@@ -9,6 +9,7 @@
 
 Остановка: не меньше min_items; затем — как только SE ≤ порога или решение по обеим границам заявленного
 грейда принято с уверенностью ≥ confidence; не больше max_items.
+Решение: грейд подтверждён, если апостериорная вероятность P(θ ≥ нижней границы грейда) ≥ confirm_prob.
 """
 from __future__ import annotations
 
@@ -25,12 +26,15 @@ INTERN_FLOOR = -2.0  # ниже этого уровня категория «С�
 
 @dataclass
 class CatConfig:
-    min_items: int = 10
-    max_items: int = 20
-    se_stop: float = 0.30
+    """Значения подобраны симуляцией (validation/cat_validation.py): баланс точности и длины теста ~20 минут."""
+    min_items: int = 12
+    max_items: int = 24
+    se_stop: float = 0.28
     confidence: float = 0.92
     randomesque: int = 4
     max_exposure: float = 0.30
+    confirm_prob: float = 0.60  # грейд подтверждается, если P(θ ≥ нижней границы) ≥ 0.6
+    parametric_bonus: float = 1.0  # множитель информации для параметрических семейств (предпочтение при равенстве)
     strong_margin: float = 0.80  # P(θ ≥ верхней границы), при которой предлагается повышение
 
 
@@ -55,6 +59,7 @@ class AnsweredItem:
     time_ms: int | None = None
     time_limit: int | None = None
     level: int = 3
+    foreign: bool = False  # ответ совпал с ключом чужого варианта того же семейства (см. integrity.py)
 
 
 @dataclass
@@ -111,7 +116,8 @@ def select_next(state: CatState, params: dict[str, ItemState], rng: random.Rando
         def info(f: ItemFamily) -> float:
             st = params.get(f.id)
             a, b, c = (st.a, st.b, st.c) if st else (f.a, f.b, f.c)
-            return float(irt.information(theta_sel, a, b, c))
+            bonus = cfg.parametric_bonus if f.parametric else 1.0
+            return float(irt.information(theta_sel, a, b, c)) * bonus
 
         ranked = sorted(pool, key=info, reverse=True)
         return rng.choice(ranked[: cfg.randomesque])
@@ -161,20 +167,25 @@ def domain_scores(state: CatState, theta: float) -> dict[str, dict]:
 
 
 def integrity_flags(state: CatState, theta: float) -> dict:
-    """Признаки нечестного прохождения: несогласованный паттерн ответов и подозрительно быстрые верные ответы
-    на трудные задания. Не влияют на грейд автоматически — помечают сессию для проверки."""
+    """Признаки нечестного прохождения: несогласованный паттерн ответов (person-fit), подозрительно быстрые верные
+    ответы на трудные задания и ответы «чужого варианта». Не влияют на грейд автоматически — сессия помечается
+    для проверки (повторный тест под наблюдением)."""
     lz = irt.person_fit_lz(theta, state.scored)
     fast = 0
     for x in state.answered:
         if x.scored and x.correct and x.level >= 4 and x.time_ms is not None and x.time_limit:
             if x.time_ms < 0.08 * x.time_limit * 1000:
                 fast += 1
+    foreign = sum(1 for x in state.answered if x.foreign)
     flags = []
     if lz is not None and lz < -2.0:
         flags.append("aberrant_pattern")
     if fast >= 2:
         flags.append("too_fast_on_hard_items")
-    return {"lz": None if lz is None else round(lz, 3), "fast_hard_correct": fast, "flags": flags}
+    if foreign >= 2:
+        flags.append("foreign_variant_answers")
+    return {"lz": None if lz is None else round(lz, 3), "fast_hard_correct": fast, "foreign_answers": foreign,
+            "flags": flags}
 
 
 def decide(state: CatState, cfg: CatConfig) -> dict:
@@ -184,7 +195,8 @@ def decide(state: CatState, cfg: CatConfig) -> dict:
     p_lo = irt.posterior_prob_above(scored, lo)
     p_hi = 0.0 if math.isinf(hi) else irt.posterior_prob_above(scored, hi)
     idx = GRADE_INDEX[state.target_grade]
-    if theta >= lo:
+    # Порог 0.6, а не 0.5: ошибка «завысили грейд» дороже для работодателя, чем «предложили пересдать уровнем ниже»
+    if p_lo >= cfg.confirm_prob:
         decision = "confirmed"
         if not math.isinf(hi) and p_hi >= cfg.strong_margin and idx < len(GRADE_CODES) - 1:
             decision = "confirmed_strong"

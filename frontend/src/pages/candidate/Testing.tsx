@@ -160,7 +160,7 @@ function HowItWorks({ spec, lang }: { spec?: string | null; lang?: string | null
   return (
     <Card title="Как устроен тест">
       <ul className="space-y-3 text-sm text-slate-600">
-        <li className="flex gap-3"><Repeat className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Адаптивный.</b> Следующее задание подбирается под текущую оценку уровня: после верного ответа — сложнее, после ошибки — проще. 10–20 заданий.</span></li>
+        <li className="flex gap-3"><Repeat className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Адаптивный.</b> Следующее задание подбирается под текущую оценку уровня: после верного ответа — сложнее, после ошибки — проще. 12–24 задания.</span></li>
         <li className="flex gap-3"><Fingerprint className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Уникальный.</b> Каждое задание — ваш личный вариант: свои числа, данные, код. Ответы других кандидатов не помогут.</span></li>
         <li className="flex gap-3"><Timer className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С таймером.</b> На каждое задание 1–4 минуты. Вернуться к предыдущему нельзя.</span></li>
         <li className="flex gap-3"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Честные ограничения.</b> Смена грейда — не чаще раза в 90 дней, повтор того же уровня — через 30 дней. Не прошли — можно сразу уровнем ниже; уверенно прошли — сразу уровнем выше.</span></li>

@@ -22,8 +22,21 @@ W_TEST, W_FSP, W_ACTIVITY = 0.60, 0.25, 0.15
 VERIFY_THRESHOLD = 0.5
 TASK_HALF_LIFE_DAYS = 60
 
-# Навыки, которые совпадают с доменом теста по смыслу и подтверждаются им даже без упоминания в резюме.
-# Домены «шире» конкретного навыка (архитектура, CI/CD, мониторинг) сюда намеренно не входят.
+# Навыки, которые домен теста измеряет НАПРЯМУЮ. Только они могут получить статус «подтверждён тестом»
+# (или «не подтвердился»). Знание конкретных инструментов (Kafka, Spring, PyTorch) общий домен не проверяет —
+# такие навыки остаются заявленными.
+VERIFIABLE = {
+    "python": ["python"], "java": ["java"], "go": ["go"], "javascript": ["javascript"], "typescript": ["typescript"],
+    "react": ["react"], "web_layout": ["html", "css", "a11y"], "browser": ["browser_apis", "web_perf"],
+    "sql": ["sql", "postgresql", "mysql", "mssql", "oracle", "clickhouse"], "databases": ["db_design"],
+    "http_api": ["rest"], "security": ["security_web"], "linux": ["linux", "bash"], "networks": ["networks"],
+    "containers": ["docker"], "kubernetes": ["kubernetes"], "cicd": ["git", "gitlab_ci"],
+    "observability": ["prometheus", "sre"], "statistics": ["statistics"], "analytics": ["product_metrics", "ab_testing"],
+    "data_tools": ["pandas", "numpy"], "ml": ["scikit_learn", "gradient_boosting"], "algorithms": ["algorithms"],
+    "testing_theory": ["test_design", "manual_testing"], "test_automation": ["pytest", "selenium"],
+}
+SKILL_VERIFIER = {sk: d for d, sks in VERIFIABLE.items() for sk in sks}
+# Навыки, совпадающие с доменом по смыслу: подтверждаются даже без упоминания в резюме
 DOMAIN_CORE_SKILLS = {
     "sql": ["sql"], "python": ["python"], "java": ["java"], "go": ["go"], "javascript": ["javascript"],
     "typescript": ["typescript"], "react": ["react"], "web_layout": ["html", "css"], "algorithms": ["algorithms"],
@@ -53,19 +66,19 @@ def activity_score(cand: CandidateProfile) -> float:
     return round(volume * decay * (0.4 + 0.6 * quality), 4)
 
 
-def primary_domain(skill_id: str) -> str | None:
-    sk = SKILL_BY_ID.get(skill_id)
-    return sk.domains[0] if sk and sk.domains else None
+def verifier_domain(skill_id: str) -> str | None:
+    """Домен теста, который напрямую измеряет навык (None — тест навык не проверяет)."""
+    return SKILL_VERIFIER.get(skill_id)
 
 
 def verified_skills(cand: CandidateProfile) -> list[str]:
-    """Заявленные навыки, чей ОСНОВНОЙ тестовый домен пройден на уровне ≥ порога (Django подтверждается доменом
-    Python, а не общим доменом HTTP), + навыки, совпадающие с пройденным доменом по смыслу."""
+    """Заявленные навыки, чей проверяющий домен пройден на уровне ≥ порога, + навыки пройденных доменов
+    «по смыслу» (SQL для домена SQL и т. п.)."""
     scores = cand.domain_scores or {}
     passed = {d for d, v in scores.items() if v.get("score", 0) >= VERIFY_THRESHOLD and v.get("n", 0) >= 1}
     out: list[str] = []
     for sid in cand.skills or []:
-        if primary_domain(sid) in passed:
+        if verifier_domain(sid) in passed:
             out.append(sid)
     for d in passed:
         for sid in DOMAIN_CORE_SKILLS.get(d, []):

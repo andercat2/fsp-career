@@ -1,0 +1,290 @@
+{
+  "generated_at": "2026-10-05 01:54",
+  "setup": {
+    "candidates": 900,
+    "needs": 60,
+    "k": 10,
+    "inflated_resume_share": 0.35,
+    "relevance": "метка 0–3 из латентных специализации, грейда, навыков, ожиданий по ЗП и географии; релевантен — метка ≥ 2",
+    "avg_relevant_per_need": 27.283
+  },
+  "summary": {
+    "keyword": {
+      "p10": 0.272,
+      "ndcg10": 0.293,
+      "mrr": 0.437,
+      "irrelevant_in_top10": 0.422,
+      "inflated_in_top10": 0.087,
+      "returned": 900.0,
+      "needs_with_5plus_relevant_in_top10": 0.167,
+      "p10_ci95": 0.046
+    },
+    "filters": {
+      "p10": 0.743,
+      "ndcg10": 0.801,
+      "mrr": 0.919,
+      "irrelevant_in_top10": 0.012,
+      "inflated_in_top10": 0.177,
+      "returned": 47.45,
+      "needs_with_5plus_relevant_in_top10": 0.9,
+      "p10_ci95": 0.054
+    },
+    "ours": {
+      "p10": 0.803,
+      "ndcg10": 0.815,
+      "mrr": 0.983,
+      "irrelevant_in_top10": 0.043,
+      "inflated_in_top10": 0.04,
+      "returned": 149.15,
+      "needs_with_5plus_relevant_in_top10": 0.933,
+      "p10_ci95": 0.05
+    },
+    "ours_no_fsp": {
+      "p10": 0.797,
+      "ndcg10": 0.813,
+      "mrr": 0.983,
+      "irrelevant_in_top10": 0.043,
+      "inflated_in_top10": 0.04,
+      "returned": 149.15,
+      "needs_with_5plus_relevant_in_top10": 0.917,
+      "p10_ci95": 0.05
+    },
+    "ours_no_verification": {
+      "p10": 0.815,
+      "ndcg10": 0.833,
+      "mrr": 0.964,
+      "irrelevant_in_top10": 0.03,
+      "inflated_in_top10": 0.045,
+      "returned": 149.15,
+      "needs_with_5plus_relevant_in_top10": 0.95,
+      "p10_ci95": 0.05
+    },
+    "ours_self_declared_category": {
+      "p10": 0.675,
+      "ndcg10": 0.736,
+      "mrr": 0.875,
+      "irrelevant_in_top10": 0.05,
+      "inflated_in_top10": 0.217,
+      "returned": 152.55,
+      "needs_with_5plus_relevant_in_top10": 0.833,
+      "p10_ci95": 0.056
+    },
+    "ours_nlp": {
+      "p10": 0.802,
+      "ndcg10": 0.815,
+      "mrr": 0.983,
+      "irrelevant_in_top10": 0.043,
+      "inflated_in_top10": 0.04,
+      "returned": 149.15,
+      "needs_with_5plus_relevant_in_top10": 0.933,
+      "p10_ci95": 0.05
+    }
+  },
+  "summary_with_proficiency": {
+    "keyword": {
+      "p10": 0.245,
+      "ndcg10": 0.276,
+      "mrr": 0.411,
+      "irrelevant_in_top10": 0.488
+    },
+    "filters": {
+      "p10": 0.743,
+      "ndcg10": 0.758,
+      "mrr": 0.919,
+      "irrelevant_in_top10": 0.07
+    },
+    "ours": {
+      "p10": 0.802,
+      "ndcg10": 0.788,
+      "mrr": 0.983,
+      "irrelevant_in_top10": 0.07
+    },
+    "ours_no_fsp": {
+      "p10": 0.795,
+      "ndcg10": 0.783,
+      "mrr": 0.983,
+      "irrelevant_in_top10": 0.07
+    },
+    "ours_no_verification": {
+      "p10": 0.815,
+      "ndcg10": 0.811,
+      "mrr": 0.964,
+      "irrelevant_in_top10": 0.055
+    },
+    "ours_self_declared_category": {
+      "p10": 0.675,
+      "ndcg10": 0.699,
+      "mrr": 0.875,
+      "irrelevant_in_top10": 0.127
+    },
+    "ours_nlp": {
+      "p10": 0.8,
+      "ndcg10": 0.787,
+      "mrr": 0.983,
+      "irrelevant_in_top10": 0.072
+    }
+  },
+  "nlp_end_to_end": {
+    "specialization_accuracy": 1.0,
+    "grades_exact": 1.0
+  },
+  "latency_ms": {
+    "mean": 37.982,
+    "p95": 65.926,
+    "pool": "до 900 кандидатов, без кэширования"
+  },
+  "example": {
+    "need": {
+      "specialization": "backend",
+      "grades": [
+        "intern",
+        "junior"
+      ],
+      "must_skills": [
+        "rest",
+        "postgresql",
+        "cassandra",
+        "django"
+      ],
+      "nice_skills": [
+        "security_web",
+        "celery"
+      ],
+      "salary_from": 60000,
+      "salary_to": 145000,
+      "work_format": "hybrid",
+      "city": "Самара",
+      "text": "Открыта позиция: backend-разработчик уровня стажёр / Junior.\nТребования: REST API, PostgreSQL, Cassandra, Django.\nБудет плюсом: Безопасность веб-приложений, Celery.\nУсловия: гибридный формат  Самара  зарплата от 60 000 до 145 000 ₽.",
+      "title": "Backend-разработчик (стажёр / Junior)"
+    },
+    "top5": {
+      "keyword": [
+        {
+          "idx": 121,
+          "label": 0,
+          "true_grade": "middle",
+          "claimed_grade": "middle",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 420,
+          "label": 0,
+          "true_grade": "middle",
+          "claimed_grade": "middle",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 301,
+          "label": 0,
+          "true_grade": "middle",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 558,
+          "label": 1,
+          "true_grade": "intern",
+          "claimed_grade": "intern",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 240,
+          "label": 1,
+          "true_grade": "intern",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        }
+      ],
+      "filters": [
+        {
+          "idx": 539,
+          "label": 3,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 234,
+          "label": 3,
+          "true_grade": "intern",
+          "claimed_grade": "intern",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 305,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "intern",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 373,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 571,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        }
+      ],
+      "ours": [
+        {
+          "idx": 475,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "middle",
+          "inflated": true,
+          "spec": "backend"
+        },
+        {
+          "idx": 321,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 772,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 825,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 682,
+          "label": 1,
+          "true_grade": "intern",
+          "claimed_grade": "junior",
+          "inflated": true,
+          "spec": "backend"
+        }
+      ]
+    }
+  },
+  "runtime_sec": 22.5
+}

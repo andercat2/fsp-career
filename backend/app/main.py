@@ -19,10 +19,12 @@ def _warmup() -> None:
     """Обучение классификатора специализаций и загрузка NER-модели занимают несколько секунд — делаем в фоне."""
     from app.services.nlp.resume_parser import _natasha
     from app.services.nlp.vacancy_parser import _model
+    from app.services.testing.integrity import build_index
 
     _model()
     _natasha()
     log.info("NLP-модели загружены")
+    log.info("Индекс детектора «чужого варианта»: %d семейств", len(build_index()))
 
 
 @asynccontextmanager

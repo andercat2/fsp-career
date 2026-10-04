@@ -83,3 +83,15 @@ def test_information(theta: np.ndarray, items: Sequence[tuple[float, float, floa
     for a, b, c in items:
         total += information(theta, a, b, c)
     return total
+
+
+B_GRID = np.linspace(-3.0, 3.0, 121)
+
+
+def calibrate_b(u: Sequence[int | bool], thetas: Sequence[float], a: float, c: float) -> float:
+    """Онлайн-калибровка трудности задания при фиксированных θ̂ кандидатов (MLE на сетке, векторно)."""
+    th = np.asarray(thetas, dtype=float)[:, None]
+    uu = np.asarray(u, dtype=float)[:, None]
+    p = np.clip(c + (1.0 - c) / (1.0 + np.exp(-a * (th - B_GRID[None, :]))), 1e-6, 1 - 1e-6)
+    ll = (uu * np.log(p) + (1 - uu) * np.log(1 - p)).sum(axis=0)
+    return float(B_GRID[int(np.argmax(ll))])

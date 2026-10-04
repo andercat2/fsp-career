@@ -1,18 +1,23 @@
 """Механика подбора: потребность работодателя → рекомендованные категории → ранжированные кандидаты с объяснением.
 
 Пул кандидатов формируется только из категорий, присвоенных тестированием (специализация × грейд), а не из
-самоописания. Внутри пула релевантность считается как взвешенная сумма пяти компонент (все в [0, 1]):
+самоописания. Внутри пула релевантность:
 
-  score = (0.30·skills + 0.25·strength + 0.20·category + 0.15·conditions + 0.10·text) · (0.8 + 0.2·category)
+  score = (0.30·skills + 0.25·strength + 0.20·category + 0.15·conditions + 0.10·text) · availability
 
-  skills     — покрытие обязательных навыков: подтверждён тестом 1.0 / только заявлен 0.55 / смежный навык 0.3,
-               плюс бонус за «желательные» навыки;
-  strength   — сила подтверждённого профиля (тест + ФСП + активность), см. profile.py;
-  category   — совпадение специализации (смежные — с понижающим коэффициентом) и грейда; дополнительно
-               мягко понижает кандидатов вне запрошенных категорий (множитель 0.8 + 0.2·category), чтобы основная
-               категория шла первой, но сильные кандидаты смежных категорий оставались видимыми;
-  conditions — ожидания по доходу vs вилка, формат работы, город/релокация;
-  text       — TF-IDF-близость описания потребности и текстов профиля (о себе, опыт).
+  skills       — покрытие обязательных навыков с учётом свидетельств теста на уровне требуемого грейда (см.
+                 skill_value): проверенный навык 0.35 + 0.65·владение, непроверенный заявленный 0.65, смежный 0.3;
+                 плюс бонус за «желательные» навыки. Проверяются только навыки, которые домен теста измеряет
+                 напрямую (profile.VERIFIABLE);
+  strength     — сила подтверждённого профиля (тест + ФСП + активность), см. profile.py;
+  category     — специализация (смежные — с коэффициентом) × соответствие грейду: половина — совпадение
+                 присвоенного грейда, половина — апостериорная вероятность, что уровень θ лежит в запрошенных
+                 грейдах (учитывает погрешность теста у границ);
+  conditions   — ожидания по доходу vs вилка, формат, город;
+  text         — TF-IDF-близость описания потребности и текстов профиля;
+  availability — мультипликативный штраф за фактическую недоступность (другой город без релокации, ожидания
+                 заметно выше вилки, несовместимый формат) — такие кандидаты остаются видимыми, но ниже.
+Параметры подобраны и проверены на синтетическом наборе пар (validation/matching_validation.py).
 
 Каждая компонента порождает человекочитаемые причины (+/−), которые показываются работодателю.
 """
@@ -27,6 +32,7 @@ from sqlalchemy.orm import Session
 from app.core.db import utcnow
 from app.models import CandidateProfile, User
 from app.services.fsp.scoring import fsp_summary
+from app.services.matching.profile import verifier_domain
 from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import (
     DOMAINS,
@@ -36,6 +42,7 @@ from app.services.reference.taxonomy import (
     SPEC_BY_CODE,
     SPEC_NAMES,
     WORK_FORMATS,
+    grade_center,
 )
 
 WEIGHTS = {"skills": 0.30, "strength": 0.25, "category": 0.20, "conditions": 0.15, "text": 0.10}
@@ -112,25 +119,39 @@ def _related_skill(sid: str, cand_skills: set[str]) -> str | None:
     return None
 
 
-def skill_value(sid: str, cand: CandidateProfile) -> tuple[float, str, str | None]:
-    """(значение, статус, связанный навык). Статусы: verified | declared | related | domain | missing."""
-    verified = set(cand.verified_skills or [])
-    declared = set(cand.skills or [])
-    if sid in verified:
-        return 1.0, "verified", None
-    if sid in declared:
-        return 0.55, "declared", None
-    sk = SKILL_BY_ID.get(sid)
+def skill_value(sid: str, cand: CandidateProfile, level: float = 0.5) -> tuple[float, str, str | None]:
+    """(значение, статус, связанный навык) с учётом свидетельств теста НА УРОВНЕ ТРЕБОВАНИЙ потребности.
+
+    Если навык измеряется доменом теста, берём доменную оценку θ_d кандидата и считаем владение относительно
+    центра требуемого грейда: prof = σ(1.3·(θ_d − level)). Заявленный и проверенный навык: 0.35 + 0.65·prof
+    (prof ≥ 0.5 — «подтверждён на уровне вакансии», prof < 0.3 — «не подтвердился»). Не заявлен, но домен
+    силён — 0.35·prof. Не проверялся тестом: заявлен 0.65, смежный навык 0.3, иначе 0.
+    Статусы: verified | declared | refuted | domain | related | missing."""
+    declared = set(cand.skills or []) | set(cand.verified_skills or [])
     scores = cand.domain_scores or {}
-    if sk and sk.domains and scores.get(sk.domains[0], {}).get("score", 0) >= 0.6:
-        return 0.35, "domain", None
-    rel = _related_skill(sid, declared | verified)
+    vd = verifier_domain(sid)
+    tested = scores.get(vd) if vd else None
+    if tested and tested.get("n", 0) >= 1:
+        th = tested.get("theta")
+        prof = 1 / (1 + math.exp(-1.3 * (th - level))) if th is not None else tested.get("score", 0.5)
+        if sid in declared:
+            if prof >= 0.5:
+                return 0.35 + 0.65 * prof, "verified", None
+            if prof < 0.3 and tested.get("n", 0) >= 2:
+                return 0.35 + 0.65 * prof, "refuted", None
+            return 0.35 + 0.65 * prof, "declared", None
+        if prof >= 0.6:
+            return 0.35 * prof, "domain", None
+    elif sid in declared:
+        return 0.65, "declared", None
+    rel = _related_skill(sid, declared)
     if rel:
         return 0.3, "related", rel
     return 0.0, "missing", None
 
 
 def skills_component(need: Need, cand: CandidateProfile) -> tuple[float, list[dict]]:
+    level = grade_center(min(need.grades, key=lambda g: GRADE_INDEX[g]))
     implicit = False
     must = need.must_skills
     if not must:
@@ -139,13 +160,13 @@ def skills_component(need: Need, cand: CandidateProfile) -> tuple[float, list[di
     details = []
     must_vals = []
     for sid in must:
-        v, status, rel = skill_value(sid, cand)
+        v, status, rel = skill_value(sid, cand, level)
         must_vals.append(v)
         details.append({"skill": sid, "name": SKILL_BY_ID[sid].name if sid in SKILL_BY_ID else sid, "status": status,
                         "related": SKILL_BY_ID[rel].name if rel else None, "required": True, "implicit": implicit})
     nice_vals = []
     for sid in need.nice_skills:
-        v, status, rel = skill_value(sid, cand)
+        v, status, rel = skill_value(sid, cand, level)
         nice_vals.append(v)
         details.append({"skill": sid, "name": SKILL_BY_ID[sid].name if sid in SKILL_BY_ID else sid, "status": status,
                         "related": SKILL_BY_ID[rel].name if rel else None, "required": False, "implicit": False})
@@ -187,7 +208,28 @@ def conditions_component(need: Need, cand: CandidateProfile) -> tuple[float, dic
     s, s_status = salary_fit(need, cand)
     f = format_fit(need, cand)
     c = city_fit(need, cand)
-    return 0.5 * s + 0.3 * f + 0.2 * c, {"salary": s, "salary_status": s_status, "format": f, "city": c}
+    availability = (0.6 if s_status == "above" else 0.9 if s_status == "slightly_above" else 1.0) \
+        * (0.5 if c <= 0.2 else 1.0) * (0.75 if f <= 0.3 else 1.0)
+    return 0.5 * s + 0.3 * f + 0.2 * c, {"salary": s, "salary_status": s_status, "format": f, "city": c,
+                                          "availability": round(availability, 3)}
+
+
+def band_probability(need_grades: list[str], cand: CandidateProfile) -> float | None:
+    """P(θ кандидата лежит в полосах запрошенных грейдов) по нормальной аппроксимации апостериорного θ."""
+    if cand.grade_theta is None or not cand.grade_se:
+        return None
+    from app.services.reference.taxonomy import grade_band
+
+    def phi(x: float) -> float:
+        return 0.5 * (1 + math.erf(x / math.sqrt(2)))
+
+    total = 0.0
+    for g in need_grades:
+        lo, hi = grade_band(g)
+        p_hi = 1.0 if math.isinf(hi) else phi((hi - cand.grade_theta) / cand.grade_se)
+        p_lo = 0.0 if math.isinf(lo) else phi((lo - cand.grade_theta) / cand.grade_se)
+        total += max(0.0, p_hi - p_lo)
+    return min(1.0, total)
 
 
 def candidate_text(cand: CandidateProfile) -> str:
@@ -246,15 +288,18 @@ def _reasons(need: Need, cand: CandidateProfile, comp: dict, skill_details: list
         r.append({"kind": "info", "text": "Частичное совпадение категории: " + ", ".join(why) if why else "Частичное совпадение категории"})
     verified = [d["name"] for d in skill_details if d["status"] == "verified"]
     declared = [d["name"] for d in skill_details if d["status"] == "declared"]
+    refuted = [d["name"] for d in skill_details if d["status"] == "refuted"]
     domain = [d["name"] for d in skill_details if d["status"] == "domain"]
     related = [f"{d['related']} вместо {d['name']}" for d in skill_details if d["status"] == "related"]
     missing = [d["name"] for d in skill_details if d["status"] == "missing" and d["required"]]
     if verified:
-        r.append({"kind": "plus", "text": "Подтверждены тестом: " + ", ".join(verified)})
+        r.append({"kind": "plus", "text": "Подтверждены тестом на уровне требований: " + ", ".join(verified)})
     if domain:
         r.append({"kind": "plus", "text": "Сильный результат в профильном домене теста: " + ", ".join(domain)})
     if declared:
         r.append({"kind": "info", "text": "Заявлены в профиле, но не проверены тестом: " + ", ".join(declared)})
+    if refuted:
+        r.append({"kind": "minus", "text": "Заявлены, но тест показал уровень ниже требуемого: " + ", ".join(refuted)})
     if related:
         r.append({"kind": "info", "text": "Смежный опыт: " + "; ".join(related)})
     if missing:
@@ -308,14 +353,16 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
         sk, skill_details = skills_component(need, cand)
         cond_v, cond = conditions_component(need, cand)
         sf = spec_factor(need.specialization, cand.grade_specialization)
+        gf = grade_fit(need.grades, cand.grade)
+        pb = band_probability(need.grades, cand)
         comp = {
             "skills": round(sk, 4),
             "strength": round(cand.strength or 0.0, 4),
-            "category": round(sf * grade_fit(need.grades, cand.grade), 4),
+            "category": round(sf * (gf if pb is None else 0.5 * gf + 0.5 * pb), 4),
             "conditions": round(cond_v, 4),
             "text": round(sim, 4),
         }
-        score = sum(WEIGHTS[k] * v for k, v in comp.items()) * (0.8 + 0.2 * comp["category"])
+        score = sum(WEIGHTS[k] * v for k, v in comp.items()) * cond["availability"]
         if need.require_fsp and not cand.fsp_id:
             score *= 0.85  # работодатель отметил важность ФСП — мягкое понижение, а не исключение
         fsp = fsp_summary(cand.fsp_profile, cand.grade_specialization)

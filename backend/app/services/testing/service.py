@@ -17,7 +17,7 @@ from app.core.security import derive_seed
 from app.models import CandidateProfile, GradeHistory, ItemStat, TestResponse, TestSession
 from app.services.notify import notify
 from app.services.reference.taxonomy import DOMAINS, GRADE_CODES, GRADE_INDEX, GRADE_NAMES, SPEC_NAMES, resolve_blueprint
-from app.services.testing import irt
+from app.services.testing import integrity, irt
 from app.services.testing.bank import REGISTRY, check_answer
 from app.services.testing.cat import AnsweredItem, CatConfig, CatState, ItemState, decide, select_next, should_stop
 
@@ -87,14 +87,7 @@ def calibrate_pretest(db: Session) -> list[dict]:
         if len(rows) < PRETEST_PROMOTE_N:
             out.append({"family_id": st.family_id, "n": len(rows), "promoted": False})
             continue
-        best_b, best_ll = st.b, -1e18
-        for b in [x / 20 for x in range(-60, 61)]:
-            ll = 0.0
-            for u, th in rows:
-                p = min(max(float(irt.prob(th, st.a, b, st.c)), 1e-6), 1 - 1e-6)
-                ll += math.log(p) if u else math.log(1 - p)
-            if ll > best_ll:
-                best_b, best_ll = b, ll
+        best_b = irt.calibrate_b([bool(u) for u, _ in rows], [th for _, th in rows], st.a, st.c)
         st.b = best_b
         st.status = "active"
         out.append({"family_id": st.family_id, "n": len(rows), "promoted": True, "b": best_b})
@@ -170,7 +163,8 @@ def _state_from_session(sess: TestSession) -> CatState:
         st.answered.append(AnsweredItem(r.family_id, r.domain, p.get("a", fam.a if fam else 1.0),
                                         p.get("b", fam.b if fam else 0.0), p.get("c", fam.c if fam else 0.0),
                                         bool(r.is_correct), r.scored, r.time_ms,
-                                        fam.time_limit if fam else None, fam.level if fam else 3))
+                                        fam.time_limit if fam else None, fam.level if fam else 3,
+                                        bool(r.payload.get("foreign_answer"))))
     return st
 
 
@@ -308,6 +302,8 @@ def submit_answer(db: Session, sess: TestSession, response_id: int, answer) -> d
     resp.is_correct = (not timed_out) and check_answer(resp.payload["kind"], k["key"], answer,
                                                        tolerance=k.get("tolerance", 0), accepted=k.get("accepted"),
                                                        norm=k.get("norm", "tokens"))
+    if not resp.is_correct and integrity.detectable(resp.family_id) is not None:
+        _check_foreign_answer(db, resp, answer)
     state = _state_from_session(sess)
     theta, se = state.estimate()
     resp.theta_after, resp.se_after = theta, se
@@ -319,6 +315,20 @@ def submit_answer(db: Session, sess: TestSession, response_id: int, answer) -> d
         _finalize(db, sess, state)
     db.commit()
     return question_view(sess, current_response(sess))
+
+
+def _check_foreign_answer(db: Session, resp: TestResponse, answer) -> None:
+    """Неверный ответ совпал с правильным ответом чужого варианта этого семейства → вероятно, списан."""
+    kind = resp.payload["kind"]
+    mine = integrity.norm_answer(kind, answer)
+    own_key = integrity.norm_answer(kind, resp.answer_key.get("key"))
+    if not mine or mine == own_key:
+        return
+    others = db.scalars(select(TestResponse.answer_key).where(
+        TestResponse.family_id == resp.family_id, TestResponse.session_id != resp.session_id)
+        .order_by(TestResponse.id.desc()).limit(3000))
+    if any(integrity.norm_answer(kind, k.get("key")) == mine for k in others if k):
+        resp.payload = {**resp.payload, "foreign_answer": True}
 
 
 def abandon(db: Session, sess: TestSession) -> None:
@@ -342,7 +352,10 @@ def _finalize(db: Session, sess: TestSession, state: CatState) -> None:
     current = _current_grade(cand)
     decision = result["decision"]
     assigned = None
-    if decision in ("confirmed", "confirmed_strong"):
+    # Ответы «чужого варианта» — признак списанных ответов: грейд не меняется автоматически до перепроверки
+    review = "foreign_variant_answers" in result["integrity"]["flags"]
+    result["review_required"] = review
+    if decision in ("confirmed", "confirmed_strong") and not review:
         if current is None or GRADE_INDEX[sess.target_grade] > GRADE_INDEX[current]:
             assigned = sess.target_grade
             db.add(GradeHistory(candidate_id=cand.id, specialization=sess.specialization, old_grade=current,
@@ -360,6 +373,11 @@ def _finalize(db: Session, sess: TestSession, state: CatState) -> None:
     result["kept_grade"] = current if assigned is None else None
     sess.result = result
     recompute_candidate(db, cand)
+    if review:
+        notify(db, cand.user_id, "test_review", "Результат теста отправлен на перепроверку",
+               "Часть ответов совпала с ответами других вариантов заданий. Пройдите, пожалуйста, тест повторно "
+               "в формате под наблюдением — это стандартная процедура.", "/candidate/grade")
+        return
     title = {
         "confirmed": f"Грейд {GRADE_NAMES[sess.target_grade]} подтверждён",
         "confirmed_strong": f"Грейд {GRADE_NAMES[sess.target_grade]} подтверждён уверенно",

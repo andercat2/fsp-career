@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-10-05 01:54",
+  "vacancies": {
+    "n": 28,
+    "specialization_accuracy": {
+      "hybrid": 1.0,
+      "model_only": 0.964,
+      "rules_only": 1.0
+    },
+    "grades_exact": 1.0,
+    "grades_overlap": 1.0,
+    "skills": {
+      "precision": 0.953,
+      "recall": 0.977,
+      "f1": 0.961
+    },
+    "nice_to_have_detected": 0.875,
+    "salary_exact": 1.0,
+    "work_format": 1.0,
+    "city": 0.929,
+    "errors": []
+  },
+  "resumes": {
+    "n": 60,
+    "pipeline": "текст → PDF (ReportLab) → pdfminer.six → парсер",
+    "field_accuracy": {
+      "name": 0.95,
+      "email": 1.0,
+      "phone": 1.0,
+      "telegram": 1.0,
+      "city": 0.983,
+      "years_within_0_5": 0.983
+    },
+    "experience_mae_years": 0.05,
+    "skills_f1": 0.954,
+    "skills_f1_by_template": {
+      "hh": 0.944,
+      "free": 0.964
+    }
+  },
+  "runtime_sec": 2.3
+}

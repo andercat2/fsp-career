@@ -65,9 +65,13 @@ def extract_name(text: str) -> str | None:
         doc.segment(seg)
         doc.tag_ner(ner)
         for span in doc.spans:
-            words = span.text.split()
-            if span.type == "PER" and 2 <= len(words) <= 3:
-                return span.text.strip()
+            if span.type != "PER":
+                continue
+            # спан может захватить следующую строку («Иванов Иван\nМужчина») — берём только строку с именем
+            line = span.text.split("\n")[0].strip()
+            words = line.split()
+            if 2 <= len(words) <= 3 and all(re.fullmatch(r"[А-ЯЁ][а-яё-]+", w) for w in words):
+                return line
     for line in head.splitlines():
         words = line.strip().split()
         if 2 <= len(words) <= 3 and all(re.fullmatch(r"[А-ЯЁ][а-яё-]+", w) for w in words):
@@ -95,7 +99,7 @@ def extract_contacts(text: str) -> dict:
 
 def _parse_point(s: str) -> date | None:
     s = s.strip().lower()
-    if re.search(r"наст|сейчас|по н\.?в|present|current|now", s):
+    if re.search(r"наст|сейчас|н\.\s*в\.?|по н\.?в|present|current|now", s):
         return date.today()
     m = re.search(r"(\d{1,2})[./](\d{4})", s)
     if m:
@@ -111,7 +115,7 @@ def _parse_point(s: str) -> date | None:
 
 _RANGE_RE = re.compile(
     r"((?:[а-яa-z]{3,9}\.?\s*)?(?:\d{1,2}[./])?\d{4})\s*[—–-]\s*((?:[а-яa-z]{3,9}\.?\s*)?(?:\d{1,2}[./])?\d{4}|"
-    r"наст\w*\.?\s*врем\w*|по наст\w*|сейчас|present|current|now)", re.I)
+    r"наст\w*\.?\s*врем\w*|по наст\w*|н\.\s*в\.?|сейчас|present|current|now)", re.I)
 
 
 def extract_experience(text: str) -> tuple[float | None, list[dict]]:

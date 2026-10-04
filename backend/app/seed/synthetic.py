@@ -12,6 +12,7 @@ import random
 from dataclasses import dataclass, field
 
 from app.seed.fsp_data import person_name
+from app.services.matching.profile import SKILL_VERIFIER
 from app.services.reference.skills import SKILL_BY_ID, skills_for_spec
 from app.services.reference.taxonomy import (
     GRADE_CODES,
@@ -24,6 +25,10 @@ from app.services.testing import irt
 from app.services.testing.bank import REGISTRY
 from app.services.testing.cat import AnsweredItem, CatConfig, CatState, ItemState, decide, select_next, should_stop
 
+# Домены, измеряющие конкретный язык/инструмент (в отличие от общих: алгоритмы, архитектура, сети…)
+SPECIFIC_DOMAINS = {"python", "java", "go", "javascript", "typescript", "react", "web_layout", "sql", "linux",
+                    "containers", "kubernetes", "statistics", "analytics", "data_tools", "ml", "testing_theory",
+                    "test_automation"}
 SPEC_DIST = [("backend", 0.27), ("frontend", 0.18), ("fullstack", 0.10), ("ml", 0.10), ("data_analyst", 0.12),
              ("devops", 0.10), ("qa", 0.13)]
 CITY_DIST = [("Москва", 0.34), ("Санкт-Петербург", 0.15), ("Казань", 0.08), ("Новосибирск", 0.06),
@@ -113,17 +118,21 @@ def generate_population(n: int, seed: int = 42, inflation_rate: float = 0.35) ->
         spec = _pick(rng, SPEC_DIST)
         sp = SPEC_BY_CODE[spec]
         lang = rng.choice(sp["languages"])
-        theta = max(-2.6, min(2.6, rng.gauss(0, 1)))
-        grade_true = theta_to_grade(theta)
+        theta_base = max(-2.6, min(2.6, rng.gauss(0, 1)))
         bp = resolve_blueprint(spec, lang)
-        domain_theta = {d: theta + rng.gauss(0, 0.35) for d in bp}
         pool = [s.id for s in skills_for_spec(spec)]
         core = [s for s in sp["core_skills"] if s in SKILL_BY_ID]
-        k = int(max(3, min(11, round(5 + 2.2 * theta + rng.gauss(0, 1)))))
+        k = int(max(3, min(11, round(5 + 2.2 * theta_base + rng.gauss(0, 1)))))
         lang_skill = {"python": "python", "java": "java", "go": "go", "javascript": "javascript"}[lang]
         true_skills = list(dict.fromkeys([lang_skill] + rng.sample(core, min(len(core), max(2, k // 2)))
                                          + rng.sample(pool, min(len(pool), k))))[:k + 1]
-        # навыки, не принадлежащие ни одному домену блюпринта, ослабляют доменную θ
+        # Владение навыком проявляется в тесте: в «предметных» доменах, где кандидат не владеет ни одним навыком,
+        # его способность ниже. Истинный уровень — компетентность по блюпринту специализации.
+        known = {SKILL_VERIFIER[s] for s in true_skills if s in SKILL_VERIFIER}
+        domain_theta = {d: theta_base + rng.gauss(0, 0.35) - (0.6 if d in SPECIFIC_DOMAINS and d not in known else 0.0)
+                        for d in bp}
+        theta = max(-2.8, min(2.8, sum(w * domain_theta[d] for d, w in bp.items()) + 0.15))
+        grade_true = theta_to_grade(theta)
         inflated = rng.random() < inflation_rate
         declared = [s for s in true_skills if rng.random() > 0.08]
         if inflated:
@@ -181,9 +190,17 @@ def default_params() -> dict[str, ItemState]:
 
 def simulate_cat(domain_theta: dict[str, float], spec: str, lang: str, target: str, rng: random.Random,
                  params: dict[str, ItemState], cfg: CatConfig | None = None, exclude: set[str] | None = None,
-                 cheat_known: set[str] | None = None) -> tuple[CatState, dict]:
-    """Один прогон адаптивного теста. cheat_known — семейства, ответы на которые кандидат «знает заранее»
-    (модель утечки: для статичных заданий ответ известен, для параметрических — помогает лишь частично)."""
+                 cheat_known: set[str] | None = None, template_boost: float = 0.15, stale_prob: float = 0.5,
+                 collision: dict[str, float] | None = None) -> tuple[CatState, dict]:
+    """Один прогон адаптивного теста.
+
+    Модель утечки (cheat_known — семейства, которые кандидат видел в «слитой базе»):
+      • статичное задание — ответ известен: P(верно) = 0.98;
+      • параметрическое — у кандидата другой вариант, известен лишь шаблон: P → P + template_boost·(1 − P);
+        если не решил, с вероятностью stale_prob вводит «слитый» ответ чужого варианта (детектируемо).
+    collision — вероятность случайного совпадения неверного ответа честного кандидата с ключом чужого варианта
+    (модель ложных срабатываний детектора).
+    """
     cfg = cfg or CatConfig()
     bp = resolve_blueprint(spec, lang)
     state = CatState(bp, target, lang)
@@ -193,11 +210,19 @@ def simulate_cat(domain_theta: dict[str, float], spec: str, lang: str, target: s
             break
         th = domain_theta.get(fam.domain, sum(domain_theta.values()) / len(domain_theta))
         p = float(irt.prob(th, fam.a, fam.b, fam.c))
-        if cheat_known and fam.id in cheat_known:
-            p = 0.98 if not fam.parametric else p + (1 - p) * 0.25
+        leaked = bool(cheat_known and fam.id in cheat_known)
+        if leaked:
+            p = 0.98 if not fam.parametric else p + (1 - p) * template_boost
         u = rng.random() < p
+        foreign = False
+        if not u and fam.parametric and fam.kind in ("input", "numeric"):
+            if leaked and rng.random() < stale_prob:
+                foreign = True
+            elif collision and fam.id in collision and rng.random() < collision[fam.id]:
+                foreign = True
         state.answered.append(AnsweredItem(fam.id, fam.domain, fam.a, fam.b, fam.c, bool(u), True,
-                                           int(rng.uniform(0.2, 0.9) * fam.time_limit * 1000), fam.time_limit, fam.level))
+                                           int(rng.uniform(0.2, 0.9) * fam.time_limit * 1000), fam.time_limit,
+                                           fam.level, foreign))
     return state, decide(state, cfg)
 
 

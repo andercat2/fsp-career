@@ -1,0 +1,95 @@
+"""Полный прогон процедуры валидации и сводка в Markdown (validation/reports/SUMMARY.md).
+
+Запуск: python -m validation.run_all   (≈3–4 минуты на обычном ноутбуке)
+"""
+from __future__ import annotations
+
+import time
+
+from validation import cat_validation, matching_validation, nlp_validation
+from validation.common import REPORTS
+
+
+def pct(x) -> str:
+    return "—" if x is None else f"{x * 100:.1f}%"
+
+
+def summary_md(cat: dict, match: dict, nlp: dict) -> str:
+    rec, gr, la, dd, ms = cat["recovery"], cat["grades"], cat["leak_attack"], cat["drift_detection"], cat["misspecification"]
+    s = match["summary"]
+    sp = match["summary_with_proficiency"]
+    lines = [
+        "# Результаты валидации", "",
+        f"Сгенерировано: {time.strftime('%Y-%m-%d %H:%M')}. Все эксперименты воспроизводимы: `python -m validation.run_all`.", "",
+        "## 1. Механика тестирования (адаптивный тест, IRT)", "",
+        f"Популяция: {cat['config']['population']} синтетических кандидатов, 35% завышают заявленный грейд.", "",
+        "| Метрика | Значение |", "|---|---|",
+        f"| Корреляция оценки уровня θ̂ с истинным θ | {rec['pearson_r']} |",
+        f"| RMSE оценки уровня | {rec['rmse']} |",
+        f"| Средняя длина теста (заданий) | {rec['test_length']['mean']} (p10–p90: {rec['test_length']['p10']}–{rec['test_length']['p90']}) |",
+        f"| Точность решения «грейд подтверждён» | {pct(rec['decision']['accuracy'])} |",
+        f"| Ложные подтверждения / ложные отказы | {pct(rec['decision']['false_confirm_rate'])} / {pct(rec['decision']['false_reject_rate'])} |",
+        f"| Итоговый грейд совпал с истинным | {pct(gr['grade_exact_accuracy'])} (самооценка: {pct(gr['self_declared_exact_accuracy'])}) |",
+        f"| Грейд в пределах ±1 ступени | {pct(gr['grade_within_one'])} |",
+        f"| Завышение грейда | {pct(gr['overgrading_rate_test'])} (самооценка: {pct(gr['overgrading_rate_self_declared'])}) |",
+        f"| Повторное прохождение: тот же грейд | {pct(gr['retest']['grade_agreement'])}, взвешенная κ = {gr['retest']['weighted_kappa']}, r(θ̂₁, θ̂₂) = {gr['retest']['theta_test_retest_r']} |",
+        f"| Дискриминативность заданий: медиана D / доля D ≥ 0.3 | {cat['discrimination']['median_D']} / {pct(cat['discrimination']['share_D_ge_0_3'])} |",
+        f"| Использовано семейств банка / макс. экспозиция | {pct(cat['exposure']['used_share'])} / {pct(cat['exposure']['max_exposure_rate'])} |",
+        f"| Совпадение идентичных вопросов у двух кандидатов одного уровня | {pct(cat['overlap']['mean_identical_question_overlap'])} |",
+        "", "### Атака «слитой базой» (заявляют грейд на ступень выше)", "",
+        "| Система | Честно (K=0) | K=5 | K=25 | K=100 |", "|---|---|---|---|---|",
+    ]
+    for name, title in (("fixed_form", "Фиксированный тест (20 статичных заданий)"),
+                        ("static_bank", "Адаптивный тест без параметрических вариантов"),
+                        ("ours", "Наша система: завышение"), ):
+        r = la["inflation_rate"][name]
+        lines.append(f"| {title} | {pct(r['0'])} | {pct(r['5'])} | {pct(r['25'])} | {pct(r['100'])} |")
+    u = la["undetected_inflation_rate"]["ours"]
+    d = la["detection_rate"]["ours"]
+    lines += [
+        f"| Наша система: незамеченное завышение | {pct(u['0'])} | {pct(u['5'])} | {pct(u['25'])} | {pct(u['100'])} |",
+        f"| Наша система: доля помеченных сессий | {pct(la['honest_flag_rate']['ours'])} | {pct(d['5'])} | {pct(d['25'])} | {pct(d['100'])} |",
+        "", f"Обнаружение утечки статичных заданий по дрейфу решаемости ({dd['specialization']}, порог z>3): " + ", ".join(
+            f"после {k} прохождений — TPR {pct(v['3.0']['tpr'])}, FPR {pct(v['3.0']['fpr'])}" for k, v in dd["checkpoints"].items()) + ".",
+        "", f"Ошибки априорной калибровки (b ± 0.4, a × e^N(0,0.25)): точность грейда {pct(ms['grade_accuracy']['prior_params'])} "
+            f"на априорных параметрах против {pct(ms['grade_accuracy']['oracle_true_params'])} у «оракула»; онлайн-калибровка "
+            f"снижает ошибку трудности с {ms['b_rmse_prior']} до {ms['b_rmse_after_calibration']}.", "",
+        "## 2. Механика подбора", "",
+        f"{match['setup']['candidates']} кандидатов, {match['setup']['needs']} потребностей; релевантность — из латентной истины.", "",
+        "| Система | P@10 | nDCG@10 | MRR | Нерелевантных в топ-10 | «Завысивших» в топ-10 |", "|---|---|---|---|---|---|",
+    ]
+    names = {"keyword": "Поиск по ключевым словам (TF-IDF по резюме)", "filters": "Фильтры по самоописанию",
+             "ours": "**Наша система**", "ours_nlp": "Наша система, потребность из текста (NLP)",
+             "ours_self_declared_category": "Абляция: категория из самоописания", "ours_no_fsp": "Абляция: без ФСП",
+             "ours_no_verification": "Абляция: без проверки навыков тестом"}
+    for k, title in names.items():
+        v = s[k]
+        lines.append(f"| {title} | {v['p10']} ± {v['p10_ci95']} | {v['ndcg10']} | {v['mrr']} | {pct(v['irrelevant_in_top10'])} | {pct(v['inflated_in_top10'])} |")
+    lines += ["", "С учётом уровня владения навыками (P@10 / nDCG@10): " + "; ".join(
+        f"{names[k].strip('*')}: {sp[k]['p10']} / {sp[k]['ndcg10']}" for k in ("keyword", "filters", "ours")) + ".",
+              "", f"Время ранжирования пула до {match['setup']['candidates']} кандидатов: {match['latency_ms']['mean']} мс в среднем.", "",
+              "## 3. NLP", "",
+              f"Вакансии ({nlp['vacancies']['n']} размеченных текстов): специализация {pct(nlp['vacancies']['specialization_accuracy']['hybrid'])} "
+              f"(только модель — {pct(nlp['vacancies']['specialization_accuracy']['model_only'])}), грейды {pct(nlp['vacancies']['grades_exact'])}, "
+              f"навыки F1 {nlp['vacancies']['skills']['f1']}, вилка {pct(nlp['vacancies']['salary_exact'])}, формат {pct(nlp['vacancies']['work_format'])}.", "",
+              f"Резюме ({nlp['resumes']['n']} синтетических PDF): ФИО {pct(nlp['resumes']['field_accuracy']['name'])}, e-mail "
+              f"{pct(nlp['resumes']['field_accuracy']['email'])}, телефон {pct(nlp['resumes']['field_accuracy']['phone'])}, "
+              f"стаж ±0.5 г. {pct(nlp['resumes']['field_accuracy']['years_within_0_5'])}, навыки F1 {nlp['resumes']['skills_f1']}.", "",
+              "## Ограничения", "",
+              "- Эталон синтетический: проверяются свойства процедур при известной истине. Для продуктива нужен пилот с "
+              "экспертной оценкой ФСП (план — в документации) и онлайн-калибровка заданий на реальных ответах.",
+              "- Тексты вакансий для проверки NLP написаны командой; перед запуском — проверка на выборке реальных вакансий.", ""]
+    return "\n".join(lines)
+
+
+def main() -> None:
+    t0 = time.time()
+    cat = cat_validation.main()
+    match = matching_validation.main()
+    nlp = nlp_validation.main()
+    (REPORTS / "SUMMARY.md").write_text(summary_md(cat, match, nlp), encoding="utf-8", newline="\n")
+    print(f"Готово за {time.time() - t0:.0f} с. Сводка: {REPORTS / 'SUMMARY.md'}")
+
+
+if __name__ == "__main__":
+    main()

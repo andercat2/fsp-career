@@ -139,7 +139,8 @@ function Result({ view }: { view: any }) {
           <div className="min-w-0 flex-1">
             <h2 className={clsx('text-2xl font-extrabold', r.decision !== 'not_confirmed' && 'text-white')}>{d.title(r.target_grade_name)}</h2>
             <p className={clsx('mt-1 text-sm', r.decision === 'not_confirmed' ? 'text-amber-900' : 'text-white/75')}>
-              {r.assigned_grade ? `Категория «${view.specialization_name} · ${r.target_grade_name}» присвоена и видна работодателям.` :
+              {r.review_required ? 'Результат отправлен на перепроверку: часть ответов совпала с ответами других вариантов заданий. Категория не изменена — пройдите тест повторно под наблюдением.' :
+                r.assigned_grade ? `Категория «${view.specialization_name} · ${r.target_grade_name}» присвоена и видна работодателям.` :
                 r.kept_grade ? 'Ваш текущий грейд сохранён — грейд не понижается по результатам теста.' :
                   r.decision === 'not_confirmed' ? 'Категория пока не присвоена. Это не приговор: пройдите тест уровнем ниже — сразу, без ожидания.' : 'Результат учтён в профиле.'}
             </p>
@@ -176,7 +177,7 @@ function Result({ view }: { view: any }) {
       </div>
       <Alert tone="info" icon={<Info className="h-4 w-4" />} title="Как считается результат">
         Оценка уровня θ = {r.theta} (± {r.se}) на общей шкале модели IRT: задания разной трудности дают сопоставимый результат.
-        Грейд подтверждается, если оценка не ниже порога уровня; уверенный результат — если с вероятностью ≥ 80% вы выше верхней границы уровня.
+        Грейд подтверждается, если с вероятностью ≥ 60% ваш уровень не ниже порога грейда; уверенный результат — если с вероятностью ≥ 80% вы выше верхней границы уровня.
       </Alert>
     </div>
   )

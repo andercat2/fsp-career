@@ -49,7 +49,7 @@ def test_full_candidate_and_employer_flow(client):
     view = r.json()
     token = view["token"]
     assert "answer_key" not in str(view["question"]) and "irt" not in view["question"]
-    for _ in range(40):
+    for _ in range(50):
         if view["status"] != "in_progress":
             break
         q = view["question"]
@@ -60,7 +60,7 @@ def test_full_candidate_and_employer_flow(client):
     res = view["result"]
     assert res["decision"] in ("confirmed", "confirmed_strong")
     assert res["assigned_grade"] == "middle"
-    assert 10 <= res["n_items"] <= 20
+    assert 12 <= res["n_items"] <= 24
 
     # повторно тот же уровень — нельзя (ограничение частоты); ниже текущего — нельзя
     el = client.get(f"{API}/testing/eligibility", headers=h).json()
