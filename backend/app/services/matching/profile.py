@@ -22,15 +22,14 @@ W_TEST, W_FSP, W_ACTIVITY = 0.60, 0.25, 0.15
 VERIFY_THRESHOLD = 0.5
 TASK_HALF_LIFE_DAYS = 60
 
-# Навыки, которые подтверждаются доменом теста даже без явного упоминания в резюме
+# Навыки, которые совпадают с доменом теста по смыслу и подтверждаются им даже без упоминания в резюме.
+# Домены «шире» конкретного навыка (архитектура, CI/CD, мониторинг) сюда намеренно не входят.
 DOMAIN_CORE_SKILLS = {
     "sql": ["sql"], "python": ["python"], "java": ["java"], "go": ["go"], "javascript": ["javascript"],
     "typescript": ["typescript"], "react": ["react"], "web_layout": ["html", "css"], "algorithms": ["algorithms"],
     "linux": ["linux"], "containers": ["docker"], "kubernetes": ["kubernetes"], "statistics": ["statistics"],
-    "testing_theory": ["test_design"], "http_api": ["rest"], "cicd": ["git"], "data_tools": ["pandas"],
-    "ml": ["scikit_learn"], "analytics": ["product_metrics"], "databases": ["db_design"], "security": ["security_web"],
-    "architecture": ["system_design"], "observability": ["prometheus"], "networks": ["networks"],
-    "test_automation": ["pytest"], "deep_learning": [], "browser": ["browser_apis"],
+    "testing_theory": ["test_design"], "http_api": ["rest"], "data_tools": ["pandas"], "ml": ["scikit_learn"],
+    "analytics": ["product_metrics"], "databases": ["db_design"], "networks": ["networks"], "browser": ["browser_apis"],
 }
 
 
@@ -54,14 +53,19 @@ def activity_score(cand: CandidateProfile) -> float:
     return round(volume * decay * (0.4 + 0.6 * quality), 4)
 
 
+def primary_domain(skill_id: str) -> str | None:
+    sk = SKILL_BY_ID.get(skill_id)
+    return sk.domains[0] if sk and sk.domains else None
+
+
 def verified_skills(cand: CandidateProfile) -> list[str]:
-    """Заявленные навыки, чей тестовый домен пройден на уровне ≥ порога, + ключевые навыки пройденных доменов."""
+    """Заявленные навыки, чей ОСНОВНОЙ тестовый домен пройден на уровне ≥ порога (Django подтверждается доменом
+    Python, а не общим доменом HTTP), + навыки, совпадающие с пройденным доменом по смыслу."""
     scores = cand.domain_scores or {}
     passed = {d for d, v in scores.items() if v.get("score", 0) >= VERIFY_THRESHOLD and v.get("n", 0) >= 1}
     out: list[str] = []
     for sid in cand.skills or []:
-        sk = SKILL_BY_ID.get(sid)
-        if sk and set(sk.domains) & passed:
+        if primary_domain(sid) in passed:
             out.append(sid)
     for d in passed:
         for sid in DOMAIN_CORE_SKILLS.get(d, []):

@@ -87,7 +87,7 @@ def callback(db: DB, state: str, code: str | None = None, error: str | None = No
 
     # Вход через ФСП ID: существующий профиль или новый кандидат с подтверждённым у провайдера e-mail
     if owner is None:
-        email = (claims.get("email") or f"{fsp_id.lower()}@fsp-id.local").lower()
+        email = (claims.get("email") or f"{fsp_id.lower()}@fsp-id.example").lower()
         user = db.scalar(select(User).where(User.email == email))
         if user and user.role != "candidate":
             return _front("/login?fsp_error=" + quote("E-mail из ФСП ID занят учётной записью работодателя"))

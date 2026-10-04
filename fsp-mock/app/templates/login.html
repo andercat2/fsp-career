@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вход — ФСП ID</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --pink:#FF0053; --deep:#310F53; --purple:#520978; --lav:#8A83D1; --light:#FFD6E4; --dark:#1C1D22; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Montserrat, Arial, sans-serif; color: var(--dark);
+           background: linear-gradient(135deg, var(--deep) 0%, var(--purple) 60%, #7a1a8f 100%); min-height:100vh;
+           display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+    .card { background:#fff; border-radius:24px; max-width:460px; width:100%; padding:32px; box-shadow:0 24px 60px rgba(0,0,0,.25); }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .logo { width:44px; height:44px; border-radius:12px; background:var(--pink); color:#fff; display:grid; place-items:center;
+            font-weight:700; font-size:15px; }
+    h1 { font-size:22px; margin:0; color:var(--deep); }
+    .sub { color:#6b6b7b; font-size:13px; margin:4px 0 22px; }
+    label { font-size:12px; font-weight:600; color:#555; display:block; margin:12px 0 6px; }
+    input { width:100%; padding:12px 14px; border:1.5px solid #e4e1ee; border-radius:12px; font:inherit; font-size:14px; }
+    input:focus { outline:none; border-color:var(--lav); }
+    .btn { width:100%; margin-top:18px; padding:13px; border:0; border-radius:12px; background:var(--pink); color:#fff;
+           font:inherit; font-weight:700; font-size:15px; cursor:pointer; }
+    .btn:hover { filter:brightness(.95); }
+    .ghost { background:transparent; color:#6b6b7b; margin-top:8px; font-weight:600; }
+    .err { background:#ffe8ef; color:#b0003a; padding:10px 12px; border-radius:10px; font-size:13px; margin-bottom:8px; }
+    .demo { margin-top:22px; border-top:1px solid #eee; padding-top:16px; }
+    .demo h2 { font-size:13px; margin:0 0 10px; color:var(--deep); }
+    .acc { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 12px; border-radius:12px;
+           background:#f7f5fc; margin-bottom:8px; cursor:pointer; border:1.5px solid transparent; }
+    .acc:hover { border-color: var(--lav); }
+    .acc b { font-size:13px; } .acc small { color:#6b6b7b; font-size:11px; display:block; }
+    .tag { font-size:11px; padding:3px 8px; border-radius:20px; background:var(--light); color:#b0003a; white-space:nowrap; }
+    .tag.none { background:#eceaf5; color:#555; }
+    .hint { font-size:11px; color:#8a8a99; margin-top:12px; line-height:1.5; }
+  </style>
+</head>
+<body>
+<form class="card" method="post">
+  <div class="brand"><div class="logo">ФСП</div><h1>Вход через ФСП ID</h1></div>
+  <p class="sub">Сервис «ФСП Карьера» запрашивает доступ к вашему профилю участника и достижениям.</p>
+  {% if error %}<div class="err">{{ error }}</div>{% endif %}
+  {% for k, v in q.items() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+  <label for="username">Логин или ФСП ID</label>
+  <input id="username" name="username" autocomplete="username" required placeholder="FSP-24-100000">
+  <label for="password">Пароль</label>
+  <input id="password" name="password" type="password" autocomplete="current-password" required>
+  <button class="btn" name="action" value="login">Войти и разрешить доступ</button>
+  <button class="btn ghost" name="action" value="cancel" formnovalidate>Отмена</button>
+  <div class="demo">
+    <h2>Демо-участники (пароль: {{ password }})</h2>
+    {% for p in demo %}
+    <div class="acc" onclick="fill('{{ 'alice' if loop.first else 'gleb' }}')">
+      <div><b>{{ p.full_name }}</b><small>{{ 'alice' if loop.first else 'gleb' }} · {{ p.fsp_id }} · {{ p.region }}</small></div>
+      {% if p.achievements %}<span class="tag">{{ p.achievements|length }} достижения</span>
+      {% else %}<span class="tag none">нет истории</span>{% endif %}
+    </div>
+    {% endfor %}
+    <p class="hint">Также можно войти любым участником реестра по его ФСП ID, например:
+      {% for p in others[:3] %}<code>{{ p.fsp_id }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.</p>
+  </div>
+</form>
+<script>
+  function fill(login) {
+    document.getElementById('username').value = login;
+    document.getElementById('password').value = '{{ password }}';
+  }
+</script>
+</body>
+</html>

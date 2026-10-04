@@ -3,12 +3,14 @@
 Пул кандидатов формируется только из категорий, присвоенных тестированием (специализация × грейд), а не из
 самоописания. Внутри пула релевантность считается как взвешенная сумма пяти компонент (все в [0, 1]):
 
-  score = 0.30·skills + 0.30·strength + 0.15·category + 0.15·conditions + 0.10·text
+  score = (0.30·skills + 0.25·strength + 0.20·category + 0.15·conditions + 0.10·text) · (0.8 + 0.2·category)
 
   skills     — покрытие обязательных навыков: подтверждён тестом 1.0 / только заявлен 0.55 / смежный навык 0.3,
                плюс бонус за «желательные» навыки;
   strength   — сила подтверждённого профиля (тест + ФСП + активность), см. profile.py;
-  category   — совпадение специализации (смежные — с понижающим коэффициентом) и грейда;
+  category   — совпадение специализации (смежные — с понижающим коэффициентом) и грейда; дополнительно
+               мягко понижает кандидатов вне запрошенных категорий (множитель 0.8 + 0.2·category), чтобы основная
+               категория шла первой, но сильные кандидаты смежных категорий оставались видимыми;
   conditions — ожидания по доходу vs вилка, формат работы, город/релокация;
   text       — TF-IDF-близость описания потребности и текстов профиля (о себе, опыт).
 
@@ -36,7 +38,7 @@ from app.services.reference.taxonomy import (
     WORK_FORMATS,
 )
 
-WEIGHTS = {"skills": 0.30, "strength": 0.30, "category": 0.15, "conditions": 0.15, "text": 0.10}
+WEIGHTS = {"skills": 0.30, "strength": 0.25, "category": 0.20, "conditions": 0.15, "text": 0.10}
 RELATED_SPECS = {
     "backend": {"fullstack": 0.6},
     "frontend": {"fullstack": 0.6},
@@ -120,7 +122,7 @@ def skill_value(sid: str, cand: CandidateProfile) -> tuple[float, str, str | Non
         return 0.55, "declared", None
     sk = SKILL_BY_ID.get(sid)
     scores = cand.domain_scores or {}
-    if sk and any(scores.get(d, {}).get("score", 0) >= 0.6 for d in sk.domains):
+    if sk and sk.domains and scores.get(sk.domains[0], {}).get("score", 0) >= 0.6:
         return 0.35, "domain", None
     rel = _related_skill(sid, declared | verified)
     if rel:
@@ -313,7 +315,7 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
             "conditions": round(cond_v, 4),
             "text": round(sim, 4),
         }
-        score = sum(WEIGHTS[k] * v for k, v in comp.items())
+        score = sum(WEIGHTS[k] * v for k, v in comp.items()) * (0.8 + 0.2 * comp["category"])
         if need.require_fsp and not cand.fsp_id:
             score *= 0.85  # работодатель отметил важность ФСП — мягкое понижение, а не исключение
         fsp = fsp_summary(cand.fsp_profile, cand.grade_specialization)

@@ -34,7 +34,7 @@ SKILLS: list[Skill] = [
     _s("javascript", "JavaScript", LANG, ["javascript", "js", "ecmascript", "es6", "es2015", "джаваскрипт"], ["javascript"], ["frontend", "fullstack"]),
     _s("typescript", "TypeScript", LANG, ["typescript"], ["typescript"], ["frontend", "fullstack"]),
     _s("csharp", "C#", LANG, ["c#", "csharp", "c sharp", ".net", "dotnet", "asp.net"], [], ["backend"]),
-    _s("cpp", "C++", LANG, ["c++", "cpp", "плюсы"], ["algorithms"], ["backend"]),
+    _s("cpp", "C++", LANG, ["c++", "cpp", "плюсы"], [], ["backend"]),
     _s("c", "C", LANG, ["язык c", "ansi c", "c99", "c11"], [], []),
     _s("rust", "Rust", LANG, ["rust"], [], ["backend"]),
     _s("php", "PHP", LANG, ["php", "laravel", "symfony"], [], ["backend"]),

@@ -77,14 +77,14 @@ def generate_participants(n: int = 180, seed: int = 2026) -> list[dict]:
             rank = rng.choice(["1 разряд", None])
         out.append({
             "fsp_id": f"FSP-{24 + i % 3}-{100000 + i * 37 % 900000:06d}", "full_name": name,
-            "email": f"participant{i}@fsp-mail.local", "region": rng.choice(REGIONS),
+            "email": f"participant{i}@fsp-mail.example", "region": rng.choice(REGIONS),
             "birth_year": rng.randint(1996, 2008), "sport_rank": rank,
             "rating": {"points": int(200 + quality * 1800 + rng.randint(-100, 100)),
                        "season": "2025/2026"},
             "quality": round(quality, 3), "achievements": sorted(ach, key=lambda a: a["date"], reverse=True),
         })
     # Фиксированные учётные записи для живой демонстрации привязки ФСП ID
-    out.append({"fsp_id": "FSP-DEMO-000001", "full_name": "Демидова Алиса", "email": "alice.demo@fsp-mail.local",
+    out.append({"fsp_id": "FSP-DEMO-000001", "full_name": "Демидова Алиса", "email": "alice.demo@fsp-mail.example",
                 "region": "Республика Татарстан", "birth_year": 2003, "sport_rank": "КМС",
                 "rating": {"points": 1650, "season": "2025/2026"}, "quality": 0.85,
                 "achievements": [
@@ -100,7 +100,7 @@ def generate_participants(n: int = 180, seed: int = 2026) -> list[dict]:
                      "participants": 60, "team": "Byte Busters", "role": "участник",
                      "result_url": "https://fsp-russia.com/results/2024/3301", "verified": True},
                 ]})
-    out.append({"fsp_id": "FSP-DEMO-000002", "full_name": "Новиков Глеб", "email": "gleb.demo@fsp-mail.local",
+    out.append({"fsp_id": "FSP-DEMO-000002", "full_name": "Новиков Глеб", "email": "gleb.demo@fsp-mail.example",
                 "region": "Москва", "birth_year": 2005, "sport_rank": None, "rating": {"points": 0, "season": "2025/2026"},
                 "quality": 0.0, "achievements": []})
     return out

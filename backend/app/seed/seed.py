@@ -162,7 +162,7 @@ def seed_if_empty(db: Session) -> None:
     cands: list[CandidateProfile] = []
     for sc in pop:
         simulate_assessment(sc, rng, params)
-        cands.append(_candidate_from_synth(db, sc, f"cand{sc.idx:03d}@synthetic.local", pwd, rng, participants,
+        cands.append(_candidate_from_synth(db, sc, f"cand{sc.idx:03d}@synthetic.example", pwd, rng, participants,
                                            used_fsp))
     db.flush()
 

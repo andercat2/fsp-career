@@ -34,10 +34,10 @@ class Settings(BaseSettings):
     # ФСП ID (OIDC, совместимо с Keycloak). issuer — адрес для браузера,
     # internal — адрес для межсервисных вызовов (в docker-сети отличается).
     fsp_oidc_issuer: str = "http://localhost:8090/realms/fsp"
-    fsp_oidc_internal_url: str | None = None
+    fsp_oidc_internal_url: str | None = "http://127.0.0.1:8090/realms/fsp"
     fsp_client_id: str = "fsp-career"
     fsp_client_secret: str = "fsp-career-secret"
-    fsp_registry_url: str = "http://localhost:8090/registry/api/v1"
+    fsp_registry_url: str = "http://127.0.0.1:8090/registry/api/v1"
     fsp_registry_api_key: str = "registry-demo-key"
     fsp_enabled: bool = True
 

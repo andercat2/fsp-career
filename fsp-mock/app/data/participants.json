@@ -1,0 +1,7648 @@
+[
+ {
+  "fsp_id": "FSP-24-100000",
+  "full_name": "Лебедев Ринат",
+  "email": "participant0@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 431,
+   "season": "2025/2026"
+  },
+  "quality": 0.119,
+  "achievements": [
+   {
+    "event_id": "EV-2026-345",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2026-08-01",
+    "place": 180,
+    "participants": 180,
+    "team": "Рекурсия",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/2814",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-178",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2026-07-24",
+    "place": 43,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/9815",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-602",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2022-08-22",
+    "place": 39,
+    "participants": 40,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/7508",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100037",
+  "full_name": "Киселёв Глеб",
+  "email": "participant1@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 446,
+   "season": "2025/2026"
+  },
+  "quality": 0.141,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-100074",
+  "full_name": "Сафина Вера",
+  "email": "participant2@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1045,
+   "season": "2025/2026"
+  },
+  "quality": 0.461,
+  "achievements": [
+   {
+    "event_id": "EV-2024-677",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-09-16",
+    "place": 71,
+    "participants": 120,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/4678",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-581",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-11-05",
+    "place": 14,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/2999",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-100111",
+  "full_name": "Сергеев Арсений",
+  "email": "participant3@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1504,
+   "season": "2025/2026"
+  },
+  "quality": 0.674,
+  "achievements": [
+   {
+    "event_id": "EV-2026-468",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2026-08-07",
+    "place": 28,
+    "participants": 60,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/8645",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-543",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-11-07",
+    "place": 68,
+    "participants": 180,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/1151",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-764",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-07-09",
+    "place": 27,
+    "participants": 120,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/7064",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-424",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-09-15",
+    "place": 64,
+    "participants": 120,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/8183",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100148",
+  "full_name": "Волкова Анна",
+  "email": "participant4@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 1662,
+   "season": "2025/2026"
+  },
+  "quality": 0.857,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-100185",
+  "full_name": "Петрова Дарья",
+  "email": "participant5@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1297,
+   "season": "2025/2026"
+  },
+  "quality": 0.61,
+  "achievements": [
+   {
+    "event_id": "EV-2024-527",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-12-22",
+    "place": 94,
+    "participants": 120,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6013",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-697",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2024-01-19",
+    "place": 27,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/3209",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-100222",
+  "full_name": "Антонов Кирилл",
+  "email": "participant6@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1572,
+   "season": "2025/2026"
+  },
+  "quality": 0.808,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-100259",
+  "full_name": "Попова Валерия",
+  "email": "participant7@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 366,
+   "season": "2025/2026"
+  },
+  "quality": 0.051,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-100296",
+  "full_name": "Сафина Дарья",
+  "email": "participant8@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 782,
+   "season": "2025/2026"
+  },
+  "quality": 0.304,
+  "achievements": [
+   {
+    "event_id": "EV-2026-562",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2026-01-28",
+    "place": 23,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/8927",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-264",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2023-11-22",
+    "place": 19,
+    "participants": 60,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/7389",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-738",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-10-11",
+    "place": 57,
+    "participants": 60,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/2138",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-100333",
+  "full_name": "Никитина Ксения",
+  "email": "participant9@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 1016,
+   "season": "2025/2026"
+  },
+  "quality": 0.414,
+  "achievements": [
+   {
+    "event_id": "EV-2025-433",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-05-17",
+    "place": 31,
+    "participants": 120,
+    "team": "Git Gud",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/2967",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-195",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-04-15",
+    "place": 24,
+    "participants": 40,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/7684",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100370",
+  "full_name": "Ковалёва Алина",
+  "email": "participant10@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 493,
+   "season": "2025/2026"
+  },
+  "quality": 0.182,
+  "achievements": [
+   {
+    "event_id": "EV-2024-265",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2024-02-09",
+    "place": 164,
+    "participants": 180,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/1227",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-676",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2023-10-09",
+    "place": 37,
+    "participants": 40,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/2662",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-800",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-07-02",
+    "place": 37,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/4039",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-100407",
+  "full_name": "Романова Дарья",
+  "email": "participant11@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1021,
+   "season": "2025/2026"
+  },
+  "quality": 0.415,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-100444",
+  "full_name": "Ильин Андрей",
+  "email": "participant12@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1141,
+   "season": "2025/2026"
+  },
+  "quality": 0.561,
+  "achievements": [
+   {
+    "event_id": "EV-2026-708",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-06-15",
+    "place": 27,
+    "participants": 120,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/7130",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-655",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2026-06-11",
+    "place": 15,
+    "participants": 120,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/2844",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-388",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-01-23",
+    "place": 64,
+    "participants": 120,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3004",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100481",
+  "full_name": "Гусева Валерия",
+  "email": "participant13@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 403,
+   "season": "2025/2026"
+  },
+  "quality": 0.118,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-100518",
+  "full_name": "Яковлев Илья",
+  "email": "participant14@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 969,
+   "season": "2025/2026"
+  },
+  "quality": 0.415,
+  "achievements": [
+   {
+    "event_id": "EV-2025-905",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2025-09-05",
+    "place": 158,
+    "participants": 250,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/1271",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-100555",
+  "full_name": "Волков Артём",
+  "email": "participant15@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1012,
+   "season": "2025/2026"
+  },
+  "quality": 0.418,
+  "achievements": [
+   {
+    "event_id": "EV-2026-863",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-04-28",
+    "place": 96,
+    "participants": 250,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/4809",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-748",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-09-17",
+    "place": 201,
+    "participants": 250,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/1921",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-570",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-04-21",
+    "place": 55,
+    "participants": 90,
+    "team": "Git Gud",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/6114",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100592",
+  "full_name": "Ковалёв Иван",
+  "email": "participant16@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 969,
+   "season": "2025/2026"
+  },
+  "quality": 0.411,
+  "achievements": [
+   {
+    "event_id": "EV-2026-241",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2026-06-23",
+    "place": 26,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/1300",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-502",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-10-13",
+    "place": 162,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9335",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-142",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2024-09-24",
+    "place": 20,
+    "participants": 40,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3657",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-237",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-09-13",
+    "place": 41,
+    "participants": 90,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/8864",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-130",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2023-09-06",
+    "place": 40,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/3685",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-100629",
+  "full_name": "Медведев Иван",
+  "email": "participant17@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1437,
+   "season": "2025/2026"
+  },
+  "quality": 0.668,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-100666",
+  "full_name": "Лебедев Артём",
+  "email": "participant18@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 569,
+   "season": "2025/2026"
+  },
+  "quality": 0.154,
+  "achievements": [
+   {
+    "event_id": "EV-2025-184",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-06-03",
+    "place": 83,
+    "participants": 120,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/9107",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-731",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2025-02-10",
+    "place": 250,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/6698",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100703",
+  "full_name": "Валиева Камила",
+  "email": "participant19@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1358,
+   "season": "2025/2026"
+  },
+  "quality": 0.662,
+  "achievements": [
+   {
+    "event_id": "EV-2023-374",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2023-12-11",
+    "place": 75,
+    "participants": 180,
+    "team": "Ctrl+Z",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/6243",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-925",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2023-06-15",
+    "place": 23,
+    "participants": 120,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/6736",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-100740",
+  "full_name": "Поляков Егор",
+  "email": "participant20@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 517,
+   "season": "2025/2026"
+  },
+  "quality": 0.145,
+  "achievements": [
+   {
+    "event_id": "EV-2026-314",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2026-08-14",
+    "place": 55,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1983",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-748",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-05-13",
+    "place": 71,
+    "participants": 90,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/6393",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-672",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2022-03-23",
+    "place": 171,
+    "participants": 250,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6472",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-100777",
+  "full_name": "Хабибуллин Сергей",
+  "email": "participant21@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1007,
+   "season": "2025/2026"
+  },
+  "quality": 0.415,
+  "achievements": [
+   {
+    "event_id": "EV-2024-898",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-05-07",
+    "place": 83,
+    "participants": 250,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/9436",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100814",
+  "full_name": "Смирнов Кирилл",
+  "email": "participant22@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 946,
+   "season": "2025/2026"
+  },
+  "quality": 0.369,
+  "achievements": [
+   {
+    "event_id": "EV-2023-789",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2023-08-06",
+    "place": 24,
+    "participants": 60,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/2380",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-100851",
+  "full_name": "Лебедев Артём",
+  "email": "participant23@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1086,
+   "season": "2025/2026"
+  },
+  "quality": 0.522,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-100888",
+  "full_name": "Галиев Егор",
+  "email": "participant24@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1103,
+   "season": "2025/2026"
+  },
+  "quality": 0.55,
+  "achievements": [
+   {
+    "event_id": "EV-2025-476",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-05-09",
+    "place": 24,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/5981",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-137",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-08-21",
+    "place": 49,
+    "participants": 90,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/1356",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-100925",
+  "full_name": "Гусев Ринат",
+  "email": "participant25@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2001,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1659,
+   "season": "2025/2026"
+  },
+  "quality": 0.815,
+  "achievements": [
+   {
+    "event_id": "EV-2026-910",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2026-03-28",
+    "place": 31,
+    "participants": 60,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/3239",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-208",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-09-20",
+    "place": 41,
+    "participants": 180,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/8599",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-447",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-08-12",
+    "place": 1,
+    "participants": 180,
+    "team": "Сигма",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/3856",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-100962",
+  "full_name": "Захаров Матвей",
+  "email": "participant26@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1933,
+   "season": "2025/2026"
+  },
+  "quality": 0.997,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-100999",
+  "full_name": "Васильева Мария",
+  "email": "participant27@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1585,
+   "season": "2025/2026"
+  },
+  "quality": 0.729,
+  "achievements": [
+   {
+    "event_id": "EV-2026-407",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-08-08",
+    "place": 32,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/9892",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-231",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-05-15",
+    "place": 8,
+    "participants": 60,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1878",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101036",
+  "full_name": "Степанова Алиса",
+  "email": "participant28@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2004,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1492,
+   "season": "2025/2026"
+  },
+  "quality": 0.747,
+  "achievements": [
+   {
+    "event_id": "EV-2022-700",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-01-28",
+    "place": 2,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6386",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101073",
+  "full_name": "Зайцева Камила",
+  "email": "participant29@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 1853,
+   "season": "2025/2026"
+  },
+  "quality": 0.869,
+  "achievements": [
+   {
+    "event_id": "EV-2023-838",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2023-06-14",
+    "place": 15,
+    "participants": 60,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/4427",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101110",
+  "full_name": "Хабибуллин Матвей",
+  "email": "participant30@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 942,
+   "season": "2025/2026"
+  },
+  "quality": 0.44,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-101147",
+  "full_name": "Семёнова Алина",
+  "email": "participant31@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 356,
+   "season": "2025/2026"
+  },
+  "quality": 0.116,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-101184",
+  "full_name": "Попов Илья",
+  "email": "participant32@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1754,
+   "season": "2025/2026"
+  },
+  "quality": 0.899,
+  "achievements": [
+   {
+    "event_id": "EV-2024-109",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-12-16",
+    "place": 26,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/5474",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101221",
+  "full_name": "Ковалёва Виктория",
+  "email": "participant33@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 393,
+   "season": "2025/2026"
+  },
+  "quality": 0.107,
+  "achievements": [
+   {
+    "event_id": "EV-2026-171",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2026-02-17",
+    "place": 40,
+    "participants": 40,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/2782",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-122",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2025-10-05",
+    "place": 188,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3200",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-579",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2022-05-12",
+    "place": 243,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/5523",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101258",
+  "full_name": "Кузнецов Михаил",
+  "email": "participant34@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 345,
+   "season": "2025/2026"
+  },
+  "quality": 0.092,
+  "achievements": [
+   {
+    "event_id": "EV-2026-549",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-04-07",
+    "place": 68,
+    "participants": 120,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/8803",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-642",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-04-15",
+    "place": 120,
+    "participants": 120,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/5827",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-344",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2023-12-17",
+    "place": 60,
+    "participants": 60,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/7862",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-977",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2022-09-11",
+    "place": 180,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6030",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101295",
+  "full_name": "Попов Глеб",
+  "email": "participant35@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 760,
+   "season": "2025/2026"
+  },
+  "quality": 0.267,
+  "achievements": [
+   {
+    "event_id": "EV-2026-925",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-02-07",
+    "place": 140,
+    "participants": 180,
+    "team": "Рекурсия",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/3786",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-979",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-12-07",
+    "place": 23,
+    "participants": 90,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/1770",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-350",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-07-07",
+    "place": 75,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3768",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-137",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2024-02-07",
+    "place": 90,
+    "participants": 90,
+    "team": "Синтаксис",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/8330",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-309",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-03-01",
+    "place": 35,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/8723",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101332",
+  "full_name": "Романова Юлия",
+  "email": "participant36@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1454,
+   "season": "2025/2026"
+  },
+  "quality": 0.728,
+  "achievements": [
+   {
+    "event_id": "EV-2022-523",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-04-13",
+    "place": 29,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/8227",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101369",
+  "full_name": "Валиева София",
+  "email": "participant37@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 535,
+   "season": "2025/2026"
+  },
+  "quality": 0.172,
+  "achievements": [
+   {
+    "event_id": "EV-2023-194",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-11-01",
+    "place": 219,
+    "participants": 250,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/3134",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-663",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2023-06-04",
+    "place": 91,
+    "participants": 120,
+    "team": "Сигма",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/7218",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101406",
+  "full_name": "Ковалёв Роман",
+  "email": "participant38@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1237,
+   "season": "2025/2026"
+  },
+  "quality": 0.629,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-101443",
+  "full_name": "Воробьёва Диана",
+  "email": "participant39@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1294,
+   "season": "2025/2026"
+  },
+  "quality": 0.65,
+  "achievements": [
+   {
+    "event_id": "EV-2025-169",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2025-10-05",
+    "place": 194,
+    "participants": 250,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3418",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-402",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2025-01-05",
+    "place": 25,
+    "participants": 90,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/8275",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-450",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-12-24",
+    "place": 39,
+    "participants": 90,
+    "team": "Сигма",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/2590",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101480",
+  "full_name": "Тарасова Екатерина",
+  "email": "participant40@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 592,
+   "season": "2025/2026"
+  },
+  "quality": 0.227,
+  "achievements": [
+   {
+    "event_id": "EV-2026-580",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2026-08-10",
+    "place": 158,
+    "participants": 250,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/3755",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-318",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-09-23",
+    "place": 150,
+    "participants": 180,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/4683",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101517",
+  "full_name": "Павлова Диана",
+  "email": "participant41@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 401,
+   "season": "2025/2026"
+  },
+  "quality": 0.166,
+  "achievements": [
+   {
+    "event_id": "EV-2026-810",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2026-09-09",
+    "place": 57,
+    "participants": 60,
+    "team": "Дедлайн",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/4974",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-618",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2024-12-12",
+    "place": 60,
+    "participants": 60,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/7382",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-918",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-10-20",
+    "place": 120,
+    "participants": 120,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/5881",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-407",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-05-06",
+    "place": 169,
+    "participants": 180,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/3048",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101554",
+  "full_name": "Белов Матвей",
+  "email": "participant42@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 966,
+   "season": "2025/2026"
+  },
+  "quality": 0.421,
+  "achievements": [
+   {
+    "event_id": "EV-2026-482",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2026-07-01",
+    "place": 40,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/2662",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-200",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2026-06-14",
+    "place": 45,
+    "participants": 60,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/6088",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-571",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2024-02-21",
+    "place": 19,
+    "participants": 40,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/2728",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-341",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-12-07",
+    "place": 131,
+    "participants": 180,
+    "team": "Сигма",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/7448",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-454",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-03-08",
+    "place": 86,
+    "participants": 180,
+    "team": "Сигма",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/8639",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101591",
+  "full_name": "Сидорова Анна",
+  "email": "participant43@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1619,
+   "season": "2025/2026"
+  },
+  "quality": 0.754,
+  "achievements": [
+   {
+    "event_id": "EV-2025-459",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-01-24",
+    "place": 45,
+    "participants": 120,
+    "team": "NullPointer",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/7678",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101628",
+  "full_name": "Воробьёв Ринат",
+  "email": "participant44@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 302,
+   "season": "2025/2026"
+  },
+  "quality": 0.069,
+  "achievements": [
+   {
+    "event_id": "EV-2024-904",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-05-04",
+    "place": 32,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6978",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-886",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2022-11-20",
+    "place": 120,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/7994",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101665",
+  "full_name": "Никитин Ринат",
+  "email": "participant45@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 673,
+   "season": "2025/2026"
+  },
+  "quality": 0.234,
+  "achievements": [
+   {
+    "event_id": "EV-2025-312",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2025-05-23",
+    "place": 169,
+    "participants": 180,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/3670",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-212",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-05-28",
+    "place": 164,
+    "participants": 180,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/1031",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101702",
+  "full_name": "Сорокина Дарья",
+  "email": "participant46@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 861,
+   "season": "2025/2026"
+  },
+  "quality": 0.338,
+  "achievements": [
+   {
+    "event_id": "EV-2025-698",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-06-11",
+    "place": 131,
+    "participants": 180,
+    "team": "Рекурсия",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/6869",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-901",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-07-16",
+    "place": 55,
+    "participants": 90,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/7772",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101739",
+  "full_name": "Соколов Арсений",
+  "email": "participant47@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 207,
+   "season": "2025/2026"
+  },
+  "quality": 0.023,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-101776",
+  "full_name": "Иванов Михаил",
+  "email": "participant48@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 898,
+   "season": "2025/2026"
+  },
+  "quality": 0.384,
+  "achievements": [
+   {
+    "event_id": "EV-2025-792",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-10-20",
+    "place": 30,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/5736",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101813",
+  "full_name": "Лебедев Дмитрий",
+  "email": "participant49@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 685,
+   "season": "2025/2026"
+  },
+  "quality": 0.229,
+  "achievements": [
+   {
+    "event_id": "EV-2025-853",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2025-03-01",
+    "place": 21,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/7700",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101850",
+  "full_name": "Комаров Алексей",
+  "email": "participant50@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1797,
+   "season": "2025/2026"
+  },
+  "quality": 0.835,
+  "achievements": [
+   {
+    "event_id": "EV-2026-941",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-08-16",
+    "place": 38,
+    "participants": 180,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1013",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-376",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-03-24",
+    "place": 6,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4367",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101887",
+  "full_name": "Захарова Дарья",
+  "email": "participant51@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1619,
+   "season": "2025/2026"
+  },
+  "quality": 0.801,
+  "achievements": [
+   {
+    "event_id": "EV-2024-786",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2024-01-03",
+    "place": 1,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/4185",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-101924",
+  "full_name": "Фёдорова Вера",
+  "email": "participant52@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1212,
+   "season": "2025/2026"
+  },
+  "quality": 0.539,
+  "achievements": [
+   {
+    "event_id": "EV-2023-585",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-04-03",
+    "place": 102,
+    "participants": 180,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/5701",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-665",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-03-09",
+    "place": 33,
+    "participants": 60,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/7395",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-101961",
+  "full_name": "Галиев Михаил",
+  "email": "participant53@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 894,
+   "season": "2025/2026"
+  },
+  "quality": 0.345,
+  "achievements": [
+   {
+    "event_id": "EV-2025-908",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-05-23",
+    "place": 48,
+    "participants": 60,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/6028",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-101998",
+  "full_name": "Дмитриева Алиса",
+  "email": "participant54@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2006,
+  "sport_rank": "МС",
+  "rating": {
+   "points": 1592,
+   "season": "2025/2026"
+  },
+  "quality": 0.822,
+  "achievements": [
+   {
+    "event_id": "EV-2026-799",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-08-11",
+    "place": 1,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1700",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-916",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2026-05-13",
+    "place": 50,
+    "participants": 180,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/1340",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-539",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2025-11-02",
+    "place": 92,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/6948",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-130",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-04-11",
+    "place": 10,
+    "participants": 40,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/6216",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102035",
+  "full_name": "Галиева Полина",
+  "email": "participant55@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1306,
+   "season": "2025/2026"
+  },
+  "quality": 0.643,
+  "achievements": [
+   {
+    "event_id": "EV-2025-890",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-10-11",
+    "place": 11,
+    "participants": 60,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/6418",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-276",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2025-09-13",
+    "place": 56,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4259",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-542",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-07-07",
+    "place": 26,
+    "participants": 60,
+    "team": "NullPointer",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/7158",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-318",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-04-15",
+    "place": 15,
+    "participants": 40,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/2986",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102072",
+  "full_name": "Макарова Ольга",
+  "email": "participant56@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1997,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1589,
+   "season": "2025/2026"
+  },
+  "quality": 0.74,
+  "achievements": [
+   {
+    "event_id": "EV-2024-795",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-10-10",
+    "place": 7,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/5485",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-879",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-08-13",
+    "place": 37,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/6151",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-372",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2022-12-26",
+    "place": 43,
+    "participants": 90,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/1129",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-974",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2022-08-24",
+    "place": 37,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/2503",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-986",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2022-02-05",
+    "place": 3,
+    "participants": 40,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6203",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102109",
+  "full_name": "Иванов Иван",
+  "email": "participant57@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 776,
+   "season": "2025/2026"
+  },
+  "quality": 0.37,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-102146",
+  "full_name": "Кузнецов Иван",
+  "email": "participant58@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1313,
+   "season": "2025/2026"
+  },
+  "quality": 0.626,
+  "achievements": [
+   {
+    "event_id": "EV-2025-207",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-12-10",
+    "place": 40,
+    "participants": 120,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/6824",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-303",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-02-25",
+    "place": 58,
+    "participants": 180,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/9073",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-150",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-09-28",
+    "place": 14,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/4377",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-301",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2023-05-25",
+    "place": 15,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/8059",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-637",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2022-04-17",
+    "place": 11,
+    "participants": 60,
+    "team": "Git Gud",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/9668",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102183",
+  "full_name": "Петрова Виктория",
+  "email": "participant59@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1847,
+   "season": "2025/2026"
+  },
+  "quality": 0.908,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-102220",
+  "full_name": "Богданов Артём",
+  "email": "participant60@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 211,
+   "season": "2025/2026"
+  },
+  "quality": 0.042,
+  "achievements": [
+   {
+    "event_id": "EV-2026-157",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2026-05-14",
+    "place": 90,
+    "participants": 90,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/6403",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-708",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-12-28",
+    "place": 120,
+    "participants": 120,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/4117",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-695",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2023-09-15",
+    "place": 120,
+    "participants": 120,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/9991",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-800",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2023-01-28",
+    "place": 120,
+    "participants": 120,
+    "team": "NullPointer",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/3015",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-600",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-10-01",
+    "place": 161,
+    "participants": 180,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/8713",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102257",
+  "full_name": "Антонов Никита",
+  "email": "participant61@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 614,
+   "season": "2025/2026"
+  },
+  "quality": 0.266,
+  "achievements": [
+   {
+    "event_id": "EV-2026-940",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2026-08-04",
+    "place": 32,
+    "participants": 40,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/3346",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-862",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2026-07-14",
+    "place": 36,
+    "participants": 60,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/8710",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-686",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2026-03-01",
+    "place": 88,
+    "participants": 120,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1243",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-491",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-10-02",
+    "place": 210,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/9887",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-239",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-03-13",
+    "place": 189,
+    "participants": 250,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8652",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102294",
+  "full_name": "Козлов Алексей",
+  "email": "participant62@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1907,
+   "season": "2025/2026"
+  },
+  "quality": 0.915,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-102331",
+  "full_name": "Виноградова Юлия",
+  "email": "participant63@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 326,
+   "season": "2025/2026"
+  },
+  "quality": 0.109,
+  "achievements": [
+   {
+    "event_id": "EV-2026-715",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2026-07-11",
+    "place": 34,
+    "participants": 40,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/4628",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-980",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-05-11",
+    "place": 94,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/4299",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102368",
+  "full_name": "Беляев Алексей",
+  "email": "participant64@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 215,
+   "season": "2025/2026"
+  },
+  "quality": 0.052,
+  "achievements": [
+   {
+    "event_id": "EV-2023-462",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-01-27",
+    "place": 76,
+    "participants": 90,
+    "team": "Сигма",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/7027",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-273",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2022-08-25",
+    "place": 40,
+    "participants": 40,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/4709",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-299",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-07-21",
+    "place": 40,
+    "participants": 40,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/3370",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-446",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2022-06-18",
+    "place": 250,
+    "participants": 250,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/7658",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102405",
+  "full_name": "Сергеев Матвей",
+  "email": "participant65@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 660,
+   "season": "2025/2026"
+  },
+  "quality": 0.272,
+  "achievements": [
+   {
+    "event_id": "EV-2025-505",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2025-09-02",
+    "place": 60,
+    "participants": 60,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/6891",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-804",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-05-11",
+    "place": 43,
+    "participants": 60,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/5193",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-621",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2023-09-13",
+    "place": 64,
+    "participants": 90,
+    "team": "Синтаксис",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/4720",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-417",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-02-09",
+    "place": 120,
+    "participants": 120,
+    "team": "Синтаксис",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/7617",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-233",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2022-12-06",
+    "place": 43,
+    "participants": 60,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/9554",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102442",
+  "full_name": "Волков Павел",
+  "email": "participant66@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1740,
+   "season": "2025/2026"
+  },
+  "quality": 0.83,
+  "achievements": [
+   {
+    "event_id": "EV-2024-121",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2024-01-10",
+    "place": 7,
+    "participants": 250,
+    "team": "Рекурсия",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/6972",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102479",
+  "full_name": "Яковлева Елена",
+  "email": "participant67@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 940,
+   "season": "2025/2026"
+  },
+  "quality": 0.413,
+  "achievements": [
+   {
+    "event_id": "EV-2026-926",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2026-07-27",
+    "place": 63,
+    "participants": 90,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/8529",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-110",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-08-20",
+    "place": 183,
+    "participants": 250,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/5609",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-794",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-03-01",
+    "place": 27,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/7368",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102516",
+  "full_name": "Михайлов Тимур",
+  "email": "participant68@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 845,
+   "season": "2025/2026"
+  },
+  "quality": 0.354,
+  "achievements": [
+   {
+    "event_id": "EV-2026-271",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-03-28",
+    "place": 29,
+    "participants": 40,
+    "team": "Byte Busters",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/1276",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-215",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-12-01",
+    "place": 93,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/7678",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-275",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-11-26",
+    "place": 18,
+    "participants": 40,
+    "team": "Сигма",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/9728",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102553",
+  "full_name": "Кузьмина Юлия",
+  "email": "participant69@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1938,
+   "season": "2025/2026"
+  },
+  "quality": 0.959,
+  "achievements": [
+   {
+    "event_id": "EV-2024-269",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2024-07-21",
+    "place": 39,
+    "participants": 120,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/8076",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-322",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-03-03",
+    "place": 6,
+    "participants": 40,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/8193",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102590",
+  "full_name": "Волкова Ксения",
+  "email": "participant70@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1083,
+   "season": "2025/2026"
+  },
+  "quality": 0.448,
+  "achievements": [
+   {
+    "event_id": "EV-2025-236",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2025-10-21",
+    "place": 57,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2033",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-428",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-03-16",
+    "place": 84,
+    "participants": 180,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/8693",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-230",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-04-24",
+    "place": 19,
+    "participants": 60,
+    "team": "Квант",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/9357",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-638",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2022-08-07",
+    "place": 63,
+    "participants": 180,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/3816",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-780",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-08-01",
+    "place": 62,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/7127",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102627",
+  "full_name": "Беляева Полина",
+  "email": "participant71@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 900,
+   "season": "2025/2026"
+  },
+  "quality": 0.404,
+  "achievements": [
+   {
+    "event_id": "EV-2024-978",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-05-03",
+    "place": 102,
+    "participants": 250,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/7140",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102664",
+  "full_name": "Беляев Глеб",
+  "email": "participant72@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 882,
+   "season": "2025/2026"
+  },
+  "quality": 0.411,
+  "achievements": [
+   {
+    "event_id": "EV-2025-860",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-06-22",
+    "place": 65,
+    "participants": 90,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2131",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-374",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-01-23",
+    "place": 56,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2888",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-623",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2023-09-24",
+    "place": 25,
+    "participants": 40,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/6433",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-312",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-02-26",
+    "place": 179,
+    "participants": 180,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/7109",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-217",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-01-19",
+    "place": 13,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/5681",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102701",
+  "full_name": "Андреев Алексей",
+  "email": "participant73@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 785,
+   "season": "2025/2026"
+  },
+  "quality": 0.351,
+  "achievements": [
+   {
+    "event_id": "EV-2026-430",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-03-25",
+    "place": 82,
+    "participants": 90,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/9532",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-679",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-04-25",
+    "place": 37,
+    "participants": 60,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2574",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-375",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-06-15",
+    "place": 73,
+    "participants": 180,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9328",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-699",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2022-11-20",
+    "place": 96,
+    "participants": 180,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/2240",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-478",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2022-09-12",
+    "place": 90,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8165",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102738",
+  "full_name": "Морозов Даниил",
+  "email": "participant74@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 686,
+   "season": "2025/2026"
+  },
+  "quality": 0.262,
+  "achievements": [
+   {
+    "event_id": "EV-2025-495",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2025-03-21",
+    "place": 39,
+    "participants": 40,
+    "team": "Рекурсия",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/6030",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-379",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2025-02-08",
+    "place": 36,
+    "participants": 60,
+    "team": "Синтаксис",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/9058",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102775",
+  "full_name": "Баранова Вера",
+  "email": "participant75@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1055,
+   "season": "2025/2026"
+  },
+  "quality": 0.444,
+  "achievements": [
+   {
+    "event_id": "EV-2022-946",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2022-05-03",
+    "place": 52,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/5142",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102812",
+  "full_name": "Лебедев Егор",
+  "email": "participant76@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1378,
+   "season": "2025/2026"
+  },
+  "quality": 0.635,
+  "achievements": [
+   {
+    "event_id": "EV-2025-623",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-12-02",
+    "place": 65,
+    "participants": 90,
+    "team": "Синтаксис",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/6732",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102849",
+  "full_name": "Тарасов Михаил",
+  "email": "participant77@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 397,
+   "season": "2025/2026"
+  },
+  "quality": 0.113,
+  "achievements": [
+   {
+    "event_id": "EV-2023-661",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-01-11",
+    "place": 31,
+    "participants": 60,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/1362",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102886",
+  "full_name": "Герасимов Матвей",
+  "email": "participant78@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 1996,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1721,
+   "season": "2025/2026"
+  },
+  "quality": 0.891,
+  "achievements": [
+   {
+    "event_id": "EV-2026-623",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2026-09-09",
+    "place": 15,
+    "participants": 120,
+    "team": "Рекурсия",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/2967",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2026-965",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2026-05-24",
+    "place": 2,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/9000",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-633",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-08-07",
+    "place": 7,
+    "participants": 40,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/1689",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-602",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-11-11",
+    "place": 83,
+    "participants": 180,
+    "team": "Квант",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/1188",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-501",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-06-06",
+    "place": 56,
+    "participants": 180,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/9497",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-102923",
+  "full_name": "Соколов Артём",
+  "email": "participant79@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1255,
+   "season": "2025/2026"
+  },
+  "quality": 0.567,
+  "achievements": [
+   {
+    "event_id": "EV-2025-618",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-08-26",
+    "place": 20,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/6777",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-982",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2022-02-13",
+    "place": 71,
+    "participants": 180,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/4503",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-102960",
+  "full_name": "Александров Сергей",
+  "email": "participant80@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 566,
+   "season": "2025/2026"
+  },
+  "quality": 0.191,
+  "achievements": [
+   {
+    "event_id": "EV-2026-610",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2026-06-21",
+    "place": 51,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/4097",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-102997",
+  "full_name": "Хабибуллин Тимур",
+  "email": "participant81@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1524,
+   "season": "2025/2026"
+  },
+  "quality": 0.772,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-103034",
+  "full_name": "Медведева Елена",
+  "email": "participant82@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 625,
+   "season": "2025/2026"
+  },
+  "quality": 0.224,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-103071",
+  "full_name": "Фролова Ольга",
+  "email": "participant83@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 392,
+   "season": "2025/2026"
+  },
+  "quality": 0.115,
+  "achievements": [
+   {
+    "event_id": "EV-2026-916",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-05-16",
+    "place": 245,
+    "participants": 250,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/2200",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-239",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-11-12",
+    "place": 174,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/1389",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-171",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-03-03",
+    "place": 203,
+    "participants": 250,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/3947",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-909",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-04-17",
+    "place": 23,
+    "participants": 40,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9348",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-385",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2022-04-06",
+    "place": 73,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6064",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103108",
+  "full_name": "Михайлов Матвей",
+  "email": "participant84@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1256,
+   "season": "2025/2026"
+  },
+  "quality": 0.541,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-103145",
+  "full_name": "Ковалёв Даниил",
+  "email": "participant85@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 882,
+   "season": "2025/2026"
+  },
+  "quality": 0.361,
+  "achievements": [
+   {
+    "event_id": "EV-2024-436",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2024-07-15",
+    "place": 52,
+    "participants": 90,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3777",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-118",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2023-11-28",
+    "place": 27,
+    "participants": 40,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/8423",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103182",
+  "full_name": "Андреев Алексей",
+  "email": "participant86@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 1130,
+   "season": "2025/2026"
+  },
+  "quality": 0.536,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-103219",
+  "full_name": "Андреева Юлия",
+  "email": "participant87@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2004,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1225,
+   "season": "2025/2026"
+  },
+  "quality": 0.613,
+  "achievements": [
+   {
+    "event_id": "EV-2026-427",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2026-02-26",
+    "place": 51,
+    "participants": 120,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/4116",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-418",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2023-06-18",
+    "place": 35,
+    "participants": 90,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/5316",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-534",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2022-10-04",
+    "place": 1,
+    "participants": 60,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/3340",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103256",
+  "full_name": "Филиппов Кирилл",
+  "email": "participant88@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1077,
+   "season": "2025/2026"
+  },
+  "quality": 0.464,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-103293",
+  "full_name": "Богданова Виктория",
+  "email": "participant89@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 908,
+   "season": "2025/2026"
+  },
+  "quality": 0.443,
+  "achievements": [
+   {
+    "event_id": "EV-2025-216",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2025-12-05",
+    "place": 121,
+    "participants": 250,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4025",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-331",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-03-14",
+    "place": 50,
+    "participants": 90,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/5370",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-634",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2024-01-25",
+    "place": 53,
+    "participants": 180,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/6373",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-578",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2023-07-08",
+    "place": 91,
+    "participants": 180,
+    "team": "Сигма",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/5485",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-136",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-06-24",
+    "place": 93,
+    "participants": 120,
+    "team": "Синтаксис",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/4148",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103330",
+  "full_name": "Орлов Сергей",
+  "email": "participant90@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 709,
+   "season": "2025/2026"
+  },
+  "quality": 0.29,
+  "achievements": [
+   {
+    "event_id": "EV-2023-505",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-06-21",
+    "place": 59,
+    "participants": 60,
+    "team": "Дедлайн",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/7535",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-121",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2023-06-12",
+    "place": 67,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/9599",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103367",
+  "full_name": "Яковлев Кирилл",
+  "email": "participant91@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1103,
+   "season": "2025/2026"
+  },
+  "quality": 0.539,
+  "achievements": [
+   {
+    "event_id": "EV-2025-494",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2025-10-10",
+    "place": 51,
+    "participants": 120,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/8356",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-853",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-10-15",
+    "place": 81,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/2023",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-450",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2022-04-16",
+    "place": 85,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/1771",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103404",
+  "full_name": "Антонова Камила",
+  "email": "participant92@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 584,
+   "season": "2025/2026"
+  },
+  "quality": 0.191,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-103441",
+  "full_name": "Осипов Михаил",
+  "email": "participant93@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 599,
+   "season": "2025/2026"
+  },
+  "quality": 0.247,
+  "achievements": [
+   {
+    "event_id": "EV-2024-503",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2024-01-04",
+    "place": 250,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/2974",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-748",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-08-07",
+    "place": 68,
+    "participants": 120,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/4819",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103478",
+  "full_name": "Ильин Алексей",
+  "email": "participant94@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 324,
+   "season": "2025/2026"
+  },
+  "quality": 0.098,
+  "achievements": [
+   {
+    "event_id": "EV-2025-153",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-12-03",
+    "place": 118,
+    "participants": 120,
+    "team": "Сигма",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/3878",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-284",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2024-02-04",
+    "place": 124,
+    "participants": 180,
+    "team": "Квант",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/1351",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-565",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2023-12-08",
+    "place": 170,
+    "participants": 180,
+    "team": "Квант",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/6754",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-458",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2023-08-21",
+    "place": 60,
+    "participants": 60,
+    "team": "Дедлайн",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/6333",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103515",
+  "full_name": "Богданов Илья",
+  "email": "participant95@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1015,
+   "season": "2025/2026"
+  },
+  "quality": 0.443,
+  "achievements": [
+   {
+    "event_id": "EV-2024-733",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-10-27",
+    "place": 78,
+    "participants": 90,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/8713",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-707",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2022-08-22",
+    "place": 65,
+    "participants": 180,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/2153",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103552",
+  "full_name": "Козлов Никита",
+  "email": "participant96@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 756,
+   "season": "2025/2026"
+  },
+  "quality": 0.289,
+  "achievements": [
+   {
+    "event_id": "EV-2025-899",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-05-18",
+    "place": 33,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/9143",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-808",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-04-20",
+    "place": 54,
+    "participants": 60,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/5740",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-202",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2024-03-19",
+    "place": 38,
+    "participants": 40,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/8831",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-321",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-06-20",
+    "place": 78,
+    "participants": 120,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/5129",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103589",
+  "full_name": "Волков Илья",
+  "email": "participant97@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 1710,
+   "season": "2025/2026"
+  },
+  "quality": 0.792,
+  "achievements": [
+   {
+    "event_id": "EV-2026-688",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2026-05-16",
+    "place": 10,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/7505",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-217",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-03-22",
+    "place": 23,
+    "participants": 250,
+    "team": "Git Gud",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/8405",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103626",
+  "full_name": "Павлова Елена",
+  "email": "participant98@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1113,
+   "season": "2025/2026"
+  },
+  "quality": 0.495,
+  "achievements": [
+   {
+    "event_id": "EV-2025-377",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2025-08-07",
+    "place": 17,
+    "participants": 90,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2457",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-713",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-02-20",
+    "place": 19,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/7311",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-268",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-06-21",
+    "place": 93,
+    "participants": 250,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/5210",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-618",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2022-02-04",
+    "place": 6,
+    "participants": 250,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6327",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103663",
+  "full_name": "Васильев Алексей",
+  "email": "participant99@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1200,
+   "season": "2025/2026"
+  },
+  "quality": 0.513,
+  "achievements": [
+   {
+    "event_id": "EV-2025-562",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-12-10",
+    "place": 128,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/9890",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103700",
+  "full_name": "Козлов Алексей",
+  "email": "participant100@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 359,
+   "season": "2025/2026"
+  },
+  "quality": 0.074,
+  "achievements": [
+   {
+    "event_id": "EV-2024-611",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-07-28",
+    "place": 147,
+    "participants": 180,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/2335",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103737",
+  "full_name": "Гарипова Вера",
+  "email": "participant101@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1537,
+   "season": "2025/2026"
+  },
+  "quality": 0.781,
+  "achievements": [
+   {
+    "event_id": "EV-2026-891",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2026-06-27",
+    "place": 6,
+    "participants": 60,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/9964",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-191",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-01-09",
+    "place": 40,
+    "participants": 90,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/8306",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-976",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-12-27",
+    "place": 11,
+    "participants": 40,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/2105",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-554",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2023-05-13",
+    "place": 12,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/1523",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-151",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2023-02-23",
+    "place": 15,
+    "participants": 60,
+    "team": "Квант",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/8015",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103774",
+  "full_name": "Сергеев Артём",
+  "email": "participant102@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1991,
+   "season": "2025/2026"
+  },
+  "quality": 0.959,
+  "achievements": [
+   {
+    "event_id": "EV-2023-312",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-07-06",
+    "place": 5,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/9302",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103811",
+  "full_name": "Соловьёва София",
+  "email": "participant103@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 376,
+   "season": "2025/2026"
+  },
+  "quality": 0.137,
+  "achievements": [
+   {
+    "event_id": "EV-2022-682",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-01-10",
+    "place": 13,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/5656",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103848",
+  "full_name": "Ильина Виктория",
+  "email": "participant104@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1749,
+   "season": "2025/2026"
+  },
+  "quality": 0.877,
+  "achievements": [
+   {
+    "event_id": "EV-2026-470",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2026-01-05",
+    "place": 1,
+    "participants": 60,
+    "team": "NullPointer",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/2349",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-174",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-02-28",
+    "place": 9,
+    "participants": 60,
+    "team": "Сигма",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2891",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-135",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2024-09-04",
+    "place": 48,
+    "participants": 120,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/7707",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-561",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2023-09-24",
+    "place": 1,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/2992",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103885",
+  "full_name": "Новиков Михаил",
+  "email": "participant105@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 797,
+   "season": "2025/2026"
+  },
+  "quality": 0.35,
+  "achievements": [
+   {
+    "event_id": "EV-2026-865",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-01-19",
+    "place": 113,
+    "participants": 180,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/4610",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-103",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2022-02-16",
+    "place": 143,
+    "participants": 180,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/5308",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-103922",
+  "full_name": "Васильев Артём",
+  "email": "participant106@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1197,
+   "season": "2025/2026"
+  },
+  "quality": 0.588,
+  "achievements": [
+   {
+    "event_id": "EV-2024-160",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-07-02",
+    "place": 117,
+    "participants": 180,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/7549",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-791",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2022-09-08",
+    "place": 41,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/2062",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-103959",
+  "full_name": "Осипова Мария",
+  "email": "participant107@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 297,
+   "season": "2025/2026"
+  },
+  "quality": 0.002,
+  "achievements": [
+   {
+    "event_id": "EV-2022-336",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-08-08",
+    "place": 60,
+    "participants": 60,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/7193",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-103996",
+  "full_name": "Кузнецова Дарья",
+  "email": "participant108@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1407,
+   "season": "2025/2026"
+  },
+  "quality": 0.708,
+  "achievements": [
+   {
+    "event_id": "EV-2025-874",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-01-23",
+    "place": 6,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2860",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-563",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-02-05",
+    "place": 60,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/3029",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104033",
+  "full_name": "Михайлова Ксения",
+  "email": "participant109@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 831,
+   "season": "2025/2026"
+  },
+  "quality": 0.303,
+  "achievements": [
+   {
+    "event_id": "EV-2023-300",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2023-02-19",
+    "place": 115,
+    "participants": 250,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/3540",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-104070",
+  "full_name": "Давыдов Максим",
+  "email": "participant110@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 676,
+   "season": "2025/2026"
+  },
+  "quality": 0.268,
+  "achievements": [
+   {
+    "event_id": "EV-2025-696",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2025-11-12",
+    "place": 173,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/8522",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-159",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2022-11-02",
+    "place": 31,
+    "participants": 90,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/1609",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-280",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-07-27",
+    "place": 68,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/6845",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-937",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-02-15",
+    "place": 102,
+    "participants": 120,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8936",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104107",
+  "full_name": "Богданова Полина",
+  "email": "participant111@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 738,
+   "season": "2025/2026"
+  },
+  "quality": 0.273,
+  "achievements": [
+   {
+    "event_id": "EV-2024-468",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-05-04",
+    "place": 120,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9401",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104144",
+  "full_name": "Васильев Дмитрий",
+  "email": "participant112@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 998,
+   "season": "2025/2026"
+  },
+  "quality": 0.404,
+  "achievements": [
+   {
+    "event_id": "EV-2023-982",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-01-08",
+    "place": 93,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/5763",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-256",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2022-06-18",
+    "place": 54,
+    "participants": 120,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/9655",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-104181",
+  "full_name": "Осипов Роман",
+  "email": "participant113@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 936,
+   "season": "2025/2026"
+  },
+  "quality": 0.412,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-104218",
+  "full_name": "Филиппов Максим",
+  "email": "participant114@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 371,
+   "season": "2025/2026"
+  },
+  "quality": 0.106,
+  "achievements": [
+   {
+    "event_id": "EV-2026-937",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2026-07-18",
+    "place": 120,
+    "participants": 120,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/5676",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-298",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2025-11-17",
+    "place": 60,
+    "participants": 60,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3209",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-978",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-08-22",
+    "place": 36,
+    "participants": 60,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/2693",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-437",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-06-03",
+    "place": 40,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/1895",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-891",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-07-28",
+    "place": 120,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/1605",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104255",
+  "full_name": "Кузьмина Мария",
+  "email": "participant115@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1379,
+   "season": "2025/2026"
+  },
+  "quality": 0.634,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-104292",
+  "full_name": "Сорокин Андрей",
+  "email": "participant116@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1187,
+   "season": "2025/2026"
+  },
+  "quality": 0.514,
+  "achievements": [
+   {
+    "event_id": "EV-2026-835",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-06-06",
+    "place": 98,
+    "participants": 180,
+    "team": "Сигма",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/4516",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-777",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-10-03",
+    "place": 16,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/3273",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-387",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-01-18",
+    "place": 42,
+    "participants": 90,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9228",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-921",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2023-05-23",
+    "place": 49,
+    "participants": 60,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/7259",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-265",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-03-03",
+    "place": 29,
+    "participants": 120,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/7882",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104329",
+  "full_name": "Тарасова Вера",
+  "email": "participant117@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 405,
+   "season": "2025/2026"
+  },
+  "quality": 0.144,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-104366",
+  "full_name": "Гусев Даниил",
+  "email": "participant118@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 718,
+   "season": "2025/2026"
+  },
+  "quality": 0.331,
+  "achievements": [
+   {
+    "event_id": "EV-2025-982",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2025-12-02",
+    "place": 148,
+    "participants": 180,
+    "team": "Byte Busters",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/6095",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-540",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-04-10",
+    "place": 68,
+    "participants": 120,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3423",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-131",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2022-09-14",
+    "place": 234,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/2228",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-469",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-08-08",
+    "place": 35,
+    "participants": 40,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/5065",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-104403",
+  "full_name": "Максимова Анна",
+  "email": "participant119@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1659,
+   "season": "2025/2026"
+  },
+  "quality": 0.776,
+  "achievements": [
+   {
+    "event_id": "EV-2024-119",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-05-16",
+    "place": 29,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/7331",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-410",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-01-10",
+    "place": 9,
+    "participants": 60,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/2391",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-675",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-05-01",
+    "place": 12,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/6322",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-383",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2022-04-12",
+    "place": 63,
+    "participants": 120,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/5442",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-433",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-01-25",
+    "place": 49,
+    "participants": 180,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/3544",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104440",
+  "full_name": "Александрова Алиса",
+  "email": "participant120@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2002,
+  "sport_rank": "КМС",
+  "rating": {
+   "points": 1591,
+   "season": "2025/2026"
+  },
+  "quality": 0.755,
+  "achievements": [
+   {
+    "event_id": "EV-2025-709",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-05-21",
+    "place": 12,
+    "participants": 40,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2993",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-979",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-02-18",
+    "place": 1,
+    "participants": 90,
+    "team": "Рекурсия",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/5228",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-868",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "regional",
+    "date": "2022-08-23",
+    "place": 1,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/5245",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104477",
+  "full_name": "Попов Илья",
+  "email": "participant121@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1890,
+   "season": "2025/2026"
+  },
+  "quality": 0.959,
+  "achievements": [
+   {
+    "event_id": "EV-2025-659",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2025-10-10",
+    "place": 40,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/2346",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-600",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2022-10-19",
+    "place": 1,
+    "participants": 180,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/1666",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-104514",
+  "full_name": "Максимова Ольга",
+  "email": "participant122@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1223,
+   "season": "2025/2026"
+  },
+  "quality": 0.523,
+  "achievements": [
+   {
+    "event_id": "EV-2023-567",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-07-13",
+    "place": 60,
+    "participants": 180,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/1332",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104551",
+  "full_name": "Филиппов Михаил",
+  "email": "participant123@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1400,
+   "season": "2025/2026"
+  },
+  "quality": 0.655,
+  "achievements": [
+   {
+    "event_id": "EV-2025-136",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2025-11-08",
+    "place": 118,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/5332",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-349",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-06-26",
+    "place": 30,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/4483",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-372",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-01-26",
+    "place": 78,
+    "participants": 120,
+    "team": "NullPointer",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/4862",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-901",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-08-08",
+    "place": 18,
+    "participants": 120,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/9510",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104588",
+  "full_name": "Максимов Роман",
+  "email": "participant124@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 328,
+   "season": "2025/2026"
+  },
+  "quality": 0.037,
+  "achievements": [
+   {
+    "event_id": "EV-2026-779",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2026-02-14",
+    "place": 77,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/2940",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-734",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-01-25",
+    "place": 180,
+    "participants": 180,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4779",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-963",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2022-04-02",
+    "place": 40,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/6830",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-104625",
+  "full_name": "Сергеева София",
+  "email": "participant125@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1502,
+   "season": "2025/2026"
+  },
+  "quality": 0.703,
+  "achievements": [
+   {
+    "event_id": "EV-2024-167",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-01-17",
+    "place": 43,
+    "participants": 90,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6884",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104662",
+  "full_name": "Морозова София",
+  "email": "participant126@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 1994,
+   "season": "2025/2026"
+  },
+  "quality": 0.957,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-104699",
+  "full_name": "Макаров Илья",
+  "email": "participant127@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1574,
+   "season": "2025/2026"
+  },
+  "quality": 0.767,
+  "achievements": [
+   {
+    "event_id": "EV-2024-892",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2024-05-12",
+    "place": 60,
+    "participants": 120,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/4014",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-104736",
+  "full_name": "Морозов Ринат",
+  "email": "participant128@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 1498,
+   "season": "2025/2026"
+  },
+  "quality": 0.721,
+  "achievements": [
+   {
+    "event_id": "EV-2026-959",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2026-02-04",
+    "place": 15,
+    "participants": 60,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/6285",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-530",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-03-11",
+    "place": 28,
+    "participants": 60,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/5250",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-804",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-05-03",
+    "place": 32,
+    "participants": 180,
+    "team": "Бит и Байт",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/5564",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-959",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2022-12-22",
+    "place": 63,
+    "participants": 180,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/3863",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-107",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-04-04",
+    "place": 72,
+    "participants": 250,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/2786",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104773",
+  "full_name": "Степанов Кирилл",
+  "email": "participant129@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 768,
+   "season": "2025/2026"
+  },
+  "quality": 0.341,
+  "achievements": [
+   {
+    "event_id": "EV-2025-911",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-08-17",
+    "place": 49,
+    "participants": 180,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2344",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-332",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-07-19",
+    "place": 157,
+    "participants": 250,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6609",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-552",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-06-19",
+    "place": 95,
+    "participants": 180,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6842",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-271",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-09-28",
+    "place": 49,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/1877",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104810",
+  "full_name": "Киселёва Анна",
+  "email": "participant130@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1148,
+   "season": "2025/2026"
+  },
+  "quality": 0.538,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-104847",
+  "full_name": "Смирнова Алина",
+  "email": "participant131@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 247,
+   "season": "2025/2026"
+  },
+  "quality": 0.07,
+  "achievements": [
+   {
+    "event_id": "EV-2026-901",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2026-09-03",
+    "place": 112,
+    "participants": 120,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1625",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-153",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2024-10-14",
+    "place": 35,
+    "participants": 40,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3284",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104884",
+  "full_name": "Лебедева Виктория",
+  "email": "participant132@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1422,
+   "season": "2025/2026"
+  },
+  "quality": 0.706,
+  "achievements": [
+   {
+    "event_id": "EV-2025-308",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2025-09-06",
+    "place": 17,
+    "participants": 40,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/5224",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-756",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-02-25",
+    "place": 14,
+    "participants": 120,
+    "team": "Квант",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/3762",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-170",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2022-08-14",
+    "place": 128,
+    "participants": 250,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/4383",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-111",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-08-01",
+    "place": 73,
+    "participants": 120,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/3515",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-210",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-04-09",
+    "place": 27,
+    "participants": 60,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/5989",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-104921",
+  "full_name": "Алексеев Тимур",
+  "email": "participant133@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1280,
+   "season": "2025/2026"
+  },
+  "quality": 0.566,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-104958",
+  "full_name": "Романова Татьяна",
+  "email": "participant134@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 867,
+   "season": "2025/2026"
+  },
+  "quality": 0.345,
+  "achievements": [
+   {
+    "event_id": "EV-2025-750",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2025-12-13",
+    "place": 8,
+    "participants": 60,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/9864",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-416",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2022-12-06",
+    "place": 69,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/8171",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-104995",
+  "full_name": "Максимов Андрей",
+  "email": "participant135@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 643,
+   "season": "2025/2026"
+  },
+  "quality": 0.262,
+  "achievements": [
+   {
+    "event_id": "EV-2025-918",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-09-12",
+    "place": 197,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/5670",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-547",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2025-08-21",
+    "place": 90,
+    "participants": 90,
+    "team": "Git Gud",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/7224",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-273",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-09-24",
+    "place": 55,
+    "participants": 90,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/6718",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105032",
+  "full_name": "Королёва Алина",
+  "email": "participant136@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2005,
+  "sport_rank": "МС",
+  "rating": {
+   "points": 1679,
+   "season": "2025/2026"
+  },
+  "quality": 0.851,
+  "achievements": [
+   {
+    "event_id": "EV-2025-864",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-05-25",
+    "place": 7,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/7831",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-862",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2024-06-21",
+    "place": 17,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/4277",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-348",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2022-05-27",
+    "place": 1,
+    "participants": 60,
+    "team": "Дедлайн",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/3623",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-767",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-02-07",
+    "place": 9,
+    "participants": 120,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/9006",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-105069",
+  "full_name": "Баранова Вера",
+  "email": "participant137@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 965,
+   "season": "2025/2026"
+  },
+  "quality": 0.436,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-105106",
+  "full_name": "Алексеев Сергей",
+  "email": "participant138@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 1664,
+   "season": "2025/2026"
+  },
+  "quality": 0.793,
+  "achievements": [
+   {
+    "event_id": "EV-2023-135",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2023-03-06",
+    "place": 56,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/9399",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105143",
+  "full_name": "Волков Андрей",
+  "email": "participant139@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1971,
+   "season": "2025/2026"
+  },
+  "quality": 0.962,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-105180",
+  "full_name": "Сергеев Глеб",
+  "email": "participant140@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 574,
+   "season": "2025/2026"
+  },
+  "quality": 0.245,
+  "achievements": [
+   {
+    "event_id": "EV-2025-171",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-04-18",
+    "place": 129,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/8746",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-795",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-01-16",
+    "place": 250,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/2910",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-386",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-11-19",
+    "place": 157,
+    "participants": 250,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9499",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-409",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-06-14",
+    "place": 234,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3428",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105217",
+  "full_name": "Степанов Тимур",
+  "email": "participant141@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1388,
+   "season": "2025/2026"
+  },
+  "quality": 0.623,
+  "achievements": [
+   {
+    "event_id": "EV-2026-373",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2026-03-22",
+    "place": 23,
+    "participants": 60,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/3703",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-993",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-10-08",
+    "place": 10,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/8094",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-427",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2025-04-27",
+    "place": 7,
+    "participants": 120,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/7962",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-447",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2023-10-18",
+    "place": 31,
+    "participants": 60,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/2894",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-364",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-04-12",
+    "place": 98,
+    "participants": 180,
+    "team": "Дедлайн",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/4016",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105254",
+  "full_name": "Степанова Алина",
+  "email": "participant142@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1920,
+   "season": "2025/2026"
+  },
+  "quality": 0.961,
+  "achievements": [
+   {
+    "event_id": "EV-2026-428",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-08-10",
+    "place": 6,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1892",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-989",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-09-27",
+    "place": 29,
+    "participants": 90,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/9467",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-903",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2022-08-28",
+    "place": 27,
+    "participants": 180,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/8391",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-579",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-02-15",
+    "place": 16,
+    "participants": 60,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8750",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-105291",
+  "full_name": "Смирнов Тимур",
+  "email": "participant143@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1428,
+   "season": "2025/2026"
+  },
+  "quality": 0.661,
+  "achievements": [
+   {
+    "event_id": "EV-2026-342",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2026-07-24",
+    "place": 26,
+    "participants": 60,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/9078",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105328",
+  "full_name": "Смирнова Екатерина",
+  "email": "participant144@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 662,
+   "season": "2025/2026"
+  },
+  "quality": 0.261,
+  "achievements": [
+   {
+    "event_id": "EV-2024-502",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2024-11-27",
+    "place": 73,
+    "participants": 180,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/4181",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-739",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2023-04-13",
+    "place": 51,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/4104",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-146",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2022-05-08",
+    "place": 38,
+    "participants": 60,
+    "team": "Ctrl+Z",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/4565",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105365",
+  "full_name": "Галиев Глеб",
+  "email": "participant145@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 1783,
+   "season": "2025/2026"
+  },
+  "quality": 0.843,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-105402",
+  "full_name": "Соловьёва Екатерина",
+  "email": "participant146@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 1295,
+   "season": "2025/2026"
+  },
+  "quality": 0.633,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-105439",
+  "full_name": "Соколов Тимур",
+  "email": "participant147@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 1602,
+   "season": "2025/2026"
+  },
+  "quality": 0.822,
+  "achievements": [
+   {
+    "event_id": "EV-2026-743",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2026-01-10",
+    "place": 9,
+    "participants": 40,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/9143",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-483",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-06-08",
+    "place": 20,
+    "participants": 90,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/8905",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-540",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2024-02-17",
+    "place": 9,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/8232",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105476",
+  "full_name": "Новиков Тимур",
+  "email": "participant148@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 625,
+   "season": "2025/2026"
+  },
+  "quality": 0.197,
+  "achievements": [
+   {
+    "event_id": "EV-2025-176",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2025-02-10",
+    "place": 36,
+    "participants": 40,
+    "team": "NullPointer",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/7693",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-105513",
+  "full_name": "Кузьмин Дмитрий",
+  "email": "participant149@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2007,
+  "sport_rank": null,
+  "rating": {
+   "points": 1282,
+   "season": "2025/2026"
+  },
+  "quality": 0.568,
+  "achievements": [
+   {
+    "event_id": "EV-2025-221",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-11-14",
+    "place": 54,
+    "participants": 90,
+    "team": "404 Not Found",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/8576",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-407",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2023-09-18",
+    "place": 57,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/9912",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105550",
+  "full_name": "Виноградов Матвей",
+  "email": "participant150@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 1708,
+   "season": "2025/2026"
+  },
+  "quality": 0.797,
+  "achievements": [
+   {
+    "event_id": "EV-2025-161",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2025-06-09",
+    "place": 15,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/5150",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-352",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-07-24",
+    "place": 27,
+    "participants": 250,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6454",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105587",
+  "full_name": "Егоров Андрей",
+  "email": "participant151@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2000,
+  "sport_rank": "МС",
+  "rating": {
+   "points": 1830,
+   "season": "2025/2026"
+  },
+  "quality": 0.931,
+  "achievements": [
+   {
+    "event_id": "EV-2026-219",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-07-22",
+    "place": 1,
+    "participants": 250,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/6712",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-798",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-08-26",
+    "place": 36,
+    "participants": 250,
+    "team": "Ctrl+Z",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3405",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-346",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2023-03-22",
+    "place": 32,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2023/7045",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-105624",
+  "full_name": "Поляков Андрей",
+  "email": "participant152@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 417,
+   "season": "2025/2026"
+  },
+  "quality": 0.124,
+  "achievements": [
+   {
+    "event_id": "EV-2024-568",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2024-12-23",
+    "place": 90,
+    "participants": 90,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/6799",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-632",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2023-08-15",
+    "place": 165,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/1364",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-610",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2023-03-22",
+    "place": 35,
+    "participants": 60,
+    "team": "Полный стек",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/8371",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105661",
+  "full_name": "Захаров Глеб",
+  "email": "participant153@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2001,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1677,
+   "season": "2025/2026"
+  },
+  "quality": 0.785,
+  "achievements": [
+   {
+    "event_id": "EV-2026-298",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2026-02-19",
+    "place": 4,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/2457",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-471",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2025-09-23",
+    "place": 5,
+    "participants": 90,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/6399",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-708",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2023-12-19",
+    "place": 1,
+    "participants": 180,
+    "team": "Код Красный",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/6570",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-483",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2023-02-27",
+    "place": 1,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/8730",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105698",
+  "full_name": "Соколов Алексей",
+  "email": "participant154@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2000,
+  "sport_rank": "1 разряд",
+  "rating": {
+   "points": 1414,
+   "season": "2025/2026"
+  },
+  "quality": 0.728,
+  "achievements": [
+   {
+    "event_id": "EV-2024-941",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2024-06-06",
+    "place": 41,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/3576",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-239",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2023-01-11",
+    "place": 1,
+    "participants": 60,
+    "team": "Бит и Байт",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/1777",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-105735",
+  "full_name": "Галиева Вера",
+  "email": "participant155@fsp-mail.example",
+  "region": "Санкт-Петербург",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 1017,
+   "season": "2025/2026"
+  },
+  "quality": 0.471,
+  "achievements": [
+   {
+    "event_id": "EV-2023-252",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2023-04-03",
+    "place": 46,
+    "participants": 120,
+    "team": "Рекурсия",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/1304",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105772",
+  "full_name": "Гарипов Андрей",
+  "email": "participant156@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 307,
+   "season": "2025/2026"
+  },
+  "quality": 0.012,
+  "achievements": [
+   {
+    "event_id": "EV-2025-752",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-12-13",
+    "place": 73,
+    "participants": 90,
+    "team": "Git Gud",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/9426",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-148",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-05-07",
+    "place": 90,
+    "participants": 90,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/8052",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-105809",
+  "full_name": "Виноградов Максим",
+  "email": "participant157@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 932,
+   "season": "2025/2026"
+  },
+  "quality": 0.361,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-105846",
+  "full_name": "Егорова Алина",
+  "email": "participant158@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1112,
+   "season": "2025/2026"
+  },
+  "quality": 0.468,
+  "achievements": [
+   {
+    "event_id": "EV-2025-511",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-12-15",
+    "place": 28,
+    "participants": 60,
+    "team": "Stack Overflowers",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4344",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105883",
+  "full_name": "Павлов Арсений",
+  "email": "participant159@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1998,
+  "sport_rank": null,
+  "rating": {
+   "points": 1228,
+   "season": "2025/2026"
+  },
+  "quality": 0.554,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-25-105920",
+  "full_name": "Борисов Иван",
+  "email": "participant160@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 277,
+   "season": "2025/2026"
+  },
+  "quality": 0.064,
+  "achievements": [
+   {
+    "event_id": "EV-2026-626",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2026-07-25",
+    "place": 53,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/1256",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-585",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2025-04-08",
+    "place": 57,
+    "participants": 60,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4532",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-245",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "drones",
+    "level": "national",
+    "date": "2025-03-02",
+    "place": 38,
+    "participants": 90,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/3233",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-607",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2024-04-22",
+    "place": 248,
+    "participants": 250,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/4309",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-999",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2023-11-02",
+    "place": 40,
+    "participants": 40,
+    "team": "Ctrl+Z",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/8148",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-105957",
+  "full_name": "Иванов Артём",
+  "email": "participant161@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 1347,
+   "season": "2025/2026"
+  },
+  "quality": 0.68,
+  "achievements": [
+   {
+    "event_id": "EV-2024-585",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-10-08",
+    "place": 13,
+    "participants": 40,
+    "team": "Git Gud",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3269",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-251",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2022-02-13",
+    "place": 23,
+    "participants": 60,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/3791",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-105994",
+  "full_name": "Никитин Андрей",
+  "email": "participant162@fsp-mail.example",
+  "region": "Самарская область",
+  "birth_year": 2004,
+  "sport_rank": null,
+  "rating": {
+   "points": 953,
+   "season": "2025/2026"
+  },
+  "quality": 0.438,
+  "achievements": [
+   {
+    "event_id": "EV-2025-608",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2025-01-22",
+    "place": 113,
+    "participants": 180,
+    "team": "Квант",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2170",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-436",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2024-12-25",
+    "place": 31,
+    "participants": 60,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/9865",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-554",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-10-16",
+    "place": 87,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/3093",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-907",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-04-12",
+    "place": 81,
+    "participants": 90,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2022/3431",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-106031",
+  "full_name": "Сорокин Алексей",
+  "email": "participant163@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2008,
+  "sport_rank": null,
+  "rating": {
+   "points": 434,
+   "season": "2025/2026"
+  },
+  "quality": 0.153,
+  "achievements": [
+   {
+    "event_id": "EV-2024-191",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2024-06-05",
+    "place": 69,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/4338",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-754",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2022-02-03",
+    "place": 109,
+    "participants": 120,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8269",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-106068",
+  "full_name": "Хабибуллина Диана",
+  "email": "participant164@fsp-mail.example",
+  "region": "Республика Башкортостан",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1898,
+   "season": "2025/2026"
+  },
+  "quality": 0.962,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-24-106105",
+  "full_name": "Хабибуллин Арсений",
+  "email": "participant165@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1996,
+  "sport_rank": null,
+  "rating": {
+   "points": 1710,
+   "season": "2025/2026"
+  },
+  "quality": 0.788,
+  "achievements": [
+   {
+    "event_id": "EV-2026-150",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2026-03-01",
+    "place": 8,
+    "participants": 40,
+    "team": "Hello World",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2026/3940",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-569",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "product",
+    "level": "international",
+    "date": "2025-10-14",
+    "place": 190,
+    "participants": 250,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/1979",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-106142",
+  "full_name": "Павлова Ольга",
+  "email": "participant166@fsp-mail.example",
+  "region": "Свердловская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 363,
+   "season": "2025/2026"
+  },
+  "quality": 0.069,
+  "achievements": [
+   {
+    "event_id": "EV-2026-431",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "national",
+    "date": "2026-06-14",
+    "place": 40,
+    "participants": 40,
+    "team": "Дедлайн",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2026/1257",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-820",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2022-05-27",
+    "place": 60,
+    "participants": 60,
+    "team": "Дедлайн",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8438",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-106179",
+  "full_name": "Морозов Сергей",
+  "email": "participant167@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 2000,
+  "sport_rank": null,
+  "rating": {
+   "points": 1956,
+   "season": "2025/2026"
+  },
+  "quality": 0.941,
+  "achievements": [
+   {
+    "event_id": "EV-2023-125",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2023-12-16",
+    "place": 15,
+    "participants": 60,
+    "team": "NullPointer",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/8073",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-106216",
+  "full_name": "Попова Камила",
+  "email": "participant168@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 715,
+   "season": "2025/2026"
+  },
+  "quality": 0.261,
+  "achievements": [
+   {
+    "event_id": "EV-2024-893",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-12-12",
+    "place": 163,
+    "participants": 250,
+    "team": "Ctrl+Z",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/8431",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-758",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2024-01-03",
+    "place": 177,
+    "participants": 250,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3172",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-430",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2023-09-25",
+    "place": 184,
+    "participants": 250,
+    "team": "404 Not Found",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/5131",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-106253",
+  "full_name": "Петрова Алиса",
+  "email": "participant169@fsp-mail.example",
+  "region": "Пермский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 941,
+   "season": "2025/2026"
+  },
+  "quality": 0.371,
+  "achievements": [
+   {
+    "event_id": "EV-2025-798",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "security",
+    "level": "interregional",
+    "date": "2025-02-22",
+    "place": 182,
+    "participants": 250,
+    "team": "NullPointer",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/9427",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-106290",
+  "full_name": "Лебедев Максим",
+  "email": "participant170@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1102,
+   "season": "2025/2026"
+  },
+  "quality": 0.507,
+  "achievements": [
+   {
+    "event_id": "EV-2024-719",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "security",
+    "level": "regional",
+    "date": "2024-12-11",
+    "place": 47,
+    "participants": 250,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2024/5905",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2023-748",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2023-06-02",
+    "place": 30,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2023/3508",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-106327",
+  "full_name": "Соколова София",
+  "email": "participant171@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2003,
+  "sport_rank": null,
+  "rating": {
+   "points": 261,
+   "season": "2025/2026"
+  },
+  "quality": 0.006,
+  "achievements": [
+   {
+    "event_id": "EV-2023-546",
+    "event": "Международные соревнования по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "international",
+    "date": "2023-09-24",
+    "place": 202,
+    "participants": 250,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2023/8340",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-106364",
+  "full_name": "Семёнова Дарья",
+  "email": "participant172@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 1038,
+   "season": "2025/2026"
+  },
+  "quality": 0.5,
+  "achievements": []
+ },
+ {
+  "fsp_id": "FSP-26-106401",
+  "full_name": "Ковалёва Камила",
+  "email": "participant173@fsp-mail.example",
+  "region": "Новосибирская область",
+  "birth_year": 2006,
+  "sport_rank": null,
+  "rating": {
+   "points": 501,
+   "season": "2025/2026"
+  },
+  "quality": 0.123,
+  "achievements": [
+   {
+    "event_id": "EV-2025-660",
+    "event": "Чемпионат федерального округа по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "interregional",
+    "date": "2025-06-06",
+    "place": 175,
+    "participants": 180,
+    "team": "Синтаксис",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/5384",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-620",
+    "event": "Студенческая лига ФСП",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2025-01-02",
+    "place": 87,
+    "participants": 90,
+    "team": "Полный стек",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2872",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-207",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2024-11-11",
+    "place": 90,
+    "participants": 90,
+    "team": "Hello World",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2024/2248",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-795",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2022-02-21",
+    "place": 40,
+    "participants": 40,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/3199",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-106438",
+  "full_name": "Киселёва Диана",
+  "email": "participant174@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 1374,
+   "season": "2025/2026"
+  },
+  "quality": 0.625,
+  "achievements": [
+   {
+    "event_id": "EV-2026-203",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "product",
+    "level": "interregional",
+    "date": "2026-08-26",
+    "place": 6,
+    "participants": 40,
+    "team": "Бит и Байт",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/3948",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-196",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-12-17",
+    "place": 40,
+    "participants": 180,
+    "team": "Полный стек",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/4568",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-162",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-09-21",
+    "place": 48,
+    "participants": 120,
+    "team": "Рекурсия",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/7568",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-311",
+    "event": "Студенческая лига ФСП",
+    "discipline": "product",
+    "level": "regional",
+    "date": "2022-12-06",
+    "place": 117,
+    "participants": 250,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2022/8645",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2022-239",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "drones",
+    "level": "regional",
+    "date": "2022-07-04",
+    "place": 24,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2022/6952",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-106475",
+  "full_name": "Соколова Вера",
+  "email": "participant175@fsp-mail.example",
+  "region": "Нижегородская область",
+  "birth_year": 2002,
+  "sport_rank": null,
+  "rating": {
+   "points": 266,
+   "season": "2025/2026"
+  },
+  "quality": 0.07,
+  "achievements": [
+   {
+    "event_id": "EV-2026-166",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2026-05-22",
+    "place": 90,
+    "participants": 90,
+    "team": "Hello World",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2026/9344",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-106512",
+  "full_name": "Попов Сергей",
+  "email": "participant176@fsp-mail.example",
+  "region": "Приморский край",
+  "birth_year": 2001,
+  "sport_rank": null,
+  "rating": {
+   "points": 1272,
+   "season": "2025/2026"
+  },
+  "quality": 0.601,
+  "achievements": [
+   {
+    "event_id": "EV-2025-761",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2025-10-24",
+    "place": 23,
+    "participants": 40,
+    "team": "Stack Overflowers",
+    "role": "разработчик",
+    "result_url": "https://fsp-russia.com/results/2025/4777",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-24-106549",
+  "full_name": "Тарасова Ксения",
+  "email": "participant177@fsp-mail.example",
+  "region": "Краснодарский край",
+  "birth_year": 1999,
+  "sport_rank": null,
+  "rating": {
+   "points": 807,
+   "season": "2025/2026"
+  },
+  "quality": 0.37,
+  "achievements": [
+   {
+    "event_id": "EV-2025-819",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-09-12",
+    "place": 69,
+    "participants": 90,
+    "team": "Сигма",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/6879",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-25-106586",
+  "full_name": "Виноградов Роман",
+  "email": "participant178@fsp-mail.example",
+  "region": "Томская область",
+  "birth_year": 1997,
+  "sport_rank": null,
+  "rating": {
+   "points": 390,
+   "season": "2025/2026"
+  },
+  "quality": 0.11,
+  "achievements": [
+   {
+    "event_id": "EV-2025-258",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-10-03",
+    "place": 108,
+    "participants": 180,
+    "team": "NullPointer",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2025/2851",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-26-106623",
+  "full_name": "Лебедев Глеб",
+  "email": "participant179@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 1295,
+   "season": "2025/2026"
+  },
+  "quality": 0.565,
+  "achievements": [
+   {
+    "event_id": "EV-2025-398",
+    "event": "Межрегиональный чемпионат по спортивному программированию",
+    "discipline": "robotics",
+    "level": "interregional",
+    "date": "2025-02-01",
+    "place": 16,
+    "participants": 40,
+    "team": "Дедлайн",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2389",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-938",
+    "event": "Кубок России по спортивному программированию",
+    "discipline": "security",
+    "level": "national",
+    "date": "2024-11-18",
+    "place": 36,
+    "participants": 120,
+    "team": "Код Красный",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/5523",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-DEMO-000001",
+  "full_name": "Демидова Алиса",
+  "email": "alice.demo@fsp-mail.example",
+  "region": "Республика Татарстан",
+  "birth_year": 2003,
+  "sport_rank": "КМС",
+  "rating": {
+   "points": 1650,
+   "season": "2025/2026"
+  },
+  "quality": 0.85,
+  "achievements": [
+   {
+    "event_id": "EV-2025-501",
+    "event": "Чемпионат России по спортивному программированию",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-11-20",
+    "place": 2,
+    "participants": 150,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/5011",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2025-210",
+    "event": "Всероссийский хакатон ФСП",
+    "discipline": "product",
+    "level": "national",
+    "date": "2025-04-12",
+    "place": 5,
+    "participants": 120,
+    "team": "Byte Busters",
+    "role": "капитан",
+    "result_url": "https://fsp-russia.com/results/2025/2101",
+    "verified": true
+   },
+   {
+    "event_id": "EV-2024-033",
+    "event": "Региональный чемпионат по спортивному программированию",
+    "discipline": "algorithmic",
+    "level": "regional",
+    "date": "2024-10-05",
+    "place": 1,
+    "participants": 60,
+    "team": "Byte Busters",
+    "role": "участник",
+    "result_url": "https://fsp-russia.com/results/2024/3301",
+    "verified": true
+   }
+  ]
+ },
+ {
+  "fsp_id": "FSP-DEMO-000002",
+  "full_name": "Новиков Глеб",
+  "email": "gleb.demo@fsp-mail.example",
+  "region": "Москва",
+  "birth_year": 2005,
+  "sport_rank": null,
+  "rating": {
+   "points": 0,
+   "season": "2025/2026"
+  },
+  "quality": 0.0,
+  "achievements": []
+ }
+]
