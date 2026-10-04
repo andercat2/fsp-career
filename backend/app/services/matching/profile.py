@@ -1,0 +1,95 @@
+"""Сила подтверждённого профиля кандидата — основа ранжирования внутри категории.
+
+strength = 0.60 · test + 0.25 · fsp + 0.15 · activity
+  test     — положение θ внутри полосы присвоенного грейда (выше в полосе — сильнее), только по тесту;
+  fsp      — агрегированный сигнал достижений ФСП, релевантных специализации (0, если истории нет);
+  activity — регулярные задания работодателей с затуханием по давности (свежесть профиля).
+Самоописание резюме в силу профиля не входит: оно влияет только на объяснения и текстовую близость.
+"""
+from __future__ import annotations
+
+import math
+
+from sqlalchemy.orm import Session
+
+from app.core.db import utcnow
+from app.models import CandidateProfile
+from app.services.fsp.scoring import fsp_score
+from app.services.reference.skills import SKILL_BY_ID
+from app.services.reference.taxonomy import grade_band
+
+W_TEST, W_FSP, W_ACTIVITY = 0.60, 0.25, 0.15
+VERIFY_THRESHOLD = 0.5
+TASK_HALF_LIFE_DAYS = 60
+
+# Навыки, которые подтверждаются доменом теста даже без явного упоминания в резюме
+DOMAIN_CORE_SKILLS = {
+    "sql": ["sql"], "python": ["python"], "java": ["java"], "go": ["go"], "javascript": ["javascript"],
+    "typescript": ["typescript"], "react": ["react"], "web_layout": ["html", "css"], "algorithms": ["algorithms"],
+    "linux": ["linux"], "containers": ["docker"], "kubernetes": ["kubernetes"], "statistics": ["statistics"],
+    "testing_theory": ["test_design"], "http_api": ["rest"], "cicd": ["git"], "data_tools": ["pandas"],
+    "ml": ["scikit_learn"], "analytics": ["product_metrics"], "databases": ["db_design"], "security": ["security_web"],
+    "architecture": ["system_design"], "observability": ["prometheus"], "networks": ["networks"],
+    "test_automation": ["pytest"], "deep_learning": [], "browser": ["browser_apis"],
+}
+
+
+def test_position(cand: CandidateProfile) -> float:
+    if not cand.grade or cand.grade_theta is None:
+        return 0.0
+    lo, hi = grade_band(cand.grade)
+    lo = -2.0 if math.isinf(lo) else lo
+    hi = lo + 1.5 if math.isinf(hi) else hi
+    pos = (cand.grade_theta - lo) / (hi - lo)
+    return max(0.0, min(1.0, 0.15 + 0.85 * pos))
+
+
+def activity_score(cand: CandidateProfile) -> float:
+    if not cand.tasks_done or not cand.last_task_at:
+        return 0.0
+    days = max(0.0, (utcnow() - cand.last_task_at).days)
+    decay = 0.5 ** (days / TASK_HALF_LIFE_DAYS)
+    volume = 1 - math.exp(-cand.tasks_done / 3)
+    quality = cand.tasks_score or 0.5
+    return round(volume * decay * (0.4 + 0.6 * quality), 4)
+
+
+def verified_skills(cand: CandidateProfile) -> list[str]:
+    """Заявленные навыки, чей тестовый домен пройден на уровне ≥ порога, + ключевые навыки пройденных доменов."""
+    scores = cand.domain_scores or {}
+    passed = {d for d, v in scores.items() if v.get("score", 0) >= VERIFY_THRESHOLD and v.get("n", 0) >= 1}
+    out: list[str] = []
+    for sid in cand.skills or []:
+        sk = SKILL_BY_ID.get(sid)
+        if sk and set(sk.domains) & passed:
+            out.append(sid)
+    for d in passed:
+        for sid in DOMAIN_CORE_SKILLS.get(d, []):
+            if sid not in out:
+                out.append(sid)
+    return out
+
+
+def profile_completeness(cand: CandidateProfile) -> float:
+    fields = [cand.full_name, cand.city, cand.headline, cand.about, cand.experience_years is not None,
+              bool(cand.skills), bool(cand.experience), cand.desired_salary, bool(cand.work_formats)]
+    return sum(bool(f) for f in fields) / len(fields)
+
+
+def recompute_candidate(db: Session, cand: CandidateProfile) -> None:
+    cand.fsp_score = fsp_score(cand.fsp_profile, cand.grade_specialization or cand.specialization)
+    cand.verified_skills = verified_skills(cand)
+    test = test_position(cand)
+    cand.strength = round(W_TEST * test + W_FSP * cand.fsp_score + W_ACTIVITY * activity_score(cand), 4) if cand.grade else 0.0
+    db.flush()
+
+
+def strength_breakdown(cand: CandidateProfile) -> dict:
+    return {
+        "test": round(test_position(cand), 3),
+        "fsp": round(cand.fsp_score or 0.0, 3),
+        "activity": round(activity_score(cand), 3),
+        "completeness": round(profile_completeness(cand), 3),
+        "weights": {"test": W_TEST, "fsp": W_FSP, "activity": W_ACTIVITY},
+        "total": round(cand.strength or 0.0, 3),
+    }
