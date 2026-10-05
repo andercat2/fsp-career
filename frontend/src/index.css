@@ -29,7 +29,9 @@
 }
 
 @layer components {
-  .card { @apply rounded-[20px] border border-line bg-white shadow-soft; }
+  /* min-w-0: карточка в сетке сжимается до ширины колонки, а не растягивает страницу по своему содержимому
+     (иначе на телефоне длинные заголовки и таблицы дают горизонтальную прокрутку) */
+  .card { @apply min-w-0 rounded-[20px] border border-line bg-white shadow-soft; }
   .card-pad { @apply p-5 sm:p-6; }
   .card-hover { @apply transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[#E2DEEE] hover:shadow-lift; }
   .input {

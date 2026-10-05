@@ -44,7 +44,7 @@ export function CandidateInvitations() {
         { value: 'archive', label: 'Архив', count: groups.archive.length },
       ]} />
       <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           {!items.length && <EmptyState icon={<Mail className="h-5 w-5" />} title="Здесь пока пусто" text="Как только работодатель найдёт вас в подборке своей категории, приглашение появится здесь." />}
           {items.map((i, idx) => (
             <motion.button key={i.id} onClick={() => setOpenId(i.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -54,7 +54,7 @@ export function CandidateInvitations() {
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-surface text-lg font-bold text-fsp-deep">{i.company.name[0]}</div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="truncate font-semibold text-fsp-deep">{i.title}</p>
+                    <p className="min-w-0 truncate font-semibold text-fsp-deep">{i.title}</p>
                     <StatusBadge status={i.status} />
                   </div>
                   <p className="text-sm text-slate-500">{i.company.name} · {ago(i.created_at)}</p>
@@ -66,7 +66,7 @@ export function CandidateInvitations() {
           ))}
         </div>
 
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <AnimatePresence mode="wait">
           {!current ? <EmptyState key="empty" icon={<Sparkles className="h-5 w-5" />} title="Выберите приглашение" text="Откроется полное описание: условия, компания и почему вас пригласили." /> : (
             <motion.div key={current.id} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.3, ease: EASE }}>
