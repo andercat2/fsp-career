@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Download, Lock, Mail, Phone, Send, Star, Unlock } from 'lucide-react'
+import { ArrowLeft, Download, Layers, Lock, Mail, Phone, Send, Star, Unlock } from 'lucide-react'
 import { api, download } from '@/lib/api'
 import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
@@ -17,7 +17,9 @@ export function CandidateView() {
   const { push } = useToast()
   const { ref } = useReference()
   const [invite, setInvite] = useState<InviteTarget | null>(null)
-  const { data: c, isLoading } = useQuery({ queryKey: ['emp-candidate', id], queryFn: () => api(`/employer/candidates/${id}`) })
+  const [params, setParams] = useSearchParams()
+  const rid = Number(params.get('resume') ?? 0) || 0
+  const { data: c, isLoading } = useQuery({ queryKey: ['emp-candidate', id, rid], queryFn: () => api(`/employer/candidates/${id}${rid ? `?resume_id=${rid}` : ''}`), placeholderData: p => p })
   const shortlist = useShortlistToggle()
   if (isLoading || !c) return <PageLoader />
   const cat = c.category
@@ -37,19 +39,29 @@ export function CandidateView() {
             <h1 className="mt-3 text-3xl font-extrabold text-white">{c.display_name}</h1>
             <p className="mt-1 text-white/75">{c.headline}{c.city && ` · ${c.city}`}{c.relocation && ' · готов к переезду'}</p>
             <p className="mt-1 text-sm text-white/60">Был(а) активен {ago(c.last_active_at)} · {c.open_to_offers ? 'открыт к предложениям' : 'сейчас не ищет работу'}</p>
+            {c.resumes?.length > 1 && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/55"><Layers className="h-3.5 w-3.5" />Резюме кандидата:</span>
+                {c.resumes.map((x: any) => (
+                  <button key={x.resume_id} onClick={() => setParams(x.resume_id ? { resume: String(x.resume_id) } : {})}
+                    className={x.resume_id === c.resume_id ? 'rounded-full bg-white px-3 py-1 text-xs font-bold text-fsp-deep' : 'rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 transition hover:bg-white/20'}>
+                    {x.specialization_name} · {x.grade_name}</button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => shortlist.mutate({ id: c.id, on: !c.shortlisted })} icon={<Star className={c.shortlisted ? 'h-4 w-4 fill-amber-400 text-amber-400' : 'h-4 w-4'} />}>{c.shortlisted ? 'В избранном' : 'В избранное'}</Button>
-            <Button variant="secondary" onClick={() => download(`/employer/candidates/${c.id}/pdf`, `candidate-${c.public_id}.pdf`).catch(e => push(e.message, 'error'))} icon={<Download className="h-4 w-4" />}>PDF</Button>
+            <Button variant="secondary" onClick={() => download(`/employer/candidates/${c.id}/pdf${c.resume_id ? `?resume_id=${c.resume_id}` : ''}`, `candidate-${c.public_id}.pdf`).catch(e => push(e.message, 'error'))} icon={<Download className="h-4 w-4" />}>PDF</Button>
             <Button disabled={!c.open_to_offers || !!active || c.contacts_unlocked} icon={<Send className="h-4 w-4" />}
-              onClick={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: cat.grade_name, specialization_name: cat.specialization_name })}>
+              onClick={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: cat.grade_name, specialization_name: cat.specialization_name, resume_id: c.resume_id, headline: c.resume_title, categories: c.resumes })}>
               {c.contacts_unlocked ? 'Контакт открыт' : active ? 'Приглашение отправлено' : 'Пригласить'}</Button>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <Card title="Результаты тестирования" subtitle="Оценки по доменам из адаптивного теста — источник категории">
             <DomainBars domains={Object.fromEntries(Object.entries(c.test.domains).map(([k, v]: any) => [k, { ...v, name: ref?.domains[k] }]))} />
             <div className="mt-4 grid gap-2 rounded-2xl bg-surface p-4 text-sm sm:grid-cols-3">
@@ -82,7 +94,7 @@ export function CandidateView() {
             {!!c.education.length && <div className="mt-4"><p className="label">Образование</p>{c.education.map((e: any, i: number) => <p key={i} className="text-sm">{e.title}</p>)}</div>}
           </Card>
         </div>
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <Card title="Контакты">
             {c.contacts_unlocked ? (
               <div className="space-y-2 text-sm">
@@ -105,7 +117,7 @@ export function CandidateView() {
           {!!c.invitations?.length && (
             <Card title="Ваши приглашения">
               <div className="space-y-2">{c.invitations.map((i: any) => (
-                <div key={i.id} className="flex items-center justify-between gap-2 text-sm"><span className="truncate">{i.title}</span><StatusBadge status={i.status} /></div>))}</div>
+                <div key={i.id} className="flex items-center justify-between gap-2 text-sm"><span className="min-w-0 truncate">{i.title}</span><StatusBadge status={i.status} side="employer" /></div>))}</div>
             </Card>
           )}
         </div>

@@ -109,12 +109,18 @@ const STATUS_RU: Record<string, string> = {
   expired: 'Истекло', rejected: 'Отказ', submitted: 'На проверке', reviewed: 'Проверено', offered: 'Новое', skipped: 'Пропущено',
 }
 
-export function StatusBadge({ status, label }: { status: string; label?: string }) {
+/** Статусы приглашения глазами каждой стороны: «viewed» — приглашение открыл кандидат (не просмотр резюме). */
+const STATUS_SIDE: Record<'candidate' | 'employer', Record<string, string>> = {
+  candidate: { sent: 'Новое', viewed: 'Открыто вами' },
+  employer: { sent: 'Отправлено', viewed: 'Прочитано кандидатом' },
+}
+
+export function StatusBadge({ status, label, side }: { status: string; label?: string; side?: 'candidate' | 'employer' }) {
   return (
     <Badge tone={INV_TONE[status] ?? 'gray'}>
       <span className={clsx('h-1.5 w-1.5 rounded-full', { blue: 'bg-sky-500', lavender: 'bg-fsp-lavender', green: 'bg-emerald-500', red: 'bg-red-500',
         gray: 'bg-slate-400', amber: 'bg-amber-500', pink: 'bg-fsp-pink' }[INV_TONE[status] ?? 'gray'])} />
-      {label ?? STATUS_RU[status] ?? status}
+      {label ?? (side && STATUS_SIDE[side][status]) ?? STATUS_RU[status] ?? status}
     </Badge>
   )
 }

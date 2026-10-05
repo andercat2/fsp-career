@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import {
-  ArrowLeft, ChevronDown, ChevronUp, Filter, MapPin, RefreshCw, Send, Sparkles, Star, Trophy, Users, Wallet, Wand2, X,
+  ArrowLeft, ChevronDown, ChevronUp, Filter, Layers, MapPin, RefreshCw, Send, Sparkles, Star, Trophy, Users, Wallet, Wand2, X,
 } from 'lucide-react'
 import { api, qs } from '@/lib/api'
 import { useReference } from '@/lib/reference'
@@ -25,7 +25,7 @@ export function useShortlistToggle() {
   })
 }
 
-const INV_LABEL: Record<string, string> = { sent: 'приглашён', viewed: 'просмотрел', accepted: 'принял', declined: 'отклонил',
+const INV_LABEL: Record<string, string> = { sent: 'приглашён', viewed: 'прочитал', accepted: 'принял', declined: 'отклонил',
   expired: 'истекло', withdrawn: 'отозвано' }
 
 export function CandidateRow({ c, onInvite, onShortlist }: { c: any; onInvite: () => void; onShortlist: (on: boolean) => void }) {
@@ -39,11 +39,19 @@ export function CandidateRow({ c, onInvite, onShortlist }: { c: any; onInvite: (
         {c.match != null && <MatchRing value={c.match} size={64} />}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Link to={`/employer/candidates/${c.id}`} className="text-[17px] font-bold tracking-tight text-fsp-deep transition hover:text-fsp-pink">{c.display_name}</Link>
+            <Link to={`/employer/candidates/${c.id}${c.resume_id ? `?resume=${c.resume_id}` : ''}`} className="text-[17px] font-bold tracking-tight text-fsp-deep transition hover:text-fsp-pink">{c.display_name}</Link>
             <CategoryPill spec={c.specialization_name} grade={c.grade_name} />
             {c.percentile != null && <span className="text-xs font-semibold text-emerald-600">выше {Math.round(c.percentile)}%</span>}
           </div>
           <p className="mt-1 text-sm text-slate-600">{c.headline}</p>
+          {c.categories?.length > 1 && (
+            <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+              <Layers className="h-3.5 w-3.5" />Другие категории кандидата:
+              {c.categories.filter((x: any) => x.resume_id !== c.resume_id).map((x: any) => (
+                <Link key={x.resume_id} to={`/employer/candidates/${c.id}${x.resume_id ? `?resume=${x.resume_id}` : ''}`} className="font-semibold text-fsp-lavender hover:text-fsp-deep">{x.specialization_name} · {x.grade_name}</Link>
+              ))}
+            </p>
+          )}
           <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
             {c.city && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{c.city}{c.relocation && ' · готов к переезду'}</span>}
             {!!c.work_formats?.length && <span>{c.work_formats.map((f: string) => WORK_FORMATS[f]).join(' / ')}</span>}
@@ -177,7 +185,7 @@ export function SelectionPage() {
             <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={JSON.stringify(f)}>
               {s.results.map((c: any) => (
                 <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on })}
-                  onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons })} />
+                  onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories })} />
               ))}
               {s.total > s.results.length && <div className="pt-2 text-center"><Button variant="secondary" onClick={() => setSize(x => x + 20)}>Показать ещё</Button></div>}
             </motion.div>

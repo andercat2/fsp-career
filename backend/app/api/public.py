@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 
 from app.api.deps import DB, Admin
 from app.core.config import BASE_DIR
-from app.models import CandidateProfile, Company, Invitation, ItemStat, TestSession, Vacancy
+from app.models import CandidateProfile, CandidateResume, Company, Invitation, ItemStat, TestSession, Vacancy
 from app.schemas import EvalRankIn
 from app.services.fsp.scoring import fsp_score
 from app.services.matching.profile import W_FSP, W_TEST, test_position
@@ -40,6 +40,7 @@ def stats(db: DB):
 
     return {
         "candidates": count(CandidateProfile), "categorized": count(CandidateProfile, CandidateProfile.grade.is_not(None)),
+        "extra_categories": count(CandidateResume, CandidateResume.grade.is_not(None)),
         "with_fsp": count(CandidateProfile, CandidateProfile.fsp_id.is_not(None)), "companies": count(Company),
         "vacancies": count(Vacancy, Vacancy.is_published.is_(True)), "tests": count(TestSession, TestSession.status == "completed"),
         "invitations": count(Invitation), "accepted": count(Invitation, Invitation.status == "accepted"),

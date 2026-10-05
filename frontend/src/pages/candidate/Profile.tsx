@@ -8,6 +8,7 @@ import { useToast } from '@/lib/toast'
 import { WORK_FORMATS, rub, years } from '@/lib/format'
 import { Alert, Badge, Button, Card, Field, Input, Modal, PageHeader, PageLoader, Textarea, Toggle } from '@/components/ui'
 import { SkillPicker } from '@/components/SkillPicker'
+import { ResumesCard } from '@/components/Resumes'
 
 type Exp = { company: string | null; position: string | null; start: string | null; end: string | null; description: string | null }
 type Edu = { title: string; year?: number | null; level?: string | null; specialty?: string | null }
@@ -51,7 +52,7 @@ export function CandidateProfile() {
 
   const save = useMutation({
     mutationFn: (f: Form) => api('/candidate/profile', { method: 'PUT', body: { ...f, contact_email: f.contact_email || null, desired_salary: f.desired_salary || null } }),
-    onSuccess: (p) => { qc.setQueryData(['cand-profile'], p); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }); push('Профиль сохранён') },
+    onSuccess: (p) => { qc.setQueryData(['cand-profile'], p); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }); qc.invalidateQueries({ queryKey: ['cand-resumes'] }); push('Профиль сохранён') },
     onError: (e: any) => push(e.message, 'error'),
   })
 
@@ -114,8 +115,11 @@ export function CandidateProfile() {
         <Button onClick={() => fileRef.current?.click()} loading={uploading} icon={<Upload className="h-4 w-4" />}>Загрузить PDF</Button>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <Card title="Основное">
+      <ResumesCard publicId={profile.public_id}
+        onEditMain={() => document.getElementById('main-resume')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+
+      <div id="main-resume" className="grid scroll-mt-24 gap-6 xl:grid-cols-2">
+        <Card title="Основное" subtitle="Общие данные и основное резюме: заголовок, навыки и ожидания ниже относятся к нему">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="ФИО" className="sm:col-span-2"><Input value={form.full_name} onChange={e => set('full_name', e.target.value)} /></Field>
             <Field label="Желаемая должность" className="sm:col-span-2"><Input value={form.headline} onChange={e => set('headline', e.target.value)} placeholder="Python-разработчик" /></Field>

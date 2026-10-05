@@ -144,9 +144,9 @@ def should_stop(state: CatState, cfg: CatConfig) -> bool:
     return lo_sure and hi_sure
 
 
-def domain_scores(state: CatState, theta: float) -> dict[str, dict]:
+def domain_scores(state: CatState, theta: float, penalty: float = 0.0) -> dict[str, dict]:
     """Оценка по доменам: EAP по ответам домена с prior в общей θ (сжатие к общей оценке при малом n).
-    score — вероятность решить типичное задание уровня заявленного грейда."""
+    score — вероятность решить типичное задание уровня заявленного грейда. penalty — штраф за нарушение."""
     out: dict[str, dict] = {}
     target_b = grade_center(state.target_grade)
     by_dom: dict[str, list[AnsweredItem]] = {}
@@ -159,7 +159,7 @@ def domain_scores(state: CatState, theta: float) -> dict[str, dict]:
         ll -= ll.max()
         wts = [math.exp(v) for v in ll]
         s = sum(wts)
-        th = sum(g * w_ for g, w_ in zip(irt.GRID, wts, strict=True)) / s
+        th = sum(g * w_ for g, w_ in zip(irt.GRID, wts, strict=True)) / s - penalty
         score = 1 / (1 + math.exp(-1.3 * (th - target_b)))
         out[dom] = {"n": len(items), "correct": sum(x.correct for x in items), "theta": round(th, 3),
                     "score": round(score, 3)}
@@ -188,17 +188,20 @@ def integrity_flags(state: CatState, theta: float) -> dict:
             "flags": flags}
 
 
-def decide(state: CatState, cfg: CatConfig) -> dict:
-    theta, se = state.estimate()
+def decide(state: CatState, cfg: CatConfig, penalty: float = 0.0) -> dict:
+    """penalty (логиты) — штраф за нарушение прокторинга: решение принимается по сдвинутой оценке θ − penalty,
+    т. е. P(θ ≥ граница + penalty); «уверенный» результат и досрочное повышение при штрафе не предлагаются."""
+    raw_theta, se = state.estimate()
+    theta = raw_theta - penalty
     lo, hi = band_for_decision(state.target_grade)
     scored = state.scored
-    p_lo = irt.posterior_prob_above(scored, lo)
-    p_hi = 0.0 if math.isinf(hi) else irt.posterior_prob_above(scored, hi)
+    p_lo = irt.posterior_prob_above(scored, lo + penalty)
+    p_hi = 0.0 if math.isinf(hi) else irt.posterior_prob_above(scored, hi + penalty)
     idx = GRADE_INDEX[state.target_grade]
     # Порог 0.6, а не 0.5: ошибка «завысили грейд» дороже для работодателя, чем «предложили пересдать уровнем ниже»
     if p_lo >= cfg.confirm_prob:
         decision = "confirmed"
-        if not math.isinf(hi) and p_hi >= cfg.strong_margin and idx < len(GRADE_CODES) - 1:
+        if not penalty and not math.isinf(hi) and p_hi >= cfg.strong_margin and idx < len(GRADE_CODES) - 1:
             decision = "confirmed_strong"
     else:
         decision = "not_confirmed"
@@ -219,6 +222,7 @@ def decide(state: CatState, cfg: CatConfig) -> dict:
         "percentile": percentile,
         "n_items": len(scored),
         "n_correct": sum(1 for *_, u in scored if u),
-        "domains": domain_scores(state, theta),
-        "integrity": integrity_flags(state, theta),
+        "domains": domain_scores(state, raw_theta, penalty),
+        "integrity": integrity_flags(state, raw_theta),
+        **({"raw_theta": round(raw_theta, 3), "penalty": penalty} if penalty else {}),
     }

@@ -17,6 +17,7 @@ from app.services.fsp.scoring import fsp_summary
 from app.services.matching.profile import strength_breakdown
 from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import GRADE_NAMES, SPEC_NAMES
+from app.services.resumes import base_candidate, category_brief, graded_profiles, resumes_overview
 
 
 def new_public_id(db: Session) -> str:
@@ -83,6 +84,7 @@ def own_view(cand: CandidateProfile) -> dict:
         "open_to_offers": cand.open_to_offers, "strength": strength_breakdown(cand),
         "tasks_done": cand.tasks_done, "resume_filename": cand.resume_filename,
         "created_at": cand.created_at, "updated_at": cand.updated_at,
+        "resumes": resumes_overview(cand),
     }
 
 
@@ -115,5 +117,8 @@ def employer_view(db: Session, cand: CandidateProfile, company: Company | None) 
         "contacts_unlocked": bool(unlocked), "unlock_reason": unlocked,
         "contacts": ({"email": cand.contact_email, "phone": cand.phone, "telegram": cand.telegram,
                       "links": cand.links or {}} if unlocked else None),
+        # резюме (категории) кандидата: работодатель может переключиться и пригласить по нужной
+        "resume_id": cand.resume_id or 0, "resume_title": cand.headline,
+        "resumes": [category_brief(p) for p in graded_profiles(base_candidate(cand))],
     }
     return view

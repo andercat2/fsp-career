@@ -15,6 +15,7 @@ from app.models import Application, CandidateProfile, Company, Invitation, Task,
 from app.services.matching.profile import recompute_candidate
 from app.services.matching.ranking import Need, score_candidates
 from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES, SPEC_NAMES, WORK_FORMATS
+from app.services.resumes import ResumeView, category_brief, graded_profiles
 
 log = logging.getLogger("interactions")
 
@@ -31,10 +32,29 @@ def need_from_vacancy(v: Vacancy) -> Need:
                 title=v.title, require_fsp=v.require_fsp)
 
 
-def pair_score(v: Vacancy, cand: CandidateProfile) -> dict | None:
-    if not cand.grade:
+def pair_score(v: Vacancy, cand: CandidateProfile, resume_id: int | None = None) -> dict | None:
+    """Соответствие кандидата вакансии по лучшему из его резюме с категорией (или по указанному резюме)."""
+    graded = [p for p in graded_profiles(cand) if resume_id is None or (p.resume_id or 0) == resume_id]
+    if not graded:
         return None
-    return score_candidates(need_from_vacancy(v), [cand])[0]
+    return max(score_candidates(need_from_vacancy(v), graded), key=lambda r: r["score"])
+
+
+def profile_by_resume(cand: CandidateProfile, resume_id: int | None):
+    """Резюме, к которому относится приглашение/отклик; удалённое резюме — показываем основной профиль."""
+    if resume_id:
+        res = next((r for r in cand.resumes if r.id == resume_id), None)
+        if res is not None:
+            return ResumeView(cand, res)
+    return cand
+
+
+def invitation_profile(inv: Invitation):
+    return profile_by_resume(inv.candidate, inv.resume_id)
+
+
+def application_profile(a: Application):
+    return profile_by_resume(a.candidate, a.resume_id)
 
 
 def expire_invitations(db: Session, invitations: list[Invitation]) -> None:
@@ -81,6 +101,7 @@ def invitation_for_candidate(inv: Invitation) -> dict:
         "decline_comment": inv.decline_comment,
         "created_at": inv.created_at, "viewed_at": inv.viewed_at, "responded_at": inv.responded_at,
         "expires_at": inv.expires_at,
+        "resume": category_brief(invitation_profile(inv)),  # по какому резюме (категории) пришло приглашение
     }
 
 
@@ -88,7 +109,8 @@ def application_for_candidate(a: Application) -> dict:
     return {"id": a.id, "status": a.status, "status_name": APPLICATION_STATUSES[a.status],
             "vacancy": vacancy_brief(a.vacancy), "company": company_brief(a.vacancy.company),
             "cover_letter": a.cover_letter, "employer_comment": a.employer_comment, "match_score": a.match_score,
-            "created_at": a.created_at, "updated_at": a.updated_at, "viewed_at": a.viewed_at}
+            "created_at": a.created_at, "updated_at": a.updated_at, "viewed_at": a.viewed_at,
+            "resume": category_brief(application_profile(a))}
 
 
 def notify_ats(company: Company, event: str, payload: dict) -> None:
@@ -104,17 +126,19 @@ def notify_ats(company: Company, event: str, payload: dict) -> None:
 # ------------------------------------------------------------------ регулярные задания
 
 def offer_tasks(db: Session, cand: CandidateProfile) -> TaskAssignment | None:
-    """Раз в N дней предлагает кандидату с присвоенной категорией короткое задание работодателя его профиля."""
-    if not cand.grade or not cand.open_to_offers:
+    """Раз в N дней предлагает кандидату с присвоенной категорией короткое задание работодателя его профиля
+    (по любой из категорий его резюме)."""
+    cats = {(p.grade_specialization, p.grade) for p in graded_profiles(cand)}
+    if not cats or not cand.open_to_offers:
         return None
     last = db.scalar(select(TaskAssignment).where(TaskAssignment.candidate_id == cand.id)
                      .order_by(TaskAssignment.offered_at.desc()))
     if last and last.offered_at > utcnow() - timedelta(days=settings.task_offer_interval_days):
         return None
     seen = set(db.scalars(select(TaskAssignment.task_id).where(TaskAssignment.candidate_id == cand.id)))
-    tasks = [t for t in db.scalars(select(Task).where(Task.is_active.is_(True),
-                                                      Task.specialization == cand.grade_specialization))
-             if t.id not in seen and (not t.grades or cand.grade in t.grades)]
+    specs = {s for s, _ in cats}
+    tasks = [t for t in db.scalars(select(Task).where(Task.is_active.is_(True), Task.specialization.in_(specs)))
+             if t.id not in seen and (not t.grades or any((t.specialization, g) in cats for g in t.grades))]
     if not tasks:
         return None
     task = random.choice(tasks)

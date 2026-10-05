@@ -85,6 +85,56 @@ class CandidateProfile(Base):
     last_active_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     user = relationship("User", back_populates="candidate")
+    resumes = relationship("CandidateResume", back_populates="candidate", cascade="all, delete-orphan",
+                           order_by="CandidateResume.id")
+
+    # Основное резюме — сам профиль: у него нет отдельного id (в API — 0), заголовок резюме = headline
+    resume_id = None
+
+    @property
+    def resume_title(self) -> str | None:
+        return self.headline
+
+
+class CandidateResume(Base):
+    """Дополнительное резюме кандидата под другую специализацию: свой опрос, свой тест и своя категория
+    (специализация × грейд). Общие данные — ФИО, контакты, город, опыт, образование, ФСП — берутся из профиля.
+    Поля категории называются так же, как в CandidateProfile: сервисы тестирования и подбора работают с обоими."""
+    __tablename__ = "candidate_resumes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str | None] = mapped_column(String(255))
+    about: Mapped[str | None] = mapped_column(Text)
+    skills: Mapped[list] = mapped_column(JSON, default=list)
+    desired_salary: Mapped[int | None] = mapped_column(Integer)
+    visible: Mapped[bool] = mapped_column(Boolean, default=True)
+    resume_text: Mapped[str | None] = mapped_column(Text)
+    resume_filename: Mapped[str | None] = mapped_column(String(255))
+
+    # Опрос
+    industries: Mapped[list] = mapped_column(JSON, default=list)
+    specialization: Mapped[str] = mapped_column(String(40), index=True)
+    primary_language: Mapped[str | None] = mapped_column(String(40))
+    claimed_grade: Mapped[str | None] = mapped_column(String(20))
+    survey_completed_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+    # Категория по результатам тестирования
+    grade: Mapped[str | None] = mapped_column(String(20), index=True)
+    grade_specialization: Mapped[str | None] = mapped_column(String(40), index=True)
+    grade_theta: Mapped[float | None] = mapped_column(Float)
+    grade_se: Mapped[float | None] = mapped_column(Float)
+    grade_assigned_at: Mapped[datetime | None] = mapped_column(DateTime)
+    grade_changed_at: Mapped[datetime | None] = mapped_column(DateTime)
+    domain_scores: Mapped[dict] = mapped_column(JSON, default=dict)
+    verified_skills: Mapped[list] = mapped_column(JSON, default=list)
+    strength: Mapped[float] = mapped_column(Float, default=0.0)
+    fsp_score: Mapped[float] = mapped_column(Float, default=0.0)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
+
+    candidate = relationship("CandidateProfile", back_populates="resumes")
 
 
 class SurveyResponse(Base):
@@ -93,6 +143,7 @@ class SurveyResponse(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id", ondelete="CASCADE"), index=True)
     answers: Mapped[dict] = mapped_column(JSON)
+    resume_id: Mapped[int | None] = mapped_column(Integer)  # None — основное резюме
     specialization: Mapped[str] = mapped_column(String(40))
     claimed_grade: Mapped[str] = mapped_column(String(20))
     warnings: Mapped[list] = mapped_column(JSON, default=list)
@@ -104,6 +155,7 @@ class GradeHistory(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id", ondelete="CASCADE"), index=True)
+    resume_id: Mapped[int | None] = mapped_column(Integer)  # None — основное резюме
     specialization: Mapped[str] = mapped_column(String(40))
     old_grade: Mapped[str | None] = mapped_column(String(20))
     new_grade: Mapped[str] = mapped_column(String(20))

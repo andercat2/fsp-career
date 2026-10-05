@@ -1,4 +1,4 @@
-from app.models.candidate import CandidateProfile, GradeHistory, SurveyResponse
+from app.models.candidate import CandidateProfile, CandidateResume, GradeHistory, SurveyResponse
 from app.models.employer import (
     Application,
     Company,
@@ -17,6 +17,7 @@ __all__ = [
     "Application",
     "AuditLog",
     "CandidateProfile",
+    "CandidateResume",
     "Company",
     "Complaint",
     "Consent",

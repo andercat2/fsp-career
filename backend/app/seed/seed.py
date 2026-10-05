@@ -1,13 +1,15 @@
 """Наполнение демонстрационными данными (выполняется при первом старте, если БД пуста).
 
 Учётные записи для проверки (пароль у всех — demo12345):
-  candidate@demo.ru — кандидат с присвоенной категорией, ФСП, приглашениями и откликами;
+  candidate@demo.ru — кандидат с двумя резюме и двумя категориями (Backend · Middle, DevOps · Junior), ФСП,
+                      приглашениями и откликами;
   newbie@demo.ru    — новый кандидат без опроса и теста (для живой демонстрации сквозного сценария);
   employer@demo.ru  — работодатель «ТехноПульс» с потребностями, подборками и приглашениями;
   admin@demo.ru     — администратор (статистика банка заданий).
 """
 from __future__ import annotations
 
+import dataclasses
 import logging
 import random
 import secrets
@@ -21,6 +23,7 @@ from app.core.security import hash_password
 from app.models import (
     Application,
     CandidateProfile,
+    CandidateResume,
     Company,
     Consent,
     GradeHistory,
@@ -38,18 +41,29 @@ from app.models import (
 )
 from app.seed import vacancies_data as vd
 from app.seed.fsp_data import generate_participants
-from app.seed.synthetic import SynthCandidate, default_params, generate_population, simulate_assessment
+from app.seed.synthetic import (
+    LANG_TITLE,
+    ROLE_TITLE,
+    SynthCandidate,
+    default_params,
+    generate_population,
+    simulate_assessment,
+)
 from app.services import interactions as ix
 from app.services.candidates import new_public_id
 from app.services.matching.profile import recompute_candidate
 from app.services.matching.ranking import Need, match
 from app.services.nlp.vacancy_parser import parse_need
-from app.services.reference.taxonomy import DOMAINS, SPEC_BY_CODE
+from app.services.reference.skills import SKILL_BY_ID
+from app.services.reference.taxonomy import DOMAINS, SPEC_BY_CODE, resolve_blueprint, theta_to_grade
 from app.services.testing import irt
 from app.services.testing.bank import REGISTRY
 
 log = logging.getLogger("seed")
 DEMO_PASSWORD = "demo12345"
+EXTRA_RESUME_RATE = 0.08  # доля синтетических кандидатов со вторым резюме (второй категорией)
+SECOND_SPEC = {"backend": "devops", "frontend": "fullstack", "fullstack": "frontend", "ml": "data_analyst",
+               "data_analyst": "ml", "devops": "backend", "qa": "backend"}
 
 
 def _ago(days: float) -> object:
@@ -65,12 +79,13 @@ def _user(db: Session, email: str, role: str, pwd_hash: str, demo: bool = True) 
     return u
 
 
-def _store_sessions(db: Session, cand: CandidateProfile, sc: SynthCandidate, rng: random.Random) -> None:
+def _store_sessions(db: Session, cand: CandidateProfile, sc: SynthCandidate, rng: random.Random,
+                    resume_id: int | None = None) -> None:
     """Сохраняет симулированные сессии CAT как реальные записи и обновляет онлайн-статистику заданий."""
     t0 = _ago(rng.uniform(20, 120))
     for i, (target, state, res) in enumerate(sc.sessions):
         started = t0 + timedelta(hours=i * 2)
-        sess = TestSession(token=secrets.token_urlsafe(16), candidate_id=cand.id, specialization=sc.spec,
+        sess = TestSession(token=secrets.token_urlsafe(16), candidate_id=cand.id, resume_id=resume_id, specialization=sc.spec,
                            language=sc.lang, target_grade=target, blueprint=state.blueprint, status="completed",
                            theta=res["theta"], se=res["se"], n_items=res["n_items"], n_correct=res["n_correct"],
                            result=res | {"assigned_grade": target if sc.grade == target else None},
@@ -94,8 +109,48 @@ def _store_sessions(db: Session, cand: CandidateProfile, sc: SynthCandidate, rng
                 st.expected_var += p * (1 - p)
                 st.drift_z = (st.correct - st.expected_correct) / max(st.expected_var, 1e-9) ** 0.5
     if sc.grade:
-        db.add(GradeHistory(candidate_id=cand.id, specialization=sc.spec, old_grade=None, new_grade=sc.grade,
-                            theta=sc.theta_hat, created_at=t0 + timedelta(hours=1)))
+        db.add(GradeHistory(candidate_id=cand.id, resume_id=resume_id, specialization=sc.spec, old_grade=None,
+                            new_grade=sc.grade, theta=sc.theta_hat, created_at=t0 + timedelta(hours=1)))
+
+
+def _extra_resume(db: Session, cand: CandidateProfile, sc: SynthCandidate, rng: random.Random, params: dict,
+                  spec: str, domain_theta: dict[str, float] | None = None, claimed: str | None = None,
+                  title: str | None = None, skills: list[str] | None = None,
+                  salary: int | None = None) -> CandidateResume:
+    """Второе резюме под смежную специализацию: свой опрос и своя симулированная аттестация. В общих доменах
+    (например, Python у бэкенда и DevOps) способность та же, в новых — ниже основной."""
+    sp = SPEC_BY_CODE[spec]
+    lang = sc.lang if sc.lang in sp["languages"] else sp["languages"][0]
+    bp = resolve_blueprint(spec, lang)
+    if domain_theta is None:
+        drop = rng.uniform(0.4, 1.2)
+        domain_theta = {d: sc.domain_theta.get(d, sc.theta - drop + rng.gauss(0, 0.3)) for d in bp}
+    theta = sum(w * domain_theta[d] for d, w in bp.items())
+    claimed = claimed or theta_to_grade(theta + rng.gauss(0, 0.3))
+    sc2 = dataclasses.replace(sc, spec=spec, lang=lang, theta=theta, grade_true=theta_to_grade(theta),
+                              domain_theta=domain_theta, claimed_grade=claimed, theta_hat=None, se=None, grade=None,
+                              domain_scores={}, attempts=[], sessions=[])
+    simulate_assessment(sc2, rng, params)
+    core = [s for s in sp["core_skills"] if s in SKILL_BY_ID]
+    res = CandidateResume(
+        candidate_id=cand.id, title=title or ROLE_TITLE[spec].format(lang=LANG_TITLE[lang]),
+        skills=skills or list(dict.fromkeys(rng.sample(core, min(len(core), rng.randint(3, 5)))
+                                            + [s for s in sc.declared_skills if s in core])),
+        desired_salary=salary, specialization=spec, primary_language=lang, claimed_grade=sc2.claimed_grade,
+        industries=[], survey_completed_at=_ago(rng.uniform(5, 40)), created_at=_ago(rng.uniform(5, 40)),
+    )
+    if sc2.grade:
+        res.grade, res.grade_specialization = sc2.grade, spec
+        res.grade_theta, res.grade_se, res.domain_scores = sc2.theta_hat, sc2.se, sc2.domain_scores
+        res.grade_assigned_at = _ago(rng.uniform(2, 30))
+    cand.resumes.append(res)
+    db.flush()
+    db.add(SurveyResponse(candidate_id=cand.id, resume_id=res.id, specialization=spec, claimed_grade=sc2.claimed_grade,
+                          warnings=[], answers={"specialization": spec, "language": lang,
+                                                "claimed_grade": sc2.claimed_grade},
+                          created_at=res.survey_completed_at))
+    _store_sessions(db, cand, sc2, rng, resume_id=res.id)
+    return res
 
 
 def _candidate_from_synth(db: Session, sc: SynthCandidate, email: str, pwd_hash: str, rng: random.Random,
@@ -139,6 +194,78 @@ def _candidate_from_synth(db: Session, sc: SynthCandidate, email: str, pwd_hash:
     return cand
 
 
+def _demo_synth() -> SynthCandidate:
+    """Демо-кандидат candidate@demo.ru: Python-бэкенд уровня Middle с призовым местом ФСП."""
+    return SynthCandidate(
+        idx=9999, spec="backend", lang="python", theta=0.62, grade_true="middle",
+        domain_theta={d: 0.62 + (0.4 if d in ("python", "sql") else 0.0) for d in
+                      ("algorithms", "python", "sql", "databases", "http_api", "architecture", "security", "linux", "cicd")},
+        true_skills=["python", "fastapi", "django", "postgresql", "redis", "docker", "rest", "sql", "git", "kafka"],
+        declared_skills=["python", "fastapi", "django", "postgresql", "redis", "docker", "rest", "sql", "git", "kafka",
+                         "celery", "pytest"],
+        claimed_grade="middle", inflated=False, full_name="Петров Иван", city="Казань", relocation=False,
+        work_formats=["hybrid", "remote"], desired_salary=260_000, experience_years=3.5,
+        headline="Python-разработчик (FastAPI, PostgreSQL)",
+        about="Backend-разработчик: 3,5 года пишу сервисы на Python. Проектировал API платёжного шлюза, оптимизировал "
+              "запросы к PostgreSQL, внедрял очереди на Kafka. Призёр Чемпионата России по спортивному программированию.",
+        experience=[{"company": "ООО «Стрим Лаб»", "position": "Python-разработчик", "start": "2023-02", "end": None,
+                     "description": "Сервис платежей на FastAPI, PostgreSQL, Redis, Kafka. Снизил p95 API с 480 до 120 мс."},
+                    {"company": "ООО «Логос ИТ»", "position": "Junior Python-разработчик", "start": "2021-09",
+                     "end": "2023-01", "description": "Django, REST API для CRM, интеграции с 1С."}],
+        education=[{"title": "КФУ, Институт ВМиИТ, бакалавр «Программная инженерия», 2022"}], fsp_quality=0.8,
+    )
+
+
+def _add_extra_resumes(db: Session, pop: list[SynthCandidate], cands: list, params: dict) -> int:
+    """Часть кандидатов развивается в двух направлениях: второе резюме — вторая категория. Отдельный генератор
+    случайных чисел, чтобы не сдвигать остальные демо-данные."""
+    rng_res = random.Random(77)
+    added = 0
+    for sc, cand in zip(pop, cands, strict=True):
+        if rng_res.random() < EXTRA_RESUME_RATE and cand is not None:
+            _extra_resume(db, cand, sc, rng_res, params, SECOND_SPEC[sc.spec])
+            recompute_candidate(db, cand)
+            added += 1
+    db.flush()
+    return added
+
+
+def _demo_devops_resume(db: Session, demo_cand: CandidateProfile, demo: SynthCandidate, params: dict) -> None:
+    """Второе резюме демо-кандидата: DevOps — общие домены (Python) на уровне основного, новые ниже."""
+    devops_theta = {"linux": -0.15, "networks": -0.6, "containers": 0.05, "kubernetes": -0.9, "cicd": -0.05,
+                    "observability": -0.7, "security": -0.35, "python": 1.02}
+    seed = 1001
+    for seed in range(1001, 1040):  # детерминированно подбираем прогон, подтверждающий Junior, — для предсказуемой демонстрации
+        probe = dataclasses.replace(demo, spec="devops", lang="python", domain_theta=devops_theta, claimed_grade="junior",
+                                    theta_hat=None, se=None, grade=None, domain_scores={}, attempts=[], sessions=[])
+        simulate_assessment(probe, random.Random(seed), params)
+        if probe.grade == "junior":
+            break
+    _extra_resume(db, demo_cand, demo, random.Random(seed), params, "devops", domain_theta=devops_theta,
+                  claimed="junior", title="DevOps-инженер (Docker, CI/CD, Linux)", salary=210_000,
+                  skills=["docker", "linux", "bash", "git", "gitlab_ci", "kubernetes", "prometheus", "python"])
+    recompute_candidate(db, demo_cand)
+
+
+def upgrade_demo_data(db: Session) -> None:
+    """Дозаполняет уже развёрнутый стенд демо-данными новых возможностей (идемпотентно): вторые резюме
+    синтетических кандидатов и DevOps-резюме демо-кандидата — те же, что создаёт seed_if_empty на пустой БД."""
+    from app.core.config import settings
+
+    if db.scalar(select(CandidateResume.id).limit(1)) is not None:
+        return
+    demo_user = db.scalar(select(User).where(User.email == "candidate@demo.ru"))
+    if demo_user is None or demo_user.candidate is None:
+        return
+    params = default_params()
+    pop = generate_population(settings.seed_candidates, seed=7)
+    by_email = {u.email: u.candidate for u in db.scalars(select(User).where(User.email.like("%@synthetic.example")))}
+    added = _add_extra_resumes(db, pop, [by_email.get(f"cand{sc.idx:03d}@synthetic.example") for sc in pop], params)
+    _demo_devops_resume(db, demo_user.candidate, _demo_synth(), params)
+    db.commit()
+    log.info("Демо-данные дополнены: вторые резюме у %d кандидатов и у демо-кандидата", added)
+
+
 def seed_if_empty(db: Session) -> None:
     if db.scalar(select(User.id).limit(1)):
         return
@@ -165,26 +292,10 @@ def seed_if_empty(db: Session) -> None:
         cands.append(_candidate_from_synth(db, sc, f"cand{sc.idx:03d}@synthetic.example", pwd, rng, participants,
                                            used_fsp))
     db.flush()
+    _add_extra_resumes(db, pop, cands, params)
 
     # --- демо-кандидат с полной историей
-    demo = SynthCandidate(
-        idx=9999, spec="backend", lang="python", theta=0.62, grade_true="middle",
-        domain_theta={d: 0.62 + (0.4 if d in ("python", "sql") else 0.0) for d in
-                      ("algorithms", "python", "sql", "databases", "http_api", "architecture", "security", "linux", "cicd")},
-        true_skills=["python", "fastapi", "django", "postgresql", "redis", "docker", "rest", "sql", "git", "kafka"],
-        declared_skills=["python", "fastapi", "django", "postgresql", "redis", "docker", "rest", "sql", "git", "kafka",
-                         "celery", "pytest"],
-        claimed_grade="middle", inflated=False, full_name="Петров Иван", city="Казань", relocation=False,
-        work_formats=["hybrid", "remote"], desired_salary=260_000, experience_years=3.5,
-        headline="Python-разработчик (FastAPI, PostgreSQL)",
-        about="Backend-разработчик: 3,5 года пишу сервисы на Python. Проектировал API платёжного шлюза, оптимизировал "
-              "запросы к PostgreSQL, внедрял очереди на Kafka. Призёр Чемпионата России по спортивному программированию.",
-        experience=[{"company": "ООО «Стрим Лаб»", "position": "Python-разработчик", "start": "2023-02", "end": None,
-                     "description": "Сервис платежей на FastAPI, PostgreSQL, Redis, Kafka. Снизил p95 API с 480 до 120 мс."},
-                    {"company": "ООО «Логос ИТ»", "position": "Junior Python-разработчик", "start": "2021-09",
-                     "end": "2023-01", "description": "Django, REST API для CRM, интеграции с 1С."}],
-        education=[{"title": "КФУ, Институт ВМиИТ, бакалавр «Программная инженерия», 2022"}], fsp_quality=0.8,
-    )
+    demo = _demo_synth()
     simulate_assessment(demo, random.Random(5), params)
     if demo.grade != "middle":  # для предсказуемой демонстрации фиксируем результат уровня Middle
         demo.sessions = demo.sessions[-1:]
@@ -194,6 +305,7 @@ def seed_if_empty(db: Session) -> None:
     demo_cand.consent_publish, demo_cand.open_to_offers = True, True
     demo_cand.privacy = {**demo_cand.privacy, "visible_in_search": True, "hide_invites_below_salary": False}
     db.get(User, demo_cand.user_id).is_demo = True
+    _demo_devops_resume(db, demo_cand, demo, params)
 
     # --- новый кандидат для живой демонстрации
     u = _user(db, "newbie@demo.ru", "candidate", pwd)

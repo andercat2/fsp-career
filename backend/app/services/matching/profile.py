@@ -15,7 +15,6 @@ from sqlalchemy.orm import Session
 from app.core.db import utcnow
 from app.models import CandidateProfile
 from app.services.fsp.scoring import fsp_score
-from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import grade_band
 
 W_TEST, W_FSP, W_ACTIVITY = 0.60, 0.25, 0.15
@@ -114,11 +113,21 @@ def profile_completeness(cand: CandidateProfile) -> float:
     return sum(bool(f) for f in fields) / len(fields)
 
 
+def recompute_resume(cand: CandidateProfile, res) -> None:
+    """То же для дополнительного резюме: ФСП — по его специализации, активность — общая для кандидата."""
+    res.fsp_score = fsp_score(cand.fsp_profile, res.grade_specialization or res.specialization)
+    res.verified_skills = verified_skills(res)
+    res.strength = round(W_TEST * test_position(res) + W_FSP * res.fsp_score + W_ACTIVITY * activity_score(cand), 4) \
+        if res.grade else 0.0
+
+
 def recompute_candidate(db: Session, cand: CandidateProfile) -> None:
     cand.fsp_score = fsp_score(cand.fsp_profile, cand.grade_specialization or cand.specialization)
     cand.verified_skills = verified_skills(cand)
     test = test_position(cand)
     cand.strength = round(W_TEST * test + W_FSP * cand.fsp_score + W_ACTIVITY * activity_score(cand), 4) if cand.grade else 0.0
+    for res in cand.resumes:
+        recompute_resume(cand, res)
     db.flush()
 
 

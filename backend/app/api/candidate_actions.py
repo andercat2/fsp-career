@@ -9,7 +9,8 @@ from app.schemas import ApplyIn, ComplaintIn, DeclineIn, Message, TaskSubmitIn
 from app.services import interactions as ix
 from app.services.candidates import own_view
 from app.services.notify import audit, notify
-from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES
+from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES, SPEC_NAMES
+from app.services.resumes import category_brief, get_resume, graded_profiles
 
 router = APIRouter(tags=["Кандидат: приглашения, вакансии, задания"])
 
@@ -113,6 +114,7 @@ def vacancies(user: CurrentUser, db: DB, q: str | None = None, specialization: s
     if grade:
         items = [v for v in items if grade in (v.grades or [])]
     cand = user.candidate if user.role == "candidate" else None
+    graded = bool(cand and graded_profiles(cand))  # категория хотя бы по одному резюме
     applied = set()
     if cand:
         applied = set(db.scalars(select(Application.vacancy_id).where(Application.candidate_id == cand.id,
@@ -122,11 +124,12 @@ def vacancies(user: CurrentUser, db: DB, q: str | None = None, specialization: s
         row = ix.vacancy_brief(v) | {"company": ix.company_brief(v.company), "description": v.description[:400],
                                      "must_skills": v.must_skills, "nice_skills": v.nice_skills,
                                      "created_at": v.created_at, "applied": v.id in applied}
-        if cand and cand.grade:
+        if graded:
             sc = ix.pair_score(v, cand)
             row["match"] = sc["match"] if sc else None
+            row["match_resume"] = sc and {"id": sc["resume_id"], "title": sc["resume_title"]}
         out.append(row)
-    if cand and cand.grade:
+    if graded:
         out.sort(key=lambda r: -(r.get("match") or 0))
     return out
 
@@ -139,9 +142,11 @@ def vacancy(vac_id: int, user: CurrentUser, db: DB):
     out = ix.vacancy_brief(v) | {"company": ix.company_brief(v.company), "description": v.description,
                                  "team_description": v.team_description, "must_skills": v.must_skills,
                                  "nice_skills": v.nice_skills, "employment": v.employment, "created_at": v.created_at}
-    if user.role == "candidate" and user.candidate and user.candidate.grade:
+    if user.role == "candidate" and user.candidate and graded_profiles(user.candidate):
         sc = ix.pair_score(v, user.candidate)
-        out["match"] = sc and {"match": sc["match"], "reasons": sc["reasons"], "components": sc["components"]}
+        out["match"] = sc and {"match": sc["match"], "reasons": sc["reasons"], "components": sc["components"],
+                               "resume_id": sc["resume_id"], "resume_title": sc["resume_title"]}
+        out["resumes"] = [category_brief(p) for p in graded_profiles(user.candidate)]
         out["applied"] = bool(db.scalar(select(Application.id).where(Application.candidate_id == user.candidate.id,
                                                                      Application.vacancy_id == v.id,
                                                                      Application.status != "withdrawn")))
@@ -159,12 +164,17 @@ def apply(vac_id: int, data: ApplyIn, cand: Candidate, db: DB):
                                                  Application.status != "withdrawn"))
     if exists:
         raise HTTPException(409, "Вы уже откликнулись на эту вакансию")
-    sc = ix.pair_score(v, cand)
-    a = Application(candidate_id=cand.id, vacancy_id=v.id, cover_letter=data.cover_letter,
+    if data.resume_id:
+        get_resume(cand, data.resume_id)  # 404, если резюме чужое
+    sc = ix.pair_score(v, cand, data.resume_id)
+    rid = data.resume_id if data.resume_id is not None else (sc["resume_id"] if sc else 0)
+    prof = ix.profile_by_resume(cand, rid)
+    a = Application(candidate_id=cand.id, vacancy_id=v.id, resume_id=rid or None, cover_letter=data.cover_letter,
                     match_score=sc["score"] if sc else None)
     db.add(a)
     notify(db, v.company.owner_user_id, "application_new", f"Новый отклик на «{v.title}»",
-           f"Кандидат {cand.public_id}" + (f", категория {GRADE_NAMES[cand.grade]}" if cand.grade else ", без категории"),
+           f"Кандидат {cand.public_id}" + (f", категория {SPEC_NAMES.get(prof.grade_specialization, '')} · "
+                                          f"{GRADE_NAMES[prof.grade]}" if prof.grade else ", без категории"),
            f"/employer/vacancies/{v.id}")
     db.commit()
     # Отклик — инициатива кандидата: контакты открываются компании, поэтому их можно передать в ATS

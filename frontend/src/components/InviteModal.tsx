@@ -9,6 +9,8 @@ import { Alert, Button, Field, Input, Modal, Select, Textarea } from './ui'
 
 export type InviteTarget = {
   id: number; display_name: string; grade_name?: string; specialization_name?: string; reasons?: { kind: string; text: string }[]
+  /** резюме (категория), по которому приглашаем: 0 — основное */
+  resume_id?: number; headline?: string | null; categories?: { resume_id: number }[]
 }
 
 export function InviteModal({ target, onClose, vacancyId, defaults }: {
@@ -39,13 +41,13 @@ export function InviteModal({ target, onClose, vacancyId, defaults }: {
 
   const salaryTo = Number(f.salary_to) || 0
   const { data: lh } = useQuery({
-    queryKey: ['likelihood', target?.id, salaryTo, f.work_format],
-    queryFn: () => api(`/employer/likelihood/${target!.id}${qs({ salary_to: salaryTo, work_format: f.work_format })}`),
+    queryKey: ['likelihood', target?.id, target?.resume_id, salaryTo, f.work_format],
+    queryFn: () => api(`/employer/likelihood/${target!.id}${qs({ salary_to: salaryTo, work_format: f.work_format, resume_id: target!.resume_id || undefined })}`),
     enabled: !!target && salaryTo > 0,
   })
   const send = useMutation({
     mutationFn: () => api('/employer/invitations', { body: {
-      candidate_id: target!.id, vacancy_id: f.vacancy_id ? Number(f.vacancy_id) : null, title: f.title, message: f.message,
+      candidate_id: target!.id, resume_id: target!.resume_id || null, vacancy_id: f.vacancy_id ? Number(f.vacancy_id) : null, title: f.title, message: f.message,
       salary_from: Number(f.salary_from), salary_to: Number(f.salary_to), work_format: f.work_format || null, contact_method: f.contact_method,
     } }),
     onSuccess: () => {
@@ -66,6 +68,11 @@ export function InviteModal({ target, onClose, vacancyId, defaults }: {
     <Modal open={!!target} onClose={onClose} title={`Приглашение: ${target?.display_name ?? ''}`} wide
       footer={<><Button variant="secondary" onClick={onClose}>Отмена</Button>
         <Button disabled={!valid} loading={send.isPending} onClick={() => send.mutate()} icon={<Send className="h-4 w-4" />}>Отправить приглашение</Button></>}>
+      {(target?.categories?.length ?? 0) > 1 && (
+        <p className="mb-4 rounded-2xl bg-[#ECEAFB]/60 px-4 py-2.5 text-sm text-[#3c3480]">
+          У кандидата несколько резюме. Приглашение уйдёт по резюме <b>«{target?.headline}»</b> — категория {target?.specialization_name} · {target?.grade_name}.
+        </p>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Вакансия (необязательно)" className="sm:col-span-2" hint="Приглашение можно отправить и без привязки к опубликованной вакансии">
           <Select value={f.vacancy_id} onChange={e => pickVacancy(e.target.value)}>

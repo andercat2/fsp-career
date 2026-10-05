@@ -36,7 +36,11 @@ export function CandidateDashboard() {
   const { data: tasks } = useQuery({ queryKey: ['cand-tasks'], queryFn: () => api<any[]>('/candidate/tasks') })
   if (isLoading || !data) return <PageLoader />
   const p = data.profile
-  const cat = p.category
+  // главная категория — основного резюме; если она не присвоена, — первая подтверждённая из дополнительных
+  const graded: any[] = (p.resumes ?? []).filter((r: any) => r.category.grade)
+  const shownId = p.category.grade ? 0 : graded[0]?.id
+  const cat = p.category.grade ? p.category : graded[0]?.category ?? p.category
+  const others = graded.filter((r: any) => r.id !== shownId)
   const steps: any[] = data.steps
   const required = steps.filter(s => s.required)
   const doneCount = required.filter(s => s.done).length
@@ -64,6 +68,15 @@ export function CandidateDashboard() {
                 <CategoryPill spec={cat.specialization_name} grade={cat.grade_name} className="bg-white/15 px-3.5 py-1.5 text-sm" />
                 <span className="rounded-full bg-fsp-pink/25 px-3 py-1 text-xs font-semibold text-[#ffc2d6]">выше <CountUp value={Math.round(cat.percentile)} />% кандидатов</span>
               </div>
+              {!!others.length && (
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/60">
+                  <span>Ещё {others.length === 1 ? 'категория' : 'категории'}:</span>
+                  {others.map((r: any) => (
+                    <Link key={r.id} to={`/candidate/grade?resume=${r.id}`} className="rounded-full bg-white/10 px-2.5 py-1 font-semibold text-white/90 transition hover:bg-white/20">
+                      {r.category.specialization_name} · {r.category.grade_name}</Link>
+                  ))}
+                </div>
+              )}
               <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4">
                 <MiniRing value={p.strength.test} label={<>Тест<br />60% силы</>} />
                 <MiniRing value={p.strength.fsp} label={<>ФСП<br />25% силы</>} />
@@ -105,7 +118,7 @@ export function CandidateDashboard() {
 
         <div className="grid grid-cols-2 gap-4">
           <Stat label="Новые приглашения" value={data.stats.invitations_new} icon={<Mail className="h-5 w-5" />} hint={`всего ${data.stats.invitations_total}`} />
-          <Stat label="Просмотры профиля" value={data.stats.profile_views_30d} icon={<Eye className="h-5 w-5" />} hint="за 30 дней" />
+          <Stat label="Просмотры профиля" value={data.stats.profile_views_30d} icon={<Eye className="h-5 w-5" />} hint="за 30 дней · контакты скрыты" />
           <Stat label="Мои отклики" value={data.stats.applications} icon={<Send className="h-5 w-5" />} />
           <Stat label="Задания" value={data.stats.tasks_open} icon={<ListChecks className="h-5 w-5" />} hint="ждут решения" />
         </div>
@@ -125,7 +138,7 @@ export function CandidateDashboard() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-bold tabular-nums text-fsp-deep">{salaryRange(i.salary_from, i.salary_to)}</p>
-                      <div className="mt-1"><StatusBadge status={i.status} /></div>
+                      <div className="mt-1"><StatusBadge status={i.status} side="candidate" /></div>
                     </div>
                   </Link>
                 </Item>

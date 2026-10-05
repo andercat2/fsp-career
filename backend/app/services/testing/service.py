@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 import random
 import secrets
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
@@ -17,6 +17,7 @@ from app.core.security import derive_seed
 from app.models import CandidateProfile, GradeHistory, ItemStat, TestResponse, TestSession
 from app.services.notify import notify
 from app.services.reference.taxonomy import DOMAINS, GRADE_CODES, GRADE_INDEX, GRADE_NAMES, SPEC_NAMES, resolve_blueprint
+from app.services.resumes import target_for
 from app.services.testing import integrity, irt
 from app.services.testing.bank import REGISTRY, check_answer
 from app.services.testing.cat import AnsweredItem, CatConfig, CatState, ItemState, decide, select_next, should_stop
@@ -29,6 +30,23 @@ DRIFT_Z_FLAG = 3.0
 DRIFT_MIN_EXPOSURES = 30
 PRETEST_RATE = 0.12
 PRETEST_PROMOTE_N = 40
+
+# Прокторинг: снимок экрана / печать / копирование текста задания — «страйк». Первый — предупреждение,
+# второй — тест завершается досрочно, нарушение фиксируется, оценка уровня понижается на PROCTOR_PENALTY логита.
+PROCTOR_STRIKE_KINDS = {"screenshot", "print", "copy"}
+PROCTOR_MAX_STRIKES = 2
+PROCTOR_PENALTY = 0.5  # ≈ половина ширины грейда на шкале θ
+PROCTOR_DEDUPE_SEC = 3  # одно действие, пойманное двумя детекторами (клавиша + потеря фокуса), — один страйк
+PROCTOR_MAX_EVENTS = 200
+VIOLATION_NAMES = {"screenshot": "снимок экрана", "print": "печать или сохранение страницы",
+                   "copy": "копирование текста задания"}
+
+
+def effective_time_limit(base: int, b: float) -> int:
+    """Время на ответ зависит от формата задания (base: выбор — 90 с, код и вычисления — 120–240 с) и от его
+    трудности b по IRT: лёгкое — до −20 %, трудное — до +35 %. Округляется до 5 секунд."""
+    factor = min(1.35, max(0.8, 1 + 0.15 * b))
+    return max(45, int(round(base * factor / 5) * 5))
 
 
 # ---------------------------------------------------------------- статистика заданий
@@ -97,17 +115,21 @@ def calibrate_pretest(db: Session) -> list[dict]:
 
 # ---------------------------------------------------------------- допуск и кулдауны
 
-def _current_grade(cand: CandidateProfile) -> str | None:
-    if cand.grade and cand.grade_specialization == cand.specialization:
-        return cand.grade
+def _current_grade(prof) -> str | None:
+    """prof — профиль (основное резюме) или CandidateResume: поля опроса и категории у них одинаковые."""
+    if prof.grade and prof.grade_specialization == prof.specialization:
+        return prof.grade
     return None
 
 
-def eligibility(db: Session, cand: CandidateProfile) -> dict:
+def eligibility(db: Session, cand: CandidateProfile, resume_id: int | None = None) -> dict:
+    """Допуск к тесту по резюме (категории): ограничения частоты действуют для каждой категории отдельно,
+    одновременно может идти только один тест."""
     now = utcnow()
-    if not cand.specialization or not cand.survey_completed_at:
+    prof = target_for(cand, resume_id)
+    if not prof.specialization or not prof.survey_completed_at:
         return {"ready": False, "reason": "Сначала пройдите опрос по отрасли и специализации", "grades": [],
-                "in_progress": None}
+                "in_progress": None, "resume_id": resume_id or 0}
     active = db.scalar(select(TestSession).where(TestSession.candidate_id == cand.id, TestSession.status == "in_progress"))
     if active and active.started_at < now - timedelta(hours=SESSION_TTL_HOURS):
         active.status = "abandoned"
@@ -115,9 +137,9 @@ def eligibility(db: Session, cand: CandidateProfile) -> dict:
         db.commit()
         active = None
     sessions = list(db.scalars(select(TestSession).where(
-        TestSession.candidate_id == cand.id, TestSession.specialization == cand.specialization,
+        TestSession.candidate_id == cand.id, TestSession.specialization == prof.specialization,
         TestSession.status.in_(["completed", "abandoned"])).order_by(TestSession.started_at.desc())))
-    current = _current_grade(cand)
+    current = _current_grade(prof)
     strong_next = None
     for s in sessions:
         if s.status == "completed" and s.result and s.result.get("decision") == "confirmed_strong":
@@ -128,7 +150,7 @@ def eligibility(db: Session, cand: CandidateProfile) -> dict:
     for g in GRADE_CODES:
         last = next((s for s in sessions if s.target_grade == g), None)
         item = {"grade": g, "name": GRADE_NAMES[g], "allowed": True, "reason": None, "available_from": None,
-                "recommended": g == (cand.claimed_grade or "junior") and not current}
+                "recommended": g == (prof.claimed_grade or "junior") and not current}
         retake_from = last.started_at + timedelta(days=settings.same_level_retake_days) if last else None
         if current and GRADE_INDEX[g] < GRADE_INDEX[current]:
             item.update(allowed=False, reason="Ниже текущего грейда: грейд не понижается")
@@ -136,7 +158,7 @@ def eligibility(db: Session, cand: CandidateProfile) -> dict:
             item.update(allowed=False, reason=f"Повторная попытка этого уровня — через {settings.same_level_retake_days} "
                                               "дней после предыдущей", available_from=retake_from.isoformat())
         elif current and GRADE_INDEX[g] > GRADE_INDEX[current] and strong_next != g:
-            changed = cand.grade_changed_at or cand.grade_assigned_at
+            changed = prof.grade_changed_at or prof.grade_assigned_at
             if changed and changed + timedelta(days=settings.grade_change_cooldown_days) > now:
                 avail = changed + timedelta(days=settings.grade_change_cooldown_days)
                 item.update(allowed=False, reason=f"Смена грейда возможна не чаще раза в "
@@ -146,8 +168,8 @@ def eligibility(db: Session, cand: CandidateProfile) -> dict:
             item.update(recommended=True, reason="Вы уверенно прошли предыдущий уровень — можно сразу попробовать этот")
         grades.append(item)
     return {"ready": True, "reason": None, "grades": grades, "current_grade": current,
-            "in_progress": active.token if active else None,
-            "specialization": cand.specialization, "language": cand.primary_language,
+            "in_progress": active.token if active else None, "resume_id": resume_id or 0,
+            "specialization": prof.specialization, "language": prof.primary_language,
             "cooldown_days": settings.grade_change_cooldown_days}
 
 
@@ -163,7 +185,8 @@ def _state_from_session(sess: TestSession) -> CatState:
         st.answered.append(AnsweredItem(r.family_id, r.domain, p.get("a", fam.a if fam else 1.0),
                                         p.get("b", fam.b if fam else 0.0), p.get("c", fam.c if fam else 0.0),
                                         bool(r.is_correct), r.scored, r.time_ms,
-                                        fam.time_limit if fam else None, fam.level if fam else 3,
+                                        r.payload.get("time_limit", fam.time_limit if fam else None),
+                                        fam.level if fam else 3,
                                         bool(r.payload.get("foreign_answer"))))
     return st
 
@@ -200,13 +223,14 @@ def _present_next(db: Session, sess: TestSession, state: CatState, rng: random.R
     seed = derive_seed(sess.token, fam.id, seq)
     r = fam.render(seed, sess.language)
     st = params.get(fam.id)
+    b = st.b if st else fam.b
     resp = TestResponse(
         session_id=sess.id, seq=seq, family_id=fam.id, domain=fam.domain, variant_seed=f"{seed:016x}", scored=scored,
         payload={
             "prompt": r.prompt, "kind": r.kind, "options": r.options, "code": r.code, "code_lang": r.code_lang,
-            "placeholder": r.placeholder, "time_limit": fam.time_limit, "domain": fam.domain,
+            "placeholder": r.placeholder, "time_limit": effective_time_limit(fam.time_limit, b), "domain": fam.domain,
             "domain_name": DOMAINS.get(fam.domain, fam.domain), "topic": fam.topic,
-            "irt": {"a": st.a if st else fam.a, "b": st.b if st else fam.b, "c": st.c if st else fam.c},
+            "irt": {"a": st.a if st else fam.a, "b": b, "c": st.c if st else fam.c},
         },
         answer_key={"key": r.key, "tolerance": r.tolerance, "accepted": r.accepted, "norm": r.norm,
                     "explanation": r.explanation},
@@ -216,10 +240,10 @@ def _present_next(db: Session, sess: TestSession, state: CatState, rng: random.R
     return resp
 
 
-def start_session(db: Session, cand: CandidateProfile, grade: str) -> TestSession:
+def start_session(db: Session, cand: CandidateProfile, grade: str, resume_id: int | None = None) -> TestSession:
     if grade not in GRADE_CODES:
         raise HTTPException(422, "Неизвестный грейд")
-    el = eligibility(db, cand)
+    el = eligibility(db, cand, resume_id)
     if not el["ready"]:
         raise HTTPException(409, el["reason"])
     if el["in_progress"]:
@@ -228,10 +252,11 @@ def start_session(db: Session, cand: CandidateProfile, grade: str) -> TestSessio
     g = next(x for x in el["grades"] if x["grade"] == grade)
     if not g["allowed"]:
         raise HTTPException(409, g["reason"])
+    prof = target_for(cand, resume_id)
     sess = TestSession(
-        token=secrets.token_urlsafe(16), candidate_id=cand.id, specialization=cand.specialization,
-        language=cand.primary_language, target_grade=grade,
-        blueprint=resolve_blueprint(cand.specialization, cand.primary_language),
+        token=secrets.token_urlsafe(16), candidate_id=cand.id, resume_id=resume_id or None,
+        specialization=prof.specialization, language=prof.primary_language, target_grade=grade,
+        blueprint=resolve_blueprint(prof.specialization, prof.primary_language),
     )
     db.add(sess)
     db.flush()
@@ -250,7 +275,7 @@ def question_view(sess: TestSession, resp: TestResponse | None) -> dict:
     """То, что видит кандидат: без ключа ответа и параметров IRT."""
     base = {
         "token": sess.token, "status": sess.status, "target_grade": sess.target_grade,
-        "specialization": sess.specialization, "specialization_name": SPEC_NAMES.get(sess.specialization),
+        "resume_id": sess.resume_id or 0, "specialization": sess.specialization, "specialization_name": SPEC_NAMES.get(sess.specialization),
         "answered": len([r for r in sess.responses if r.answered_at is not None]),
         "max_items": CFG.max_items, "min_items": CFG.min_items, "blueprint": {
             k: {"weight": v, "name": DOMAINS.get(k, k)} for k, v in sess.blueprint.items()},
@@ -261,6 +286,10 @@ def question_view(sess: TestSession, resp: TestResponse | None) -> dict:
         elapsed = (utcnow() - resp.presented_at).total_seconds()
         base["question"] = {"id": resp.id, "seq": resp.seq, **p,
                             "time_left": max(0, int(p["time_limit"] - elapsed))}
+    if sess.status == "in_progress":
+        pr = sess.proctoring or {}
+        base["proctoring"] = {"strikes": pr.get("strikes", 0), "max_strikes": PROCTOR_MAX_STRIKES,
+                              "penalty": PROCTOR_PENALTY}
     if sess.status == "completed":
         base["result"] = public_result(sess)
     return base
@@ -278,6 +307,11 @@ def public_result(sess: TestSession) -> dict | None:
         r["suggested_grade_name"] = GRADE_NAMES[r["suggested_grade"]]
     if r.get("next_grade"):
         r["next_grade_name"] = GRADE_NAMES[r["next_grade"]]
+    pr = sess.proctoring or {}
+    r["proctoring"] = {"strikes": pr.get("strikes", 0), "away_count": pr.get("away_count", 0),
+                       "violation": pr.get("violation"), "violation_name": VIOLATION_NAMES.get(pr.get("violation")),
+                       "penalty": r.pop("penalty", 0.0), "terminated": bool(pr.get("terminated"))}
+    r.pop("raw_theta", None)
     r["review"] = [
         {"seq": x.seq, "topic": x.payload.get("topic"), "domain": x.payload.get("domain_name"),
          "correct": x.is_correct, "scored": x.scored, "explanation": x.answer_key.get("explanation") or None}
@@ -331,6 +365,51 @@ def _check_foreign_answer(db: Session, resp: TestResponse, answer) -> None:
         resp.payload = {**resp.payload, "foreign_answer": True}
 
 
+def record_proctoring(db: Session, sess: TestSession, kind: str, method: str | None = None,
+                      away_ms: int | None = None) -> dict:
+    """Событие прокторинга от клиента. Правило «двух страйков» применяется на сервере (клиенту не доверяем
+    подсчёт): 1-й снимок экрана → предупреждение, 2-й → досрочное завершение со штрафом к оценке."""
+    if sess.status != "in_progress":
+        raise HTTPException(409, "Сессия тестирования уже завершена")
+    now = utcnow()
+    pr = dict(sess.proctoring or {})
+    strikes = int(pr.get("strikes", 0))
+    resp = current_response(sess)
+    ev = {"kind": kind, "at": now.isoformat(), "seq": resp.seq if resp else None}
+    if method:
+        ev["method"] = method
+    action = "logged"
+    if kind in PROCTOR_STRIKE_KINDS:
+        last = pr.get("last_strike_at")
+        if last and (now - datetime.fromisoformat(last)).total_seconds() < PROCTOR_DEDUPE_SEC:
+            ev["duplicate"] = True
+            action = "duplicate"
+        else:
+            strikes += 1
+            pr["last_strike_at"] = now.isoformat()
+            action = "warn" if strikes < PROCTOR_MAX_STRIKES else "terminate"
+    else:  # уход со вкладки / потеря фокуса — мягкий сигнал: учитывается, но тест не прерывает
+        pr["away_count"] = int(pr.get("away_count", 0)) + 1
+        pr["away_ms"] = int(pr.get("away_ms", 0)) + int(away_ms or 0)
+        if away_ms:
+            ev["away_ms"] = int(away_ms)
+    pr["strikes"] = strikes
+    pr["events"] = (list(pr.get("events", [])) + [ev])[-PROCTOR_MAX_EVENTS:]
+    if action == "terminate":
+        pr["violation"], pr["terminated"] = kind, True
+    sess.proctoring = pr
+    if action == "terminate":
+        if resp is not None:  # задание, на котором зафиксировано нарушение, засчитывается как неверное
+            resp.answered_at = now
+            resp.time_ms = int((now - resp.presented_at).total_seconds() * 1000)
+            resp.is_correct = False
+            resp.payload = {**resp.payload, "terminated": True}
+        _finalize(db, sess, _state_from_session(sess), penalty=PROCTOR_PENALTY)
+    db.commit()
+    return {"action": action, "strikes": strikes, "max_strikes": PROCTOR_MAX_STRIKES,
+            "view": question_view(sess, current_response(sess))}
+
+
 def abandon(db: Session, sess: TestSession) -> None:
     if sess.status == "in_progress":
         sess.status = "abandoned"
@@ -338,41 +417,51 @@ def abandon(db: Session, sess: TestSession) -> None:
         db.commit()
 
 
-def _finalize(db: Session, sess: TestSession, state: CatState) -> None:
+def _finalize(db: Session, sess: TestSession, state: CatState, penalty: float = 0.0) -> None:
     from app.services.matching.profile import recompute_candidate  # локальный импорт: избегаем цикла модулей
 
-    result = decide(state, CFG)
+    result = decide(state, CFG, penalty)
     sess.status = "completed"
     sess.finished_at = utcnow()
-    sess.theta, sess.se = result["theta"], result["se"]
-    flagged = _update_item_stats(db, sess, result["theta"])
+    # в сессии — измеренная θ (для калибровки и дрейфа заданий), в результате — итоговая, со штрафом
+    measured = result.get("raw_theta", result["theta"])
+    sess.theta, sess.se = measured, result["se"]
+    flagged = _update_item_stats(db, sess, measured)
     if flagged:
         result["flagged_items"] = flagged
     cand = db.get(CandidateProfile, sess.candidate_id)
-    current = _current_grade(cand)
+    # категория пишется в резюме, по которому шёл тест; основное резюме — сам профиль
+    target = next((r for r in cand.resumes if r.id == sess.resume_id), None) if sess.resume_id else cand
+    current = _current_grade(target) if target is not None else None
     decision = result["decision"]
     assigned = None
     # Ответы «чужого варианта» — признак списанных ответов: грейд не меняется автоматически до перепроверки
     review = "foreign_variant_answers" in result["integrity"]["flags"]
     result["review_required"] = review
-    if decision in ("confirmed", "confirmed_strong") and not review:
+    if decision in ("confirmed", "confirmed_strong") and not review and target is not None:
         if current is None or GRADE_INDEX[sess.target_grade] > GRADE_INDEX[current]:
             assigned = sess.target_grade
-            db.add(GradeHistory(candidate_id=cand.id, specialization=sess.specialization, old_grade=current,
-                                new_grade=assigned, theta=result["theta"], session_id=sess.id))
+            db.add(GradeHistory(candidate_id=cand.id, resume_id=sess.resume_id, specialization=sess.specialization,
+                                old_grade=current, new_grade=assigned, theta=result["theta"], session_id=sess.id))
             if current is not None:
-                cand.grade_changed_at = utcnow()
-            cand.grade = assigned
-            cand.grade_specialization = sess.specialization
-            cand.grade_assigned_at = cand.grade_assigned_at or utcnow()
+                target.grade_changed_at = utcnow()
+            target.grade = assigned
+            target.grade_specialization = sess.specialization
+            target.grade_assigned_at = target.grade_assigned_at or utcnow()
         if current is None or GRADE_INDEX[sess.target_grade] >= GRADE_INDEX[current]:
             # обновляем «свежесть» подтверждённого уровня и доменные оценки
-            cand.grade_theta, cand.grade_se = result["theta"], result["se"]
-            cand.domain_scores = result["domains"]
+            target.grade_theta, target.grade_se = result["theta"], result["se"]
+            target.domain_scores = result["domains"]
     result["assigned_grade"] = assigned
     result["kept_grade"] = current if assigned is None else None
     sess.result = result
     recompute_candidate(db, cand)
+    if penalty:
+        pr = sess.proctoring or {}
+        notify(db, cand.user_id, "test_violation", "Тест завершён досрочно: зафиксировано нарушение",
+               f"Повторно зафиксировано действие «{VIOLATION_NAMES.get(pr.get('violation'), 'нарушение')}». Результат "
+               "засчитан с пониженной оценкой уровня.", "/candidate/grade")
+        return
     if review:
         notify(db, cand.user_id, "test_review", "Результат теста отправлен на перепроверку",
                "Часть ответов совпала с ответами других вариантов заданий. Пройдите, пожалуйста, тест повторно "
@@ -393,10 +482,13 @@ def history(db: Session, cand: CandidateProfile) -> list[dict]:
     out = []
     for s in sessions:
         out.append({
-            "token": s.token, "specialization": s.specialization, "specialization_name": SPEC_NAMES.get(s.specialization),
+            "token": s.token, "resume_id": s.resume_id or 0, "specialization": s.specialization,
+            "specialization_name": SPEC_NAMES.get(s.specialization),
             "target_grade": s.target_grade, "target_grade_name": GRADE_NAMES[s.target_grade], "status": s.status,
             "started_at": s.started_at, "finished_at": s.finished_at, "n_items": s.n_items, "n_correct": s.n_correct,
-            "decision": (s.result or {}).get("decision"), "theta": s.theta if s.status == "completed" else None,
+            "decision": (s.result or {}).get("decision"),
+            "theta": (s.result or {}).get("theta", s.theta) if s.status == "completed" else None,
             "percentile": (s.result or {}).get("percentile"),
+            "violation": (s.proctoring or {}).get("violation"),
         })
     return out

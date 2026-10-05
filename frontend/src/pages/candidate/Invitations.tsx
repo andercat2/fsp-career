@@ -38,6 +38,11 @@ export function CandidateInvitations() {
   return (
     <div>
       <PageHeader title="Приглашения" subtitle="Работодатели сами выходят на вас с конкретным предложением и вилкой зарплаты. Контакты раскрываются только после того, как вы примете приглашение." />
+      <div className="mb-5 flex items-start gap-2.5 rounded-2xl border border-line bg-white px-4 py-3 text-sm text-slate-600">
+        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+        <p>Здесь только активные предложения работодателей с обязательной вилкой. Просмотр вашего профиля контакты не раскрывает:
+          они откроются этой компании, только когда вы сами нажмёте «Принять» или откликнетесь на её вакансию. «Открыто вами» значит, что вы уже читали приглашение.</p>
+      </div>
       <Tabs value={tab} onChange={setTab} items={[
         { value: 'active', label: 'Новые и открытые', count: groups.active.length },
         { value: 'accepted', label: 'Принятые', count: groups.accepted.length },
@@ -55,7 +60,7 @@ export function CandidateInvitations() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <p className="min-w-0 truncate font-semibold text-fsp-deep">{i.title}</p>
-                    <StatusBadge status={i.status} />
+                    <StatusBadge status={i.status} side="candidate" />
                   </div>
                   <p className="text-sm text-slate-500">{i.company.name} · {ago(i.created_at)}</p>
                   <p className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-fsp-blush/50 px-2.5 py-1 text-sm font-bold text-fsp-deep">
@@ -75,8 +80,10 @@ export function CandidateInvitations() {
                 <div>
                   <p className="text-sm text-slate-500">{current.company.name}{current.company.industry && ` · ${current.company.industry}`}</p>
                   <h2 className="mt-0.5 text-xl font-bold">{current.title}</h2>
+                  {current.resume?.grade && <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-lg bg-[#ECEAFB]/70 px-2.5 py-1 text-xs font-semibold text-[#3c3480]">
+                    По резюме «{current.resume.title}» · {current.resume.specialization_name} · {current.resume.grade_name}</p>}
                 </div>
-                <StatusBadge status={current.status} />
+                <StatusBadge status={current.status} side="candidate" />
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl bg-brand-gradient p-4 text-white">

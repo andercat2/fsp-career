@@ -13,6 +13,7 @@ class TestSession(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     token: Mapped[str] = mapped_column(String(40), unique=True, index=True)
     candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id", ondelete="CASCADE"), index=True)
+    resume_id: Mapped[int | None] = mapped_column(Integer)  # тест по дополнительному резюме; None — основное
     specialization: Mapped[str] = mapped_column(String(40))
     language: Mapped[str | None] = mapped_column(String(40))
     target_grade: Mapped[str] = mapped_column(String(20))
@@ -23,6 +24,8 @@ class TestSession(Base):
     n_items: Mapped[int] = mapped_column(Integer, default=0)
     n_correct: Mapped[int] = mapped_column(Integer, default=0)
     result: Mapped[dict | None] = mapped_column(JSON)
+    # Прокторинг: события (снимок экрана, печать, копирование, уход со вкладки), число «страйков», итог
+    proctoring: Mapped[dict | None] = mapped_column(JSON)
     started_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime)
 

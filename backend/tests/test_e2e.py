@@ -214,3 +214,152 @@ def test_resume_parsing_hh_layout():
     assert {x["name"] for x in p["languages"]} == {n for n, _ in g["languages"]}
     assert p["about"] and g["about"][:30] in p["about"]
     assert set(p["skills"]) & g["skills"]
+
+
+def _new_candidate(client, email: str, spec: str = "backend", lang: str = "python", grade: str = "junior") -> dict:
+    r = client.post(f"{API}/auth/register", json={"email": email, "password": "secret-pass-1", "role": "candidate",
+                                                  "consent_pd": True})
+    assert r.status_code == 201, r.text
+    r = client.post(f"{API}/auth/verify-email", json={"email": email, "code": r.json()["dev_code"]})
+    h = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    r = client.post(f"{API}/testing/survey", headers=h, json={
+        "industries": ["Финтех и банки"], "specialization": spec, "language": lang, "experience": "1-2",
+        "roles": ["developer"], "work_formats": ["remote"], "claimed_grade": grade, "fsp_participant": False})
+    assert r.status_code == 200, r.text
+    return h
+
+
+def test_proctoring_two_strikes_terminate_with_penalty(client, monkeypatch):
+    """Снимок экрана: 1-й — предупреждение, 2-й — тест завершается досрочно, нарушение фиксируется, оценка снижена."""
+    from app.services.testing import service
+
+    h = _new_candidate(client, "proctor@example.com")
+    view = client.post(f"{API}/testing/sessions", headers=h, json={"grade": "junior"}).json()
+    token = view["token"]
+    assert view["proctoring"] == {"strikes": 0, "max_strikes": 2, "penalty": service.PROCTOR_PENALTY}
+    for _ in range(3):
+        q = view["question"]
+        view = client.post(f"{API}/testing/sessions/{token}/answer", headers=h,
+                           json={"response_id": q["id"], "answer": _answer_correctly(token, q["id"])}).json()
+
+    url = f"{API}/testing/sessions/{token}/proctoring"
+    r = client.post(url, headers=h, json={"kind": "focus_loss", "away_ms": 4200}).json()
+    assert r["action"] == "logged" and r["strikes"] == 0
+    r = client.post(url, headers=h, json={"kind": "screenshot", "method": "PrintScreen"}).json()
+    assert r["action"] == "warn" and r["strikes"] == 1 and r["view"]["status"] == "in_progress"
+    # то же действие, пойманное вторым детектором (потеря фокуса после Win+Shift+S), — не второй страйк
+    r = client.post(url, headers=h, json={"kind": "screenshot", "method": "blur-after-combo"}).json()
+    assert r["action"] == "duplicate" and r["strikes"] == 1
+    assert client.post(url, headers=h, json={"kind": "telepathy"}).status_code == 422
+
+    monkeypatch.setattr(service, "PROCTOR_DEDUPE_SEC", 0)
+    r = client.post(url, headers=h, json={"kind": "screenshot", "method": "Meta+Shift+S"}).json()
+    assert r["action"] == "terminate" and r["strikes"] == 2
+    res = r["view"]["result"]
+    assert r["view"]["status"] == "completed"
+    assert res["proctoring"]["violation"] == "screenshot" and res["proctoring"]["terminated"]
+    assert res["proctoring"]["penalty"] == service.PROCTOR_PENALTY and res["proctoring"]["away_count"] == 1
+    assert res["decision"] != "confirmed_strong" and not res["next_grade"]
+    # задание, на котором зафиксировано нарушение, засчитано неверным
+    assert res["review"][-1]["correct"] is False and len(res["review"]) == 4
+    assert client.post(url, headers=h, json={"kind": "screenshot"}).status_code == 409
+
+    hist = client.get(f"{API}/testing/history", headers=h).json()["sessions"]
+    assert hist[0]["violation"] == "screenshot"
+    notes = client.get(f"{API}/notifications", headers=h).json()
+    assert any(n["kind"] == "test_violation" for n in (notes["items"] if isinstance(notes, dict) else notes))
+
+
+def test_penalty_shifts_decision_and_time_depends_on_difficulty():
+    from app.services.testing.cat import AnsweredItem, CatConfig, CatState, decide
+    from app.services.testing.service import effective_time_limit
+
+    st = CatState({"python": 1.0}, "junior", "python")
+    for i in range(14):
+        st.answered.append(AnsweredItem(f"f{i}", "python", 1.4, -1.2 + 0.2 * i, 0.0, i < 10))
+    base, pen = decide(st, CatConfig()), decide(st, CatConfig(), 0.5)
+    assert abs(pen["theta"] - (base["theta"] - 0.5)) < 0.002
+    assert pen["p_above_lower"] < base["p_above_lower"] and pen["percentile"] < base["percentile"]
+    assert pen["raw_theta"] == base["theta"] and "raw_theta" not in base
+    # время: лёгкое задание — меньше базового, трудное — больше, в пределах −20 %…+35 %
+    assert effective_time_limit(90, -1.8) == 70 and effective_time_limit(90, 0.0) == 90
+    assert effective_time_limit(90, 1.8) == 115 and effective_time_limit(240, 3.0) == 325
+
+
+def _pass_test(client, h, grade: str, resume_id: int = 0) -> dict:
+    view = client.post(f"{API}/testing/sessions", headers=h, json={"grade": grade, "resume_id": resume_id}).json()
+    token = view["token"]
+    for _ in range(50):
+        if view["status"] != "in_progress":
+            break
+        q = view["question"]
+        view = client.post(f"{API}/testing/sessions/{token}/answer", headers=h,
+                           json={"response_id": q["id"], "answer": _answer_correctly(token, q["id"])}).json()
+    assert view["status"] == "completed"
+    return view
+
+
+def test_multiple_resumes_give_multiple_categories(client):
+    """Несколько резюме — несколько категорий: у каждого резюме свой опрос, свой тест и своя категория; работодатель
+    находит кандидата по нужной категории и приглашает по конкретному резюме."""
+    h = _new_candidate(client, "multi@example.com", spec="backend", lang="python", grade="junior")
+    client.post(f"{API}/candidate/consents", headers=h, json={"kind": "profile_publication", "granted": True})
+    res = _pass_test(client, h, "junior")["result"]
+    assert res["assigned_grade"] == "junior"
+
+    body = {"industries": [], "language": "python", "experience": "lt1", "roles": [], "work_formats": [],
+            "claimed_grade": "junior"}
+    # одна специализация — одно резюме
+    r = client.post(f"{API}/candidate/resumes", headers=h, json={**body, "specialization": "backend"})
+    assert r.status_code == 409
+    r = client.post(f"{API}/candidate/resumes", headers=h, json={
+        **body, "specialization": "devops", "title": "DevOps-инженер", "skills": ["docker", "linux", "kubernetes"]})
+    assert r.status_code == 201, r.text
+    rid = r.json()["resume"]["id"]
+    assert rid > 0 and r.json()["eligibility"]["ready"] and r.json()["eligibility"]["resume_id"] == rid
+    # основной опрос не может «забрать» специализацию дополнительного резюме
+    assert client.post(f"{API}/testing/survey", headers=h, json={**body, "specialization": "devops"}).status_code == 409
+
+    view = _pass_test(client, h, "junior", rid)
+    assert view["resume_id"] == rid and view["specialization"] == "devops"
+    assert view["result"]["assigned_grade"] == "junior"
+    resumes = client.get(f"{API}/candidate/resumes", headers=h).json()
+    cats = {x["id"]: (x["category"]["specialization"], x["category"]["grade"]) for x in resumes}
+    assert cats == {0: ("backend", "junior"), rid: ("devops", "junior")}
+    # ограничения частоты — у каждой категории свои
+    el = client.get(f"{API}/testing/eligibility?resume_id={rid}", headers=h).json()
+    assert el["specialization"] == "devops" and el["current_grade"] == "junior"
+    assert client.get(f"{API}/testing/eligibility?resume_id=999999", headers=h).status_code == 404
+    hist = client.get(f"{API}/testing/history", headers=h).json()
+    assert {s["resume_id"] for s in hist["sessions"]} == {0, rid}
+
+    # работодатель: подборка DevOps находит кандидата по дополнительному резюме (кандидат — один раз)
+    eh = login(client, "employer@demo.ru")
+    sel = client.post(f"{API}/employer/selections", headers=eh, json={
+        "text": "Ищем Junior DevOps-инженера: Docker, Kubernetes, Linux, CI/CD. Удалённо, до 200 000 ₽.",
+        "title": "DevOps junior"}).json()
+    cid = client.get(f"{API}/candidate/profile", headers=h).json()["id"]
+    mine = [x for x in sel["results"] if x["id"] == cid]
+    assert len(mine) == 1 and mine[0]["resume_id"] == rid
+    card = client.get(f"{API}/employer/candidates/{cid}?resume_id={rid}", headers=eh).json()
+    assert card["category"]["specialization"] == "devops" and card["resume_id"] == rid
+    assert {x["specialization"] for x in card["resumes"]} == {"backend", "devops"}
+    r = client.post(f"{API}/employer/invitations", headers=eh, json={
+        "candidate_id": cid, "resume_id": rid, "title": "Junior DevOps", "message": "Приглашаем в команду платформы",
+        "contact_method": "Telegram @hr", "salary_from": 150000, "salary_to": 190000})
+    assert r.status_code == 201, r.text
+    inv = client.get(f"{API}/candidate/invitations", headers=h).json()[0]
+    assert inv["resume"]["resume_id"] == rid and inv["resume"]["specialization"] == "devops"
+
+    # скрытое резюме не участвует в поиске; удалённое — исчезает из профиля
+    client.put(f"{API}/candidate/resumes/{rid}", headers=h, json={"title": "DevOps-инженер", "skills": ["docker"],
+                                                                   "visible": False})
+    found = client.get(f"{API}/employer/candidates?specialization=devops&size=100", headers=eh).json()["results"]
+    assert all(x["id"] != cid for x in found)
+    assert client.get(f"{API}/employer/candidates/{cid}?resume_id={rid}", headers=eh).status_code == 404
+    # лимит: основная + две дополнительные специализации
+    assert client.post(f"{API}/candidate/resumes", headers=h, json={**body, "specialization": "qa"}).status_code == 201
+    assert client.post(f"{API}/candidate/resumes", headers=h, json={**body, "specialization": "ml"}).status_code == 409
+    assert client.delete(f"{API}/candidate/resumes/{rid}", headers=h).status_code == 200
+    assert client.delete(f"{API}/candidate/resumes/0", headers=h).status_code == 409
+    assert len(client.get(f"{API}/candidate/resumes", headers=h).json()) == 2

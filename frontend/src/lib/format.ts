@@ -1,8 +1,8 @@
 export const rub = (n?: number | null) =>
-  n == null ? '—' : `${new Intl.NumberFormat('ru-RU').format(Math.round(n))} ₽`
+  n == null ? '—' : `${new Intl.NumberFormat('ru-RU').format(Math.round(n))} ₽`
 
 export const salaryRange = (from?: number | null, to?: number | null) => {
-  if (from && to) return `${new Intl.NumberFormat('ru-RU').format(from)} – ${new Intl.NumberFormat('ru-RU').format(to)} ₽`
+  if (from && to) return `${new Intl.NumberFormat('ru-RU').format(from)} – ${new Intl.NumberFormat('ru-RU').format(to)} ₽`
   if (from) return `от ${rub(from)}`
   if (to) return `до ${rub(to)}`
   return 'не указана'

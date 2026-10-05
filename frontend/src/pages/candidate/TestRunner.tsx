@@ -3,11 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
-import { ArrowRight, Award, Check, CircleAlert, CircleCheck, CircleX, Flag, Info, Sparkles, TrendingUp } from 'lucide-react'
+import { ArrowRight, Award, Camera, Check, CircleAlert, CircleCheck, CircleX, EyeOff, Flag, Info, ShieldAlert, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react'
 import { api } from '@/lib/api'
+import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
 import { CountUp, EASE, SPRING } from '@/lib/motion'
-import { Alert, Badge, Button, ButtonLink, Card, Input, PageLoader } from '@/components/ui'
+import { Alert, Badge, Button, ButtonLink, Card, Input, Modal, PageLoader } from '@/components/ui'
 import { CodeBlock, Markdown } from '@/components/Content'
 import { DomainBars } from '@/components/Domain'
 
@@ -16,6 +17,88 @@ type Question = {
   options: { id: string; text: string }[] | null; code: string | null; code_lang: string | null
   placeholder: string | null; time_limit: number; time_left: number; domain_name: string
 }
+
+type StrikeKind = 'screenshot' | 'print' | 'copy'
+type ProctorKind = StrikeKind | 'focus_loss'
+
+/**
+ * Прокторинг в браузере: снимок экрана (PrintScreen, Win+Shift+S, ⌘⇧3/4/5), печать и сохранение страницы,
+ * копирование текста задания, уход со вкладки. Правило «двух страйков» применяет сервер. Браузер видит не все
+ * системные способы снимка (камеру телефона — никогда), поэтому главная защита — уникальные варианты заданий,
+ * а прокторинг — дополнительный слой.
+ */
+function useProctoring(enabled: boolean, report: (kind: ProctorKind, method: string, awayMs?: number) => void) {
+  const [away, setAway] = useState(false)
+  const combo = useRef(0)
+  const leftAt = useRef<number | null>(null)
+  const lastStrike = useRef(0)
+  useEffect(() => {
+    if (!enabled) return
+    const strike = (kind: StrikeKind, method: string) => {
+      const now = Date.now()
+      if (now - lastStrike.current < 1500) return // одно действие ловят несколько детекторов
+      lastStrike.current = now
+      report(kind, method)
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      const k = e.key
+      if (k === 'PrintScreen') { e.preventDefault(); strike('screenshot', 'PrintScreen'); return }
+      // Win+Shift (Windows «Ножницы») и ⌘⇧ (macOS): сама буква до страницы обычно не доходит — запоминаем сочетание
+      if ((e.metaKey || k === 'Meta' || k === 'OS') && e.shiftKey || (k === 'Shift' && e.metaKey)) combo.current = Date.now()
+      if (e.metaKey && e.shiftKey && /^[3456sSыЫ]$/.test(k)) { strike('screenshot', `Meta+Shift+${k.toUpperCase()}`); return }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && /^[pPзЗsSыЫ]$/.test(k)) {
+        e.preventDefault()
+        strike('print', `${e.ctrlKey ? 'Ctrl' : 'Meta'}+${/[pPзЗ]/.test(k) ? 'P' : 'S'}`)
+      }
+    }
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'PrintScreen') strike('screenshot', 'PrintScreen')
+      else if (e.metaKey && e.shiftKey && /^[3456]$/.test(e.key)) strike('screenshot', `Meta+Shift+${e.key}`)
+    }
+    const leave = () => {
+      if (Date.now() - combo.current < 1500) strike('screenshot', 'Win+Shift+S') // окно «Ножниц» забрало фокус
+      if (leftAt.current === null) { leftAt.current = Date.now(); setAway(true) }
+    }
+    const back = () => {
+      if (leftAt.current === null) return
+      const ms = Date.now() - leftAt.current
+      leftAt.current = null
+      setAway(false)
+      if (ms > 1500) report('focus_loss', document.hidden ? 'hidden' : 'blur', ms)
+    }
+    const onVisibility = () => (document.hidden ? leave() : back())
+    const onCopy = (e: ClipboardEvent) => {
+      if ((e.target as HTMLElement | null)?.closest?.('input, textarea')) return // свой ответ копировать можно
+      e.preventDefault()
+      if (window.getSelection()?.toString().trim()) strike('copy', e.type)
+    }
+    const onPrint = () => strike('print', 'beforeprint')
+    const onMenu = (e: MouseEvent) => { if ((e.target as HTMLElement | null)?.closest?.('[data-proctored]')) e.preventDefault() }
+    window.addEventListener('keydown', onKeyDown, true)
+    window.addEventListener('keyup', onKeyUp, true)
+    window.addEventListener('blur', leave)
+    window.addEventListener('focus', back)
+    window.addEventListener('beforeprint', onPrint)
+    document.addEventListener('visibilitychange', onVisibility)
+    document.addEventListener('copy', onCopy)
+    document.addEventListener('cut', onCopy)
+    document.addEventListener('contextmenu', onMenu)
+    return () => {
+      window.removeEventListener('keydown', onKeyDown, true)
+      window.removeEventListener('keyup', onKeyUp, true)
+      window.removeEventListener('blur', leave)
+      window.removeEventListener('focus', back)
+      window.removeEventListener('beforeprint', onPrint)
+      document.removeEventListener('visibilitychange', onVisibility)
+      document.removeEventListener('copy', onCopy)
+      document.removeEventListener('cut', onCopy)
+      document.removeEventListener('contextmenu', onMenu)
+    }
+  }, [enabled, report])
+  return away
+}
+
+const KIND_RU: Record<StrikeKind, string> = { screenshot: 'снимок экрана', print: 'печать или сохранение страницы', copy: 'копирование текста задания' }
 
 function useCountdown(seconds: number, key: number) {
   const [left, setLeft] = useState(seconds)
@@ -47,7 +130,7 @@ function TimerRing({ left, total }: { left: number; total: number }) {
   )
 }
 
-function QuestionView({ q, onSubmit, busy }: { q: Question; onSubmit: (answer: unknown) => void; busy: boolean }) {
+function QuestionView({ q, onSubmit, busy, shielded }: { q: Question; onSubmit: (answer: unknown) => void; busy: boolean; shielded: boolean }) {
   const [single, setSingle] = useState<string | null>(null)
   const [multi, setMulti] = useState<string[]>([])
   const [text, setText] = useState('')
@@ -73,7 +156,13 @@ function QuestionView({ q, onSubmit, busy }: { q: Question; onSubmit: (answer: u
         </div>
         <TimerRing left={left} total={q.time_limit} />
       </div>
-      <div className="px-5 py-6 sm:px-7">
+      <div className="relative select-none px-5 py-6 sm:px-7" data-proctored>
+        <AnimatePresence>{shielded && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
+            className="absolute inset-0 z-10 grid place-items-center bg-white/60 backdrop-blur-xl">
+            <p className="flex items-center gap-2 rounded-2xl bg-fsp-deep px-4 py-2.5 text-sm font-semibold text-white shadow-lift"><EyeOff className="h-4 w-4" />Вернитесь к тесту — задание скрыто</p>
+          </motion.div>
+        )}</AnimatePresence>
         <Markdown className="!text-[15.5px]">{q.prompt}</Markdown>
         {q.code && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="mt-4"><CodeBlock code={q.code} lang={q.code_lang} /></motion.div>}
 
@@ -166,6 +255,7 @@ function PercentileRing({ value }: { value: number }) {
 
 function Result({ view }: { view: any }) {
   const r = view.result
+  const pr = r.proctoring
   const nav = useNavigate()
   const { push } = useToast()
   const qc = useQueryClient()
@@ -178,6 +268,16 @@ function Result({ view }: { view: any }) {
   })
   return (
     <div className="space-y-6">
+      {pr?.terminated && (
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }}
+          className="flex gap-3 rounded-[22px] border border-red-100 bg-red-50 p-4 text-sm text-red-900 sm:p-5">
+          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+          <div>
+            <p className="font-bold">Тест завершён досрочно: повторно зафиксировано нарушение — {pr.violation_name}</p>
+            <p className="mt-1 text-red-800/80">Нарушение записано в историю тестов. Результат посчитан по данным ответам с понижением оценки уровня на {String(pr.penalty).replace('.', ',')} (≈ половина грейда); задание, на котором зафиксировано нарушение, засчитано неверным.</p>
+          </div>
+        </motion.div>
+      )}
       <motion.div initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.6, ease: EASE }}
         className={clsx('relative overflow-hidden rounded-[28px] p-6 sm:p-8', ok ? 'bg-brand-gradient text-white shadow-lift' : 'border border-amber-100 bg-amber-50/70')}>
         {ok && <Confetti />}
@@ -225,7 +325,7 @@ function Result({ view }: { view: any }) {
         </Card>
       </div>
       <Alert tone="info" icon={<Info className="h-4 w-4" />} title="Как считается результат">
-        Оценка уровня θ = {r.theta} (± {r.se}) на общей шкале модели IRT: задания разной трудности дают сопоставимый результат.
+        Оценка уровня θ = {r.theta} (± {r.se}) на общей шкале модели IRT: задания разной трудности дают сопоставимый результат.{pr?.penalty ? ` Оценка включает штраф −${String(pr.penalty).replace('.', ',')} за нарушение. ` : ' '}
         Грейд подтверждается, если с вероятностью ≥ 60% ваш уровень не ниже порога грейда; уверенный результат — если с вероятностью ≥ 80% вы выше верхней границы уровня.
       </Alert>
     </div>
@@ -234,6 +334,7 @@ function Result({ view }: { view: any }) {
 
 export function TestRunner() {
   const { token } = useParams()
+  const { gradeName } = useReference()
   const qc = useQueryClient()
   const { push } = useToast()
   const { data: view, isLoading } = useQuery({ queryKey: ['session', token], queryFn: () => api(`/testing/sessions/${token}`) })
@@ -246,6 +347,23 @@ export function TestRunner() {
     onError: (e: any) => { push(e.message, 'error'); qc.invalidateQueries({ queryKey: ['session', token] }) },
   })
   const inProgress = view?.status === 'in_progress'
+  const [warn, setWarn] = useState<StrikeKind | null>(null)
+  const report = useCallback((kind: ProctorKind, method: string, awayMs?: number) => {
+    api<any>(`/testing/sessions/${token}/proctoring`, { body: { kind, method, away_ms: awayMs ? Math.round(awayMs) : undefined } })
+      .then(r => {
+        if (r.action === 'terminate') {
+          setWarn(null)
+          qc.setQueryData(['session', token], r.view)
+          qc.invalidateQueries({ queryKey: ['eligibility'] }); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }); qc.invalidateQueries({ queryKey: ['cand-profile'] })
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        } else {
+          if (r.action === 'warn') setWarn(kind as StrikeKind)
+          qc.setQueryData(['session', token], (old: any) => old && old.status === 'in_progress' ? { ...old, proctoring: r.view.proctoring } : old)
+        }
+      })
+      .catch(() => { /* сеть: событие повторится при следующем действии */ })
+  }, [qc, token])
+  const away = useProctoring(inProgress, report)
   useEffect(() => {
     if (!inProgress) return
     const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
@@ -259,15 +377,21 @@ export function TestRunner() {
 
   if (isLoading || !view) return <PageLoader />
   if (view.status === 'abandoned') return <Alert tone="warn" title="Сессия прервана">Тест был прерван. <Link to="/candidate/testing" className="link">Вернуться к выбору уровня</Link></Alert>
+  const strikes = view.proctoring?.strikes ?? 0
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="proctored mx-auto max-w-4xl">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">Тест на грейд</p>
-          <h1 className="mt-1.5 text-[26px] font-bold tracking-tight">{view.specialization_name} · {view.target_grade.charAt(0).toUpperCase() + view.target_grade.slice(1)}</h1>
+          <h1 className="mt-1.5 text-[26px] font-bold tracking-tight">{view.specialization_name} · {gradeName(view.target_grade)}</h1>
         </div>
         {inProgress && (
           <div className="w-full max-w-sm">
+            <div className={clsx('mb-2.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold',
+              strikes ? 'bg-amber-50 text-amber-800' : 'bg-emerald-50 text-emerald-700')}>
+              {strikes ? <ShieldAlert className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+              {strikes ? 'Предупреждение получено: следующее нарушение завершит тест' : 'Прокторинг: снимки экрана и копирование фиксируются'}
+            </div>
             <div className="mb-2 flex justify-between text-xs text-slate-500"><span>Отвечено: <b className="text-fsp-deep">{view.answered}</b></span><span>обычно {view.min_items}–{view.max_items}</span></div>
             <div className="flex gap-1">
               {Array.from({ length: view.max_items }).map((_, i) => (
@@ -279,10 +403,22 @@ export function TestRunner() {
         )}
       </div>
       <AnimatePresence mode="wait">
-        {inProgress && view.question ? <QuestionView key={view.question.id} q={view.question} onSubmit={onSubmit} busy={answer.isPending} /> : view.result ? (
+        {inProgress && view.question ? <QuestionView key={view.question.id} q={view.question} onSubmit={onSubmit} busy={answer.isPending} shielded={away} /> : view.result ? (
           <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Result view={view} /></motion.div>
         ) : <Alert tone="info" icon={<Flag className="h-4 w-4" />}>Тест завершён.</Alert>}
       </AnimatePresence>
+      <Modal open={!!warn && inProgress} onClose={() => setWarn(null)} title="Зафиксировано нарушение правил"
+        footer={<Button onClick={() => setWarn(null)}>Понятно, продолжить тест</Button>}>
+        <div className="space-y-4 text-sm leading-relaxed text-slate-600">
+          <div className="flex gap-3 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-amber-900">
+            <Camera className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <p><b>Обнаружено: {warn ? KIND_RU[warn] : ''}.</b> Это первое и последнее предупреждение. Если нарушение повторится, тест
+              завершится досрочно, нарушение будет записано в историю, а оценка уровня — понижена.</p>
+          </div>
+          <p>Во время теста запрещены снимки и запись экрана, печать и копирование заданий. Задания в каждой сессии уникальны —
+            снимок не поможет другим кандидатам, но нарушает правила честного тестирования. Таймер задания продолжает идти.</p>
+        </div>
+      </Modal>
     </div>
   )
 }

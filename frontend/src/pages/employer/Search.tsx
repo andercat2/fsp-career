@@ -54,7 +54,7 @@ export function CandidateSearch() {
         <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={`${page}-${JSON.stringify(f)}`}>
           {data.results.map((c: any) => (
             <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on })}
-              onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons })} />
+              onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories })} />
           ))}
           <div className="flex items-center justify-center gap-3 pt-2">
             <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Назад</Button>

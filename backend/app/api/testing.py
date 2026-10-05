@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.api.deps import DB, Candidate
 from app.core.db import utcnow
 from app.models import GradeHistory, SurveyResponse, TestSession
-from app.schemas import AnswerIn, Message, StartTestIn, SurveyIn
+from app.schemas import AnswerIn, Message, ProctoringEventIn, StartTestIn, SurveyIn
 from app.services.reference.taxonomy import (
     GRADE_INDEX,
     GRADE_NAMES,
@@ -18,6 +18,7 @@ from app.services.reference.taxonomy import (
     TEAM_ROLES,
     WORK_FORMATS,
 )
+from app.services.resumes import get_resume, taken_specializations, target_for
 from app.services.testing import service
 
 router = APIRouter(prefix="/testing", tags=["Кандидат: опрос и тестирование"])
@@ -58,49 +59,67 @@ def submit_survey(data: SurveyIn, cand: Candidate, db: DB):
     sp = SPEC_BY_CODE.get(data.specialization)
     if not sp:
         raise HTTPException(422, "Неизвестная специализация")
+    if data.resume_id:
+        res = get_resume(cand, data.resume_id)
+        if data.specialization != res.specialization:
+            raise HTTPException(409, "Специализация дополнительного резюме фиксирована: для другой специализации "
+                                     "создайте новое резюме")
+        return save_survey(db, cand, res, data, sp)
+    if data.specialization in taken_specializations(cand, except_resume=0):
+        raise HTTPException(409, "По этой специализации у вас уже есть дополнительное резюме — пройдите опрос в нём")
+    return save_survey(db, cand, cand, data, sp)
+
+
+def save_survey(db, cand, target, data: SurveyIn, sp: dict) -> dict:
+    """target — профиль (основное резюме) или дополнительное резюме: поля опроса у них одинаковые."""
     lang = data.language if data.language in sp["languages"] else sp["languages"][0]
     warnings = []
     expected = EXPECTED_GRADE[data.experience]
     if GRADE_INDEX[data.claimed_grade] - GRADE_INDEX[expected] >= 2:
         warnings.append(f"Вы выбрали {GRADE_NAMES[data.claimed_grade]} при опыте «{EXPERIENCE_OPTIONS[data.experience][0]}». "
                         "Это допустимо — тест покажет реальный уровень, а при неудаче можно пройти тест уровнем ниже.")
-    if cand.grade and cand.grade_specialization and cand.grade_specialization != data.specialization:
-        warnings.append(f"Текущая категория «{SPEC_NAMES[cand.grade_specialization]} · {GRADE_NAMES[cand.grade]}» "
-                        "сохранится, пока вы не пройдёте тест по новой специализации.")
-    db.add(SurveyResponse(candidate_id=cand.id, answers=data.model_dump(), specialization=data.specialization,
-                          claimed_grade=data.claimed_grade, warnings=warnings))
-    cand.industries = data.industries
-    cand.specialization = data.specialization
-    cand.primary_language = lang
-    cand.claimed_grade = data.claimed_grade
+    if target.grade and target.grade_specialization and target.grade_specialization != data.specialization:
+        warnings.append(f"Текущая категория «{SPEC_NAMES[target.grade_specialization]} · {GRADE_NAMES[target.grade]}» "
+                        "сохранится, пока вы не пройдёте тест по новой специализации. Если хотите сохранить обе "
+                        "категории — добавьте отдельное резюме под новую специализацию.")
+    rid = target.id if target is not cand else None
+    db.add(SurveyResponse(candidate_id=cand.id, resume_id=rid, answers=data.model_dump(),
+                          specialization=data.specialization, claimed_grade=data.claimed_grade, warnings=warnings))
+    target.industries = data.industries
+    target.specialization = data.specialization
+    target.primary_language = lang
+    target.claimed_grade = data.claimed_grade
     cand.roles = list(dict.fromkeys((cand.roles or []) + data.roles))
     if data.work_formats:
         cand.work_formats = data.work_formats
     if cand.experience_years is None:
         cand.experience_years = EXPERIENCE_OPTIONS[data.experience][1]
-    cand.survey_completed_at = utcnow()
+    target.survey_completed_at = utcnow()
     db.commit()
-    return {"warnings": warnings, "eligibility": service.eligibility(db, cand)}
+    return {"warnings": warnings, "eligibility": service.eligibility(db, cand, rid)}
 
 
 @router.get("/survey/history", summary="История ответов на опрос")
 def survey_history(cand: Candidate, db: DB):
     rows = db.scalars(select(SurveyResponse).where(SurveyResponse.candidate_id == cand.id)
                       .order_by(SurveyResponse.created_at.desc()))
-    return [{"id": r.id, "specialization": r.specialization, "specialization_name": SPEC_NAMES.get(r.specialization),
+    return [{"id": r.id, "resume_id": r.resume_id or 0, "specialization": r.specialization,
+             "specialization_name": SPEC_NAMES.get(r.specialization),
              "claimed_grade": r.claimed_grade, "warnings": r.warnings, "answers": r.answers, "created_at": r.created_at}
             for r in rows]
 
 
 @router.get("/eligibility", summary="Какие уровни теста доступны сейчас (с учётом ограничений по частоте)")
-def eligibility(cand: Candidate, db: DB):
-    return service.eligibility(db, cand)
+def eligibility(cand: Candidate, db: DB, resume_id: int = 0):
+    """resume_id — резюме (категория): 0 — основное. Ограничения частоты действуют для каждой категории отдельно."""
+    target_for(cand, resume_id)  # 404, если резюме чужое или удалено
+    return service.eligibility(db, cand, resume_id or None)
 
 
 @router.post("/sessions", summary="Начать тест на выбранный грейд (или продолжить незавершённый)",
              responses={409: {"model": Message}})
 def start(data: StartTestIn, cand: Candidate, db: DB):
-    sess = service.start_session(db, cand, data.grade)
+    sess = service.start_session(db, cand, data.grade, data.resume_id or None)
     return service.question_view(sess, service.current_response(sess))
 
 
@@ -122,6 +141,15 @@ def get_session(token: str, cand: Candidate, db: DB):
 def answer(token: str, data: AnswerIn, cand: Candidate, db: DB):
     sess = _own_session(db, cand, token)
     return service.submit_answer(db, sess, data.response_id, data.answer)
+
+
+@router.post("/sessions/{token}/proctoring", summary="Событие прокторинга: снимок экрана, печать, копирование, "
+             "уход со вкладки", responses={409: {"model": Message}})
+def proctoring(token: str, data: ProctoringEventIn, cand: Candidate, db: DB):
+    """1-й снимок экрана (печать, копирование текста задания) — предупреждение; 2-й — тест завершается
+    досрочно, нарушение фиксируется, оценка уровня понижается. Уход со вкладки только учитывается."""
+    sess = _own_session(db, cand, token)
+    return service.record_proctoring(db, sess, data.kind, data.method, data.away_ms)
 
 
 @router.post("/sessions/{token}/abandon", summary="Прервать тест", response_model=Message)

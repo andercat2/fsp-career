@@ -40,9 +40,10 @@ async def lifespan(_: FastAPI):
     with SessionLocal() as db:
         sync_item_stats(db)
         if settings.seed_demo:
-            from app.seed.seed import seed_if_empty
+            from app.seed.seed import seed_if_empty, upgrade_demo_data
 
             seed_if_empty(db)
+            upgrade_demo_data(db)
     threading.Thread(target=_warmup, daemon=True).start()
     yield
 

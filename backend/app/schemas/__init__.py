@@ -126,6 +126,7 @@ class ConsentIn(BaseModel):
 
 
 class SurveyIn(BaseModel):
+    resume_id: int | None = Field(None, ge=0, description="0 / не указан — основное резюме; id — дополнительное")
     industries: list[str] = Field([], max_length=3)
     specialization: str
     language: str | None = None
@@ -138,11 +139,36 @@ class SurveyIn(BaseModel):
 
 class StartTestIn(BaseModel):
     grade: GradeCode
+    resume_id: int | None = Field(None, ge=0, description="Резюме (категория), по которому идёт тест; 0 — основное")
+
+
+class ResumeCreateIn(SurveyIn):
+    """Новое резюме под другую специализацию — это опрос по ней (категорию затем определит тест)."""
+    title: str | None = Field(None, max_length=255, description="Заголовок резюме, например «ML-инженер (CV)»")
+    skills: list[str] | None = Field(None, description="Навыки резюме; не указаны — копируются из профиля")
+    desired_salary: int | None = Field(None, ge=0, le=10_000_000)
+    about: str | None = Field(None, max_length=5000)
+
+
+class ResumeIn(BaseModel):
+    title: str | None = Field(None, max_length=255)
+    skills: list[str] = []
+    desired_salary: int | None = Field(None, ge=0, le=10_000_000)
+    about: str | None = Field(None, max_length=5000)
+    visible: bool = True
 
 
 class AnswerIn(BaseModel):
     response_id: int
     answer: Any = Field(None, description="id варианта, список id, строка или число — в зависимости от типа задания")
+
+
+class ProctoringEventIn(BaseModel):
+    kind: Literal["screenshot", "print", "copy", "focus_loss"] = Field(
+        description="screenshot — снимок экрана (PrintScreen, Win+Shift+S, ⌘⇧3/4/5); print — печать или сохранение "
+                    "страницы; copy — копирование текста задания; focus_loss — уход со вкладки (только учитывается)")
+    method: str | None = Field(None, max_length=40, description="Как обнаружено: клавиша, сочетание, событие браузера")
+    away_ms: int | None = Field(None, ge=0, le=3_600_000, description="Сколько длился уход со вкладки, мс")
 
 
 # ------------------------------------------------------------------ employer
@@ -217,6 +243,7 @@ class InvitationIn(SalaryRange):
     work_format: WorkFormat | None = None
     contact_method: str = Field(min_length=3, max_length=255, description="Способ связи (Telegram, e-mail, телефон)")
     selection_id: int | None = None
+    resume_id: int | None = Field(None, ge=0, description="По какому резюме (категории) приглашение; 0 — основное")
 
 
 class DeclineIn(BaseModel):
@@ -231,6 +258,7 @@ class ComplaintIn(BaseModel):
 
 class ApplyIn(BaseModel):
     cover_letter: str | None = Field(None, max_length=5000)
+    resume_id: int | None = Field(None, ge=0, description="Каким резюме откликнуться; не указано — лучшим для вакансии")
 
 
 class ApplicationStatusIn(BaseModel):

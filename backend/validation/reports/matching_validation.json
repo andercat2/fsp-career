@@ -1,127 +1,127 @@
 {
-  "generated_at": "2026-10-05 09:21",
+  "generated_at": "2026-10-05 18:39",
   "setup": {
     "candidates": 900,
     "needs": 60,
     "k": 10,
     "inflated_resume_share": 0.35,
     "relevance": "метка 0–3 из латентных специализации, грейда, навыков, ожиданий по ЗП и географии; релевантен — метка ≥ 2",
-    "avg_relevant_per_need": 27.283
+    "avg_relevant_per_need": 26.217
   },
   "summary": {
     "keyword": {
-      "p10": 0.272,
-      "ndcg10": 0.293,
-      "mrr": 0.437,
-      "irrelevant_in_top10": 0.422,
-      "inflated_in_top10": 0.087,
+      "p10": 0.27,
+      "ndcg10": 0.272,
+      "mrr": 0.439,
+      "irrelevant_in_top10": 0.46,
+      "inflated_in_top10": 0.098,
       "returned": 900.0,
-      "needs_with_5plus_relevant_in_top10": 0.167,
-      "p10_ci95": 0.046
+      "needs_with_5plus_relevant_in_top10": 0.117,
+      "p10_ci95": 0.041
     },
     "filters": {
-      "p10": 0.743,
-      "ndcg10": 0.801,
-      "mrr": 0.919,
-      "irrelevant_in_top10": 0.012,
-      "inflated_in_top10": 0.177,
-      "returned": 47.45,
-      "needs_with_5plus_relevant_in_top10": 0.9,
-      "p10_ci95": 0.054
+      "p10": 0.75,
+      "ndcg10": 0.8,
+      "mrr": 0.901,
+      "irrelevant_in_top10": 0.027,
+      "inflated_in_top10": 0.207,
+      "returned": 49.783,
+      "needs_with_5plus_relevant_in_top10": 0.933,
+      "p10_ci95": 0.048
     },
     "ours": {
-      "p10": 0.845,
-      "ndcg10": 0.839,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.032,
-      "inflated_in_top10": 0.025,
-      "returned": 149.15,
-      "needs_with_5plus_relevant_in_top10": 0.95,
-      "p10_ci95": 0.049
+      "p10": 0.837,
+      "ndcg10": 0.823,
+      "mrr": 0.956,
+      "irrelevant_in_top10": 0.035,
+      "inflated_in_top10": 0.027,
+      "returned": 149.067,
+      "needs_with_5plus_relevant_in_top10": 0.983,
+      "p10_ci95": 0.04
     },
     "ours_no_fsp": {
-      "p10": 0.842,
-      "ndcg10": 0.839,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.032,
-      "inflated_in_top10": 0.03,
-      "returned": 149.15,
-      "needs_with_5plus_relevant_in_top10": 0.95,
-      "p10_ci95": 0.049
+      "p10": 0.84,
+      "ndcg10": 0.826,
+      "mrr": 0.956,
+      "irrelevant_in_top10": 0.037,
+      "inflated_in_top10": 0.028,
+      "returned": 149.067,
+      "needs_with_5plus_relevant_in_top10": 0.983,
+      "p10_ci95": 0.039
     },
     "ours_no_verification": {
-      "p10": 0.852,
-      "ndcg10": 0.859,
-      "mrr": 0.983,
+      "p10": 0.857,
+      "ndcg10": 0.853,
+      "mrr": 0.967,
       "irrelevant_in_top10": 0.027,
-      "inflated_in_top10": 0.022,
-      "returned": 149.15,
-      "needs_with_5plus_relevant_in_top10": 0.95,
-      "p10_ci95": 0.049
+      "inflated_in_top10": 0.027,
+      "returned": 149.067,
+      "needs_with_5plus_relevant_in_top10": 0.983,
+      "p10_ci95": 0.039
     },
     "ours_self_declared_category": {
-      "p10": 0.728,
-      "ndcg10": 0.771,
-      "mrr": 0.875,
-      "irrelevant_in_top10": 0.04,
-      "inflated_in_top10": 0.168,
-      "returned": 152.55,
-      "needs_with_5plus_relevant_in_top10": 0.85,
-      "p10_ci95": 0.058
+      "p10": 0.717,
+      "ndcg10": 0.745,
+      "mrr": 0.867,
+      "irrelevant_in_top10": 0.05,
+      "inflated_in_top10": 0.205,
+      "returned": 154.65,
+      "needs_with_5plus_relevant_in_top10": 0.933,
+      "p10_ci95": 0.05
     },
     "ours_nlp": {
-      "p10": 0.843,
-      "ndcg10": 0.838,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.035,
-      "inflated_in_top10": 0.023,
-      "returned": 149.15,
-      "needs_with_5plus_relevant_in_top10": 0.95,
-      "p10_ci95": 0.049
+      "p10": 0.837,
+      "ndcg10": 0.822,
+      "mrr": 0.964,
+      "irrelevant_in_top10": 0.038,
+      "inflated_in_top10": 0.025,
+      "returned": 149.067,
+      "needs_with_5plus_relevant_in_top10": 0.983,
+      "p10_ci95": 0.04
     }
   },
   "summary_with_proficiency": {
     "keyword": {
-      "p10": 0.245,
-      "ndcg10": 0.276,
-      "mrr": 0.411,
-      "irrelevant_in_top10": 0.488
+      "p10": 0.225,
+      "ndcg10": 0.241,
+      "mrr": 0.366,
+      "irrelevant_in_top10": 0.53
     },
     "filters": {
-      "p10": 0.743,
-      "ndcg10": 0.758,
-      "mrr": 0.919,
-      "irrelevant_in_top10": 0.07
+      "p10": 0.75,
+      "ndcg10": 0.757,
+      "mrr": 0.901,
+      "irrelevant_in_top10": 0.103
     },
     "ours": {
-      "p10": 0.84,
-      "ndcg10": 0.829,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.038
+      "p10": 0.833,
+      "ndcg10": 0.803,
+      "mrr": 0.956,
+      "irrelevant_in_top10": 0.06
     },
     "ours_no_fsp": {
       "p10": 0.837,
-      "ndcg10": 0.828,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.04
+      "ndcg10": 0.806,
+      "mrr": 0.956,
+      "irrelevant_in_top10": 0.057
     },
     "ours_no_verification": {
-      "p10": 0.848,
-      "ndcg10": 0.858,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.035
+      "p10": 0.852,
+      "ndcg10": 0.834,
+      "mrr": 0.967,
+      "irrelevant_in_top10": 0.053
     },
     "ours_self_declared_category": {
-      "p10": 0.728,
-      "ndcg10": 0.744,
-      "mrr": 0.875,
-      "irrelevant_in_top10": 0.093
+      "p10": 0.717,
+      "ndcg10": 0.714,
+      "mrr": 0.867,
+      "irrelevant_in_top10": 0.132
     },
     "ours_nlp": {
-      "p10": 0.838,
-      "ndcg10": 0.829,
-      "mrr": 0.983,
-      "irrelevant_in_top10": 0.04
+      "p10": 0.833,
+      "ndcg10": 0.803,
+      "mrr": 0.964,
+      "irrelevant_in_top10": 0.06
     }
   },
   "nlp_end_to_end": {
@@ -129,38 +129,59 @@
     "grades_exact": 1.0
   },
   "latency_ms": {
-    "mean": 39.418,
-    "p95": 68.306,
+    "mean": 39.585,
+    "p95": 64.195,
     "pool": "до 900 кандидатов, без кэширования"
   },
   "example": {
     "need": {
       "specialization": "backend",
       "grades": [
-        "intern",
         "junior"
       ],
       "must_skills": [
         "rest",
-        "postgresql",
-        "cassandra",
-        "django"
-      ],
-      "nice_skills": [
-        "security_web",
+        "docker",
+        "sql",
+        "sqlalchemy",
         "celery"
       ],
-      "salary_from": 60000,
-      "salary_to": 145000,
+      "nice_skills": [],
+      "salary_from": 105000,
+      "salary_to": 150000,
       "work_format": "hybrid",
-      "city": "Самара",
-      "text": "Открыта позиция: backend-разработчик уровня стажёр / Junior.\nТребования: REST API, PostgreSQL, Cassandra, Django.\nБудет плюсом: Безопасность веб-приложений, Celery.\nУсловия: гибридный формат  Самара  зарплата от 60 000 до 145 000 ₽.",
-      "title": "Backend-разработчик (стажёр / Junior)"
+      "city": "Екатеринбург",
+      "text": "Ищем в команду backend-разработчик уровня Junior.\nТребования: REST API, Docker, SQL, SQLAlchemy, Celery.\nУсловия: гибридный формат  Екатеринбург  зарплата от 105 000 до 150 000 ₽.",
+      "title": "Backend-разработчик (Junior)"
     },
     "top5": {
       "keyword": [
         {
-          "idx": 121,
+          "idx": 808,
+          "label": 0,
+          "true_grade": "senior",
+          "claimed_grade": "senior",
+          "inflated": true,
+          "spec": "backend"
+        },
+        {
+          "idx": 842,
+          "label": 1,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 381,
+          "label": 0,
+          "true_grade": "senior",
+          "claimed_grade": "senior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 748,
           "label": 0,
           "true_grade": "middle",
           "claimed_grade": "middle",
@@ -168,65 +189,17 @@
           "spec": "backend"
         },
         {
-          "idx": 420,
+          "idx": 189,
           "label": 0,
-          "true_grade": "middle",
+          "true_grade": "senior",
           "claimed_grade": "middle",
-          "inflated": false,
-          "spec": "backend"
-        },
-        {
-          "idx": 301,
-          "label": 0,
-          "true_grade": "middle",
-          "claimed_grade": "junior",
-          "inflated": false,
-          "spec": "backend"
-        },
-        {
-          "idx": 558,
-          "label": 1,
-          "true_grade": "intern",
-          "claimed_grade": "intern",
-          "inflated": false,
-          "spec": "backend"
-        },
-        {
-          "idx": 240,
-          "label": 1,
-          "true_grade": "intern",
-          "claimed_grade": "junior",
           "inflated": false,
           "spec": "backend"
         }
       ],
       "filters": [
         {
-          "idx": 539,
-          "label": 3,
-          "true_grade": "junior",
-          "claimed_grade": "junior",
-          "inflated": false,
-          "spec": "backend"
-        },
-        {
-          "idx": 234,
-          "label": 3,
-          "true_grade": "intern",
-          "claimed_grade": "intern",
-          "inflated": false,
-          "spec": "backend"
-        },
-        {
-          "idx": 305,
-          "label": 2,
-          "true_grade": "junior",
-          "claimed_grade": "intern",
-          "inflated": false,
-          "spec": "backend"
-        },
-        {
-          "idx": 373,
+          "idx": 347,
           "label": 2,
           "true_grade": "junior",
           "claimed_grade": "junior",
@@ -234,7 +207,31 @@
           "spec": "backend"
         },
         {
-          "idx": 571,
+          "idx": 18,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 532,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 799,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 438,
           "label": 2,
           "true_grade": "junior",
           "claimed_grade": "junior",
@@ -244,15 +241,7 @@
       ],
       "ours": [
         {
-          "idx": 475,
-          "label": 2,
-          "true_grade": "junior",
-          "claimed_grade": "middle",
-          "inflated": true,
-          "spec": "backend"
-        },
-        {
-          "idx": 772,
+          "idx": 18,
           "label": 2,
           "true_grade": "junior",
           "claimed_grade": "junior",
@@ -260,7 +249,7 @@
           "spec": "backend"
         },
         {
-          "idx": 321,
+          "idx": 357,
           "label": 2,
           "true_grade": "junior",
           "claimed_grade": "junior",
@@ -268,7 +257,7 @@
           "spec": "backend"
         },
         {
-          "idx": 825,
+          "idx": 882,
           "label": 2,
           "true_grade": "junior",
           "claimed_grade": "junior",
@@ -276,7 +265,15 @@
           "spec": "backend"
         },
         {
-          "idx": 202,
+          "idx": 474,
+          "label": 2,
+          "true_grade": "junior",
+          "claimed_grade": "junior",
+          "inflated": false,
+          "spec": "backend"
+        },
+        {
+          "idx": 203,
           "label": 2,
           "true_grade": "junior",
           "claimed_grade": "junior",

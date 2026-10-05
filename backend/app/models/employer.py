@@ -94,6 +94,7 @@ class Invitation(Base):
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id", ondelete="CASCADE"), index=True)
     candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id", ondelete="CASCADE"), index=True)
     vacancy_id: Mapped[int | None] = mapped_column(ForeignKey("vacancies.id", ondelete="SET NULL"))
+    resume_id: Mapped[int | None] = mapped_column(Integer)  # по какому резюме (категории) приглашён; None — основное
     title: Mapped[str] = mapped_column(String(255))
     message: Mapped[str] = mapped_column(Text)
     salary_from: Mapped[int] = mapped_column(Integer)
@@ -121,6 +122,7 @@ class Application(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id", ondelete="CASCADE"), index=True)
     vacancy_id: Mapped[int] = mapped_column(ForeignKey("vacancies.id", ondelete="CASCADE"), index=True)
+    resume_id: Mapped[int | None] = mapped_column(Integer)  # каким резюме откликнулся; None — основное
     cover_letter: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(20), default="sent")  # sent|viewed|accepted|rejected|withdrawn
     match_score: Mapped[float | None] = mapped_column(Float)

@@ -21,6 +21,9 @@
 Параметры подобраны и проверены на синтетическом наборе пар (validation/matching_validation.py).
 
 Каждая компонента порождает человекочитаемые причины (+/−), которые показываются работодателю.
+
+Единица пула — резюме: у кандидата может быть несколько резюме под разные специализации, каждое со своей
+категорией по тесту (services/resumes.py). В выдаче кандидат показывается один раз — с лучшим для потребности резюме.
 """
 from __future__ import annotations
 
@@ -31,10 +34,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.db import utcnow
-from app.models import CandidateProfile, User
+from app.models import CandidateProfile, CandidateResume, User
 from app.services.fsp.scoring import fsp_summary
 from app.services.matching.profile import strength_for, verifier_domain
 from app.services.reference.skills import SKILL_BY_ID
+from app.services.resumes import ResumeView
 from app.services.reference.taxonomy import (
     DOMAINS,
     GRADE_CODES,
@@ -363,6 +367,34 @@ def visible(cand: CandidateProfile) -> bool:
     return bool((cand.privacy or {}).get("visible_in_search", True))
 
 
+def pool_profiles(db: Session, specs: set[str] | None = None) -> list:
+    """Пул подбора: основные резюме (профили) и дополнительные резюме с категорией по тесту — только кандидаты,
+    давшие согласие на публикацию и не скрывшие профиль. specs — фильтр по специализации категории."""
+    q = base_pool_query()
+    if specs is not None:
+        q = q.where(CandidateProfile.grade_specialization.in_(specs))
+    out: list = [c for c in db.scalars(q) if visible(c)]
+    rq = (select(CandidateResume, CandidateProfile).join(CandidateProfile, CandidateProfile.id == CandidateResume.candidate_id)
+          .join(User, User.id == CandidateProfile.user_id)
+          .where(User.is_active.is_(True), CandidateProfile.consent_publish.is_(True), CandidateResume.visible.is_(True),
+                 CandidateResume.grade.is_not(None)))
+    if specs is not None:
+        rq = rq.where(CandidateResume.grade_specialization.in_(specs))
+    out += [ResumeView(c, r) for r, c in db.execute(rq) if visible(c)]
+    return out
+
+
+def best_per_candidate(results: list[dict]) -> list[dict]:
+    """Кандидат с несколькими резюме попадает в выдачу один раз — с лучшим по соответствию резюме."""
+    seen: set[int] = set()
+    out = []
+    for r in sorted(results, key=lambda x: -x["score"]):
+        if r["candidate_id"] not in seen:
+            seen.add(r["candidate_id"])
+            out.append(r)
+    return out
+
+
 def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
     sims = text_similarities(need, cands)
     out = []
@@ -386,6 +418,8 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
         out.append({
             "candidate_id": cand.id,
             "public_id": cand.public_id,
+            "resume_id": cand.resume_id or 0,
+            "resume_title": cand.headline,
             "score": round(score, 4),
             "match": round(score * 100),
             "components": comp,
@@ -422,8 +456,7 @@ def recommend_categories(db: Session, need: Need) -> list[dict]:
     for rel, f in RELATED_SPECS.get(need.specialization, {}).items():
         for g in need.grades:
             pairs.setdefault((rel, g), f)
-    cands = [c for c in db.scalars(base_pool_query().where(
-        CandidateProfile.grade_specialization.in_({p[0] for p in pairs}))) if visible(c)]
+    cands = pool_profiles(db, {p[0] for p in pairs})
     out = []
     for (spec, g), rel in sorted(pairs.items(), key=lambda kv: -kv[1]):
         group = [c for c in cands if c.grade_specialization == spec and c.grade == g]
@@ -444,11 +477,9 @@ def recommend_categories(db: Session, need: Need) -> list[dict]:
 def match(db: Session, need: Need, limit: int = 150) -> dict:
     cats = recommend_categories(db, need)
     allowed = {(c["specialization"], c["grade"]) for c in cats}
-    pool = [c for c in db.scalars(base_pool_query().where(
-        CandidateProfile.grade_specialization.in_({p[0] for p in allowed})))
-            if visible(c) and (c.grade_specialization, c.grade) in allowed]
-    results = score_candidates(need, pool)[:limit]
-    return {"categories": cats, "results": results, "pool_size": len(pool)}
+    pool = [c for c in pool_profiles(db, {p[0] for p in allowed}) if (c.grade_specialization, c.grade) in allowed]
+    results = best_per_candidate(score_candidates(need, pool))[:limit]
+    return {"categories": cats, "results": results, "pool_size": len({c.id for c in pool})}
 
 
 def apply_filters(results: list[dict], f: dict) -> list[dict]:

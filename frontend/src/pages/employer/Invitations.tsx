@@ -26,7 +26,7 @@ export function EmployerInvitations() {
       <PageHeader title="Приглашения" subtitle="Статусы обновляются в реальном времени: отправлено → просмотрено → принято / отклонено. Причины отказов помогают скорректировать предложение." />
       <Tabs value={tab} onChange={setTab} items={[
         { value: 'all', label: 'Все', count: counts('all') }, { value: 'sent', label: 'Отправлено', count: counts('sent') },
-        { value: 'viewed', label: 'Просмотрено', count: counts('viewed') }, { value: 'accepted', label: 'Принято', count: counts('accepted') },
+        { value: 'viewed', label: 'Прочитано', count: counts('viewed') }, { value: 'accepted', label: 'Принято', count: counts('accepted') },
         { value: 'declined', label: 'Отклонено', count: counts('declined') }, { value: 'expired', label: 'Истекло', count: counts('expired') },
       ]} />
       <div className="mt-5 space-y-3">
@@ -43,14 +43,14 @@ export function EmployerInvitations() {
                 <p className="mt-1 text-sm text-slate-600"><b>{i.title}</b> · {salaryRange(i.salary_from, i.salary_to)}{i.vacancy ? ` · по вакансии «${i.vacancy.title}»` : ' · без привязки к вакансии'}</p>
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
                   <span>Отправлено {dateTime(i.created_at)}</span>
-                  {i.viewed_at && <span>просмотрено {ago(i.viewed_at)}</span>}
+                  {i.viewed_at && <span>кандидат прочитал {ago(i.viewed_at)}</span>}
                   {i.responded_at && <span>ответ {ago(i.responded_at)}</span>}
                 </div>
                 {i.status === 'declined' && <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-800">Причина отказа: <b>{DECLINE[i.decline_reason] ?? i.decline_reason}</b>{i.decline_comment && ` — «${i.decline_comment}»`}</p>}
                 {i.status === 'accepted' && <p className="mt-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">Кандидат принял приглашение — контакты открыты в карточке.</p>}
               </div>
               <div className="flex items-center gap-2">
-                <StatusBadge status={i.status} />
+                <StatusBadge status={i.status} side="employer" />
                 {['sent', 'viewed'].includes(i.status) && <Button size="sm" variant="ghost" onClick={() => withdraw.mutate(i.id)}>Отозвать</Button>}
               </div>
             </div>

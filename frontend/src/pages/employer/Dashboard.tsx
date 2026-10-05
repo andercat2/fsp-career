@@ -7,7 +7,7 @@ import { ago } from '@/lib/format'
 import { ButtonLink, Card, EmptyState, PageHeader, PageLoader, Stat } from '@/components/ui'
 
 const DECLINE: Record<string, string> = { salary: 'Доход', stack: 'Стек/задачи', format: 'Формат', company: 'Компания', not_looking: 'Не ищет', other: 'Другое' }
-const FUNNEL = [['sent', 'Отправлено'], ['viewed', 'Просмотрено'], ['accepted', 'Принято'], ['declined', 'Отклонено'], ['expired', 'Истекло']]
+const FUNNEL = [['sent', 'Отправлено'], ['viewed', 'Прочитано'], ['accepted', 'Принято'], ['declined', 'Отклонено'], ['expired', 'Истекло']]
 const COLORS: Record<string, string> = { sent: '#8A83D1', viewed: '#B9B3FF', accepted: '#FF0053', declined: '#310F53', expired: '#CBD5E1' }
 
 export function EmployerDashboard() {

@@ -1,30 +1,40 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { ArrowLeft, ArrowRight, Clock, Fingerprint, Lock, Play, Repeat, RotateCcw, ShieldCheck, Sparkles, Timer } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Clock, Fingerprint, Layers, Lock, Play, Repeat, RotateCcw, ShieldCheck, Sparkles, Timer } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
 import { date } from '@/lib/format'
-import { Alert, Badge, Button, Card, ChoiceCard, PageHeader, PageLoader, Progress } from '@/components/ui'
+import { Alert, Badge, Button, Card, ChoiceCard, Field, Input, PageHeader, PageLoader, Progress } from '@/components/ui'
+import { MAX_RESUMES, ResumeTabs, resumeLabel, useResumes } from '@/components/Resumes'
 
 type Survey = {
   industries: string[]; specialization: string; language: string | null; experience: string; roles: string[]
   work_formats: string[]; claimed_grade: string; fsp_participant: boolean
 }
 
-function SurveyWizard({ onDone, initial }: { onDone: (warnings: string[]) => void; initial?: Partial<Survey> }) {
+type Mode = 'main' | 'resume' | 'new'
+
+/** Опрос по специализации. mode: main — основное резюме; resume — дополнительное (специализация фиксирована);
+ *  new — новое резюме под другую специализацию (создаётся вместе с ответами). */
+function SurveyWizard({ onDone, initial, mode = 'main', resumeId = 0, taken = [] }: {
+  onDone: (warnings: string[], resumeId: number) => void; initial?: Partial<Survey>; mode?: Mode; resumeId?: number; taken?: string[]
+}) {
   const { data: survey } = useQuery({ queryKey: ['survey'], queryFn: () => api('/testing/survey') })
   const { push } = useToast()
   const [step, setStep] = useState(0)
+  const [title, setTitle] = useState('')
   const [a, setA] = useState<Survey>({
     industries: [], specialization: '', language: null, experience: '', roles: [], work_formats: [], claimed_grade: '',
     fsp_participant: false, ...initial,
   })
   const submit = useMutation({
-    mutationFn: () => api('/testing/survey', { body: a }),
-    onSuccess: (r: any) => onDone(r.warnings),
+    mutationFn: () => mode === 'new'
+      ? api('/candidate/resumes', { body: { ...a, title: title.trim() || null } })
+      : api('/testing/survey', { body: { ...a, resume_id: resumeId } }),
+    onSuccess: (r: any) => onDone(r.warnings, mode === 'new' ? r.resume.id : resumeId),
     onError: (e: any) => push(e.message, 'error'),
   })
   if (!survey) return <PageLoader />
@@ -50,18 +60,30 @@ function SurveyWizard({ onDone, initial }: { onDone: (warnings: string[]) => voi
 
       {step === 0 && (
         <div className="space-y-6">
-          <h3 className="text-lg font-bold">{q.specialization.title}</h3>
+          <h3 className="text-lg font-bold">{mode === 'new' ? 'Специализация нового резюме' : q.specialization.title}</h3>
+          {mode === 'new' && <p className="-mt-3 text-sm text-slate-500">По ней пройдёте отдельный тест и получите ещё одну категорию. Основная категория не изменится.</p>}
+          {mode === 'resume' && <p className="-mt-3 text-sm text-slate-500">Специализация резюме фиксирована — для другой добавьте новое резюме.</p>}
           {groups.map(g => (
             <div key={g}>
               <p className="label">{g}</p>
               <div className="grid gap-3 sm:grid-cols-2">
-                {q.specialization.options.filter((o: any) => o.group === g).map((o: any) => (
-                  <ChoiceCard key={o.value} selected={a.specialization === o.value} title={o.label} hint={o.hint}
-                    onClick={() => setA(s => ({ ...s, specialization: o.value, language: q.language.options_by[o.value][0].value }))} />
-                ))}
+                {q.specialization.options.filter((o: any) => o.group === g).map((o: any) => {
+                  const busy = mode === 'new' && taken.includes(o.value)
+                  const locked = mode === 'resume' && o.value !== a.specialization
+                  return (
+                    <ChoiceCard key={o.value} selected={a.specialization === o.value} title={o.label} hint={o.hint} disabled={busy || locked}
+                      badge={busy ? <Badge tone="gray">уже есть резюме</Badge> : undefined}
+                      onClick={() => setA(s => ({ ...s, specialization: o.value, language: q.language.options_by[o.value][0].value }))} />
+                  )
+                })}
               </div>
             </div>
           ))}
+          {mode === 'new' && a.specialization && (
+            <Field label="Заголовок резюме (необязательно)" hint="Так его увидит работодатель; навыки и ожидания можно уточнить в профиле">
+              <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Например, «DevOps-инженер (Kubernetes, CI/CD)»" />
+            </Field>
+          )}
           {langs.length > 1 && (
             <div>
               <p className="label">{q.language.title} — задания с кодом будут на этом языке</p>
@@ -162,7 +184,8 @@ function HowItWorks({ spec, lang }: { spec?: string | null; lang?: string | null
       <ul className="space-y-3 text-sm text-slate-600">
         <li className="flex gap-3"><Repeat className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Адаптивный.</b> Следующее задание подбирается под текущую оценку уровня: после верного ответа — сложнее, после ошибки — проще. 12–24 задания.</span></li>
         <li className="flex gap-3"><Fingerprint className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Уникальный.</b> Каждое задание — ваш личный вариант: свои числа, данные, код. Ответы других кандидатов не помогут.</span></li>
-        <li className="flex gap-3"><Timer className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С таймером.</b> На каждое задание 1–4 минуты. Вернуться к предыдущему нельзя.</span></li>
+        <li className="flex gap-3"><Timer className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С таймером по сложности.</b> От 1 до 5 минут: базовое время зависит от формата (выбор, код, расчёт) и увеличивается для трудных заданий. Вернуться к предыдущему нельзя.</span></li>
+        <li className="flex gap-3"><Camera className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С прокторингом.</b> Снимок экрана, печать или копирование задания: первый раз — предупреждение, второй — тест завершается досрочно с пониженной оценкой. Уход со вкладки учитывается.</span></li>
         <li className="flex gap-3"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Честные ограничения.</b> Смена грейда — не чаще раза в 90 дней, повтор того же уровня — через 30 дней. Не прошли — можно сразу уровнем ниже; уверенно прошли — сразу уровнем выше.</span></li>
       </ul>
       {bp && (
@@ -188,29 +211,46 @@ export function Testing() {
   const qc = useQueryClient()
   const { push } = useToast()
   const { specName } = useReference()
+  const [params, setParams] = useSearchParams()
+  const isNew = params.get('new') === '1'
+  const rid = Number(params.get('resume') ?? 0) || 0
   const [resurvey, setResurvey] = useState(false)
   const [warnings, setWarnings] = useState<string[]>([])
   const [grade, setGrade] = useState<string | null>(null)
-  const { data: el, isLoading } = useQuery({ queryKey: ['eligibility'], queryFn: () => api('/testing/eligibility') })
+  const { data: resumes } = useResumes()
+  const { data: el, isLoading } = useQuery({ queryKey: ['eligibility', rid], queryFn: () => api(`/testing/eligibility?resume_id=${rid}`), enabled: !isNew })
+  useEffect(() => { setGrade(null); setResurvey(false) }, [rid, isNew])
   const start = useMutation({
-    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g } }),
+    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g, resume_id: rid } }),
     onSuccess: (s: any) => nav(`/candidate/testing/${s.token}`),
     onError: (e: any) => push(e.message, 'error'),
   })
   const recommended = useMemo(() => el?.grades?.find((g: any) => g.recommended && g.allowed)?.grade, [el])
-  if (isLoading || !el) return <PageLoader />
-  const selected = grade ?? recommended ?? el.grades?.find((g: any) => g.allowed)?.grade
-  const showSurvey = !el.ready || resurvey
+  if (!resumes || (!isNew && (isLoading || !el))) return <PageLoader />
+  const current = resumes.find(r => r.id === rid) ?? resumes[0]
+  const mainReady = !!resumes[0]?.survey_completed_at
+  const canAdd = mainReady && resumes.length < MAX_RESUMES
+  const selected = grade ?? recommended ?? el?.grades?.find((g: any) => g.allowed)?.grade
+  const showSurvey = !isNew && (!el.ready || resurvey)
+  const refresh = () => { qc.invalidateQueries({ queryKey: ['eligibility'] }); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }); qc.invalidateQueries({ queryKey: ['cand-resumes'] }); qc.invalidateQueries({ queryKey: ['cand-profile'] }) }
+  const goTo = (id: number) => setParams(id ? { resume: String(id) } : {})
+  const taken = resumes.map(r => r.specialization).filter(Boolean) as string[]
 
   return (
     <div>
       <PageHeader title="Опрос и тестирование"
-        subtitle="Категория, которую видит работодатель, определяется не резюме, а этим путём: опрос → выбор грейда → адаптивный тест."
-        actions={el.ready && !resurvey && <Button variant="secondary" icon={<RotateCcw className="h-4 w-4" />} onClick={() => setResurvey(true)}>Пройти опрос заново</Button>} />
+        subtitle="Категория, которую видит работодатель, определяется не резюме, а этим путём: опрос → выбор грейда → адаптивный тест. У каждого резюме — своя специализация и своя категория."
+        actions={!isNew && el.ready && !resurvey && <Button variant="secondary" icon={<RotateCcw className="h-4 w-4" />} onClick={() => setResurvey(true)}>Пройти опрос заново</Button>} />
+      {mainReady && <ResumeTabs resumes={resumes} active={isNew ? 'new' : current.id} onSelect={goTo} onNew={() => setParams({ new: '1' })} canAdd={canAdd} />}
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">
-          {showSurvey ? (
-            <SurveyWizard onDone={w => { setWarnings(w); setResurvey(false); qc.invalidateQueries({ queryKey: ['eligibility'] }); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }) }} />
+          {isNew ? (
+            canAdd ? <SurveyWizard key="new" mode="new" taken={taken} onDone={(w, id) => { setWarnings(w); refresh(); goTo(id); push('Резюме добавлено — теперь пройдите тест по новой специализации') }} />
+              : <Alert tone="info" icon={<Layers className="h-4 w-4" />}>{mainReady ? `Можно вести до ${MAX_RESUMES} резюме — удалите лишнее в профиле, чтобы добавить новое.` : 'Сначала пройдите опрос по основной специализации.'}</Alert>
+          ) : showSurvey ? (
+            <SurveyWizard key={`s-${current.id}`} mode={current.main ? 'main' : 'resume'} resumeId={current.id}
+              initial={current.main ? undefined : { specialization: current.specialization ?? '', language: current.primary_language, claimed_grade: current.claimed_grade ?? '' }}
+              onDone={w => { setWarnings(w); setResurvey(false); refresh() }} />
           ) : (<>
             {warnings.map((w, i) => <Alert key={i} tone="warn">{w}</Alert>)}
             {el.in_progress && (
@@ -218,7 +258,7 @@ export function Testing() {
                 <Button size="sm" className="mt-2" onClick={() => nav(`/candidate/testing/${el.in_progress}`)}>Продолжить</Button>
               </Alert>
             )}
-            <Card title="Выберите уровень теста" subtitle={<>Специализация: <b className="text-fsp-deep">{specName(el.specialization)}</b>{el.current_grade && <> · текущий грейд: <b className="text-fsp-deep">{el.grades.find((g: any) => g.grade === el.current_grade)?.name}</b></>}</>}>
+            <Card title="Выберите уровень теста" subtitle={<>Резюме: <b className="text-fsp-deep">{resumeLabel(current)}</b> · специализация: <b className="text-fsp-deep">{specName(el.specialization)}</b>{el.current_grade && <> · текущий грейд: <b className="text-fsp-deep">{el.grades.find((g: any) => g.grade === el.current_grade)?.name}</b></>}</>}>
               <div className="grid gap-3 sm:grid-cols-2">
                 {el.grades.map((g: any) => (
                   <ChoiceCard key={g.grade} selected={selected === g.grade && g.allowed} disabled={!g.allowed} onClick={() => setGrade(g.grade)}
@@ -235,7 +275,7 @@ export function Testing() {
             </Card>
           </>)}
         </div>
-        <HowItWorks spec={el.specialization} lang={el.language} />
+        <HowItWorks spec={isNew ? null : el.specialization} lang={isNew ? null : el.language} />
       </div>
     </div>
   )

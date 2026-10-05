@@ -9,11 +9,14 @@ import { ago, salaryRange } from '@/lib/format'
 import { Alert, Badge, Button, Card, EmptyState, Field, Input, Modal, PageHeader, PageLoader, Select, Textarea } from '@/components/ui'
 import { Components, MatchRing, Reasons } from '@/components/Domain'
 import { Markdown } from '@/components/Content'
+import { useResumes } from '@/components/Resumes'
 
 export function VacancyList() {
   const { ref, skillName } = useReference()
   const [f, setF] = useState({ q: '', specialization: '', grade: '', work_format: '' })
   const { data, isLoading } = useQuery({ queryKey: ['vacancies', f], queryFn: () => api<any[]>(`/vacancies${qs(f)}`) })
+  const { data: resumes } = useResumes()
+  const multi = (resumes?.filter(r => r.category.grade).length ?? 0) > 1
   return (
     <div>
       <PageHeader title="Вакансии" subtitle="Классический сценарий: если подходящих приглашений пока нет, проявите инициативу сами. Вакансии отсортированы по совпадению с вашим профилем." />
@@ -38,6 +41,7 @@ export function VacancyList() {
                 </div>
                 <p className="mt-2 text-lg font-bold text-fsp-deep">{v.title}</p>
                 <p className="text-sm text-slate-500">{v.company.name} · {ago(v.created_at)}</p>
+                {multi && v.match_resume && <p className="mt-1 text-xs font-medium text-fsp-lavender">лучше подходит резюме «{v.match_resume.title}»</p>}
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                   <span className="inline-flex items-center gap-1.5 font-bold text-fsp-deep"><Wallet className="h-4 w-4 text-fsp-pink" />{salaryRange(v.salary_from, v.salary_to)}</span>
                   <span className="inline-flex items-center gap-1.5 text-slate-600"><MapPin className="h-4 w-4 text-slate-400" />{v.work_format_name}{v.city && `, ${v.city}`}</span>
@@ -60,9 +64,10 @@ export function VacancyDetail() {
   const { skillName } = useReference()
   const [open, setOpen] = useState(false)
   const [letter, setLetter] = useState('')
+  const [resumeId, setResumeId] = useState<string>('')
   const { data: v, isLoading } = useQuery({ queryKey: ['vacancy', id], queryFn: () => api(`/vacancies/${id}`) })
   const apply = useMutation({
-    mutationFn: () => api(`/vacancies/${id}/apply`, { body: { cover_letter: letter || null } }),
+    mutationFn: () => api(`/vacancies/${id}/apply`, { body: { cover_letter: letter || null, resume_id: resumeId === '' ? null : Number(resumeId) } }),
     onSuccess: () => { setOpen(false); qc.invalidateQueries({ queryKey: ['vacancy', id] }); qc.invalidateQueries({ queryKey: ['vacancies'] }); push('Отклик отправлен. Работодатель увидит ваш профиль и контакты.') },
     onError: (e: any) => push(e.message, 'error'),
   })
@@ -90,16 +95,24 @@ export function VacancyDetail() {
           <Card title="Ваше совпадение">
             {v.match ? (<>
               <div className="flex items-center gap-4"><MatchRing value={v.match.match} size={76} /><div className="flex-1"><Components components={v.match.components} /></div></div>
+              {v.resumes?.length > 1 && <p className="mt-3 text-xs text-slate-500">Посчитано по лучшему для вакансии резюме: <b className="text-fsp-deep">{v.match.resume_title}</b></p>}
               <div className="mt-4"><Reasons reasons={v.match.reasons} /></div>
             </>) : <Alert tone="info">Совпадение рассчитывается после присвоения категории по тесту. Откликнуться можно и без неё.</Alert>}
           </Card>
           {v.applied ? <Alert tone="success" icon={<CircleCheck className="h-4 w-4" />} title="Вы уже откликнулись">Статус — в разделе «Мои отклики».</Alert> :
-            <Button size="lg" className="w-full" onClick={() => setOpen(true)} icon={<Send className="h-5 w-5" />}>Откликнуться</Button>}
+            <Button size="lg" className="w-full" onClick={() => { setResumeId(v.match ? String(v.match.resume_id) : ''); setOpen(true) }} icon={<Send className="h-5 w-5" />}>Откликнуться</Button>}
         </div>
       </div>
       <Modal open={open} onClose={() => setOpen(false)} title="Отклик на вакансию"
         footer={<><Button variant="secondary" onClick={() => setOpen(false)}>Отмена</Button><Button loading={apply.isPending} onClick={() => apply.mutate()}>Отправить</Button></>}>
         <Alert tone="info">При отклике работодатель увидит ваш профиль и контакты — так же, как после принятия приглашения.</Alert>
+        {v.resumes?.length > 1 && (
+          <Field label="Каким резюме откликнуться" className="mt-4" hint="Работодатель увидит категорию и навыки выбранного резюме">
+            <Select value={resumeId} onChange={e => setResumeId(e.target.value)}>
+              {v.resumes.map((r: any) => <option key={r.resume_id} value={r.resume_id}>{r.title} — {r.specialization_name} · {r.grade_name}{v.match?.resume_id === r.resume_id ? ' (лучшее совпадение)' : ''}</option>)}
+            </Select>
+          </Field>
+        )}
         <Field label="Сопроводительное письмо (необязательно)" className="mt-4"><Textarea rows={5} value={letter} onChange={e => setLetter(e.target.value)} /></Field>
       </Modal>
     </div>

@@ -10,6 +10,15 @@ from validation import cat_validation, matching_validation, nlp_validation
 from validation.common import REPORTS
 
 
+RESUME_FIELDS = {
+    "name": "ФИО", "email": "E-mail", "phone": "Телефон", "telegram": "Telegram", "github": "GitHub", "city": "Город",
+    "relocation": "Готовность к переезду", "headline": "Желаемая должность", "salary": "Желаемая зарплата",
+    "formats": "Формат работы", "years_within_0_5": "Стаж (±0,5 года)", "experience_count": "Число мест работы",
+    "company": "Компания", "position": "Должность", "start_date": "Дата начала работы", "university": "Учебное заведение",
+    "edu_year": "Год окончания", "languages": "Языки", "about": "О себе",
+}
+
+
 def pct(x) -> str:
     return "—" if x is None else f"{x * 100:.1f}%"
 
@@ -72,9 +81,14 @@ def summary_md(cat: dict, match: dict, nlp: dict) -> str:
               f"Вакансии ({nlp['vacancies']['n']} размеченных текстов): специализация {pct(nlp['vacancies']['specialization_accuracy']['hybrid'])} "
               f"(только модель — {pct(nlp['vacancies']['specialization_accuracy']['model_only'])}), грейды {pct(nlp['vacancies']['grades_exact'])}, "
               f"навыки F1 {nlp['vacancies']['skills']['f1']}, вилка {pct(nlp['vacancies']['salary_exact'])}, формат {pct(nlp['vacancies']['work_format'])}.", "",
-              f"Резюме ({nlp['resumes']['n']} синтетических PDF): ФИО {pct(nlp['resumes']['field_accuracy']['name'])}, e-mail "
-              f"{pct(nlp['resumes']['field_accuracy']['email'])}, телефон {pct(nlp['resumes']['field_accuracy']['phone'])}, "
-              f"стаж ±0.5 г. {pct(nlp['resumes']['field_accuracy']['years_within_0_5'])}, навыки F1 {nlp['resumes']['skills_f1']}.", "",
+              f"Резюме ({nlp['resumes']['n']} синтетических PDF: половина — двухколоночная вёрстка экспорта hh.ru, половина — "
+              f"свободный текст; эталон → PDF → pdfminer.six → парсер). Навыки F1 {nlp['resumes']['skills_f1']} "
+              f"(hh.ru {nlp['resumes']['skills_f1_by_template']['hh']}, свободный {nlp['resumes']['skills_f1_by_template']['free']}), "
+              f"средняя ошибка стажа {nlp['resumes']['experience_mae_years']} г.", "",
+              "| Поле | hh.ru | Свободный текст | Всего |", "|---|---|---|---|",
+              *[f"| {RESUME_FIELDS.get(k, k)} | {pct(nlp['resumes']['field_accuracy_by_template']['hh'].get(k))} | "
+                f"{pct(nlp['resumes']['field_accuracy_by_template']['free'].get(k))} | {pct(v)} |"
+                for k, v in nlp['resumes']['field_accuracy'].items()], "",
               "## Ограничения", "",
               "- Эталон синтетический: проверяются свойства процедур при известной истине. Для продуктива нужен пилот с "
               "экспертной оценкой ФСП (план — в документации) и онлайн-калибровка заданий на реальных ответах.",

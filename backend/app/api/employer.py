@@ -38,8 +38,8 @@ from app.services.fsp.scoring import fsp_summary
 from app.services.matching.ranking import (
     Need,
     apply_filters,
-    base_pool_query,
     match,
+    pool_profiles,
     response_likelihood,
     score_candidates,
     visible,
@@ -49,6 +49,7 @@ from app.services.notify import audit, notify
 from app.services.pdf.profile_pdf import render_profile_pdf
 from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import GRADE_CODES, GRADE_NAMES, SPEC_BY_CODE, SPEC_NAMES
+from app.services.resumes import ResumeView
 from app.services.testing.preview import vacancy_test_preview
 
 router = APIRouter(prefix="/employer", tags=["Работодатель"])
@@ -96,7 +97,7 @@ def dashboard(comp: EmployerCompany, db: DB):
     for i in invs:
         if i.decline_reason:
             decline_reasons[i.decline_reason] = decline_reasons.get(i.decline_reason, 0) + 1
-    pool = db.scalar(select(func.count()).select_from(base_pool_query().subquery())) or 0
+    pool = len({c.id for c in pool_profiles(db)})  # кандидаты с категорией хотя бы по одному резюме
     return {
         "company": _company_out(comp),
         "invitations": {"total": len(invs), "by_status": by_status,
@@ -197,14 +198,16 @@ def vacancy_applications(vid: int, comp: EmployerCompany, db: DB):
     v = _own_vacancy(db, comp, vid)
     apps = list(db.scalars(select(Application).where(Application.vacancy_id == v.id)))
     need = ix.need_from_vacancy(v)
-    graded = [a.candidate for a in apps if a.candidate.grade]
-    scores = {r["candidate_id"]: r for r in score_candidates(need, graded)}
+    profs = {a.id: ix.application_profile(a) for a in apps}
+    graded = [p for p in profs.values() if p.grade]
+    scores = {(r["candidate_id"], r["resume_id"]): r for r in score_candidates(need, graded)}
     out = []
     for a in apps:
-        sc = scores.get(a.candidate_id)
+        p = profs[a.id]
+        sc = scores.get((a.candidate_id, p.resume_id or 0))
         out.append({"id": a.id, "status": a.status, "status_name": ix.APPLICATION_STATUSES[a.status],
                     "cover_letter": a.cover_letter, "employer_comment": a.employer_comment, "created_at": a.created_at,
-                    "candidate": _card(db, comp, a.candidate),
+                    "candidate": _card(db, comp, p),
                     "match": sc["match"] if sc else None, "reasons": sc["reasons"] if sc else []})
     out.sort(key=lambda x: -(x["match"] or -1))
     return out
@@ -231,10 +234,12 @@ def update_application(app_id: int, data: ApplicationStatusIn, comp: EmployerCom
 # ------------------------------------------------------------------ подборки
 
 def _card(db, comp, cand: CandidateProfile, extra: dict | None = None) -> dict:
+    """cand — профиль (основное резюме) или ResumeView дополнительного резюме."""
     v = employer_view(db, cand, comp)
     pv = privacy(cand)
     return {
         "id": cand.id, "public_id": cand.public_id, "display_name": v["display_name"], "name_hidden": v["name_hidden"],
+        "resume_id": cand.resume_id or 0, "categories": v["resumes"],
         "headline": cand.headline, "city": cand.city, "relocation": cand.relocation, "work_formats": cand.work_formats,
         "experience_years": cand.experience_years, "specialization": cand.grade_specialization,
         "specialization_name": SPEC_NAMES.get(cand.grade_specialization or ""), "grade": cand.grade,
@@ -297,7 +302,11 @@ def _selection_view(db, comp, sel: Selection, filters: dict, page: int, size: in
         c = cands.get(r["candidate_id"])
         if c is None or not visible(c):
             continue
-        rows.append(_card(db, comp, c, {
+        rid = r.get("resume_id") or 0
+        res = next((x for x in c.resumes if x.id == rid and x.visible), None) if rid else None
+        if rid and res is None:  # кандидат скрыл или удалил это резюме после формирования подборки
+            continue
+        rows.append(_card(db, comp, ResumeView(c, res) if res else c, {
             "match": r["match"], "score": r["score"], "components": r["components"], "reasons": r["reasons"],
             "skills_match": r["skills"], "likelihood": r["likelihood"],
             "invitation_status": inv.get(c.id), "shortlisted": c.id in short,
@@ -379,17 +388,15 @@ def search_candidates(comp: EmployerCompany, db: DB, specialization: str | None 
                       q: str | None = None, vacancy_id: int | None = None,
                       sort: str = Query("strength", pattern="^(strength|fresh|salary|match)$"),
                       page: int = Query(1, ge=1), size: int = Query(20, le=100)):
-    stmt = base_pool_query()
-    if specialization:
-        stmt = stmt.where(CandidateProfile.grade_specialization == specialization)
+    # единица поиска — резюме с категорией (основное или дополнительное); кандидат в выдаче — один раз
+    cands = pool_profiles(db, {specialization} if specialization else None)
     gl = [g for g in (grades or "").split(",") if g in GRADE_CODES]
     if gl:
-        stmt = stmt.where(CandidateProfile.grade.in_(gl))
+        cands = [c for c in cands if c.grade in gl]
     if city:
-        stmt = stmt.where(func.lower(CandidateProfile.city) == city.lower())
+        cands = [c for c in cands if (c.city or "").lower() == city.lower()]
     if salary_max:
-        stmt = stmt.where((CandidateProfile.desired_salary.is_(None)) | (CandidateProfile.desired_salary <= salary_max))
-    cands = [c for c in db.scalars(stmt) if visible(c)]
+        cands = [c for c in cands if not c.desired_salary or c.desired_salary <= salary_max]
     want = set(s for s in (skills or "").split(",") if s)
     if want:
         cands = [c for c in cands if want <= (set(c.verified_skills or []) if verified_only
@@ -405,18 +412,24 @@ def search_candidates(comp: EmployerCompany, db: DB, specialization: str | None 
     scores = {}
     if vacancy_id:
         v = _own_vacancy(db, comp, vacancy_id)
-        scores = {r["candidate_id"]: r for r in score_candidates(ix.need_from_vacancy(v), cands)}
+        scores = {(r["candidate_id"], r["resume_id"]): r for r in score_candidates(ix.need_from_vacancy(v), cands)}
         sort = "match" if sort == "strength" else sort
+
+    def sc(c):
+        return scores.get((c.id, c.resume_id or 0))
+
     key = {"strength": lambda c: -(c.strength or 0), "fresh": lambda c: -(c.last_active_at.timestamp()),
            "salary": lambda c: c.desired_salary or 10**9,
-           "match": lambda c: -(scores.get(c.id, {}).get("score", c.strength or 0))}[sort]
+           "match": lambda c: -((sc(c) or {}).get("score", c.strength or 0))}[sort]
     cands.sort(key=key)
+    seen: set[int] = set()
+    cands = [c for c in cands if not (c.id in seen or seen.add(c.id))]  # лучшее резюме кандидата по сортировке
     total = len(cands)
     inv, short = _company_relations(db, comp)
     chunk = cands[(page - 1) * size: page * size]
     rows = [_card(db, comp, c, {"invitation_status": inv.get(c.id), "shortlisted": c.id in short,
-                                **({"match": scores[c.id]["match"], "reasons": scores[c.id]["reasons"]}
-                                   if c.id in scores else {})}) for c in chunk]
+                                **({"match": sc(c)["match"], "reasons": sc(c)["reasons"]} if sc(c) else {})})
+            for c in chunk]
     return {"total": total, "page": page, "size": size, "results": rows}
 
 
@@ -427,17 +440,29 @@ def _candidate(db, cid: int) -> CandidateProfile:
     return c
 
 
+def _visible_profile(c: CandidateProfile, resume_id: int | None):
+    """Резюме кандидата, доступное работодателю: скрытое кандидатом дополнительное резюме не показывается."""
+    if not resume_id:
+        return c
+    res = next((r for r in c.resumes if r.id == resume_id and r.visible), None)
+    if res is None:
+        raise HTTPException(404, "Резюме не найдено или скрыто кандидатом")
+    return ResumeView(c, res)
+
+
 @router.get("/candidates/{cid}", summary="Карточка кандидата (контакты — только после принятия приглашения/отклика)")
-def candidate_card(cid: int, comp: EmployerCompany, db: DB, vacancy_id: int | None = None):
+def candidate_card(cid: int, comp: EmployerCompany, db: DB, vacancy_id: int | None = None, resume_id: int = 0):
+    """resume_id — какое резюме (категорию) показать; 0 — основное."""
     c = _candidate(db, cid)
-    view = employer_view(db, c, comp)
+    prof = _visible_profile(c, resume_id)
+    view = employer_view(db, prof, comp)
     audit(db, comp.owner_user_id, "view_candidate", "candidate", c.id, company_id=comp.id)
     if view["contacts_unlocked"]:
         audit(db, comp.owner_user_id, "view_contacts", "candidate", c.id, company_id=comp.id)
     db.commit()
     if vacancy_id:
         v = _own_vacancy(db, comp, vacancy_id)
-        sc = score_candidates(ix.need_from_vacancy(v), [c])[0] if c.grade else None
+        sc = score_candidates(ix.need_from_vacancy(v), [prof])[0] if prof.grade else None
         view["match"] = sc
     invs = db.scalars(select(Invitation).where(Invitation.company_id == comp.id, Invitation.candidate_id == c.id)
                       .order_by(Invitation.created_at.desc()))
@@ -450,9 +475,9 @@ def candidate_card(cid: int, comp: EmployerCompany, db: DB, vacancy_id: int | No
 
 @router.get("/candidates/{cid}/pdf", summary="Стандартизированный PDF-профиль кандидата",
             response_class=Response, responses={200: {"content": {"application/pdf": {}}}})
-def candidate_pdf(cid: int, comp: EmployerCompany, db: DB):
+def candidate_pdf(cid: int, comp: EmployerCompany, db: DB, resume_id: int = 0):
     c = _candidate(db, cid)
-    pdf = render_profile_pdf(employer_view(db, c, comp))
+    pdf = render_profile_pdf(employer_view(db, _visible_profile(c, resume_id), comp))
     return Response(pdf, media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="candidate-{c.public_id}.pdf"'})
 
@@ -502,14 +527,15 @@ def _invitation_out(db, comp, i: Invitation) -> dict:
             "decline_reason": i.decline_reason, "decline_comment": i.decline_comment,
             "match": round(i.match_score * 100) if i.match_score else None,
             "created_at": i.created_at, "viewed_at": i.viewed_at, "responded_at": i.responded_at,
-            "expires_at": i.expires_at, "candidate": _card(db, comp, i.candidate)}
+            "expires_at": i.expires_at, "candidate": _card(db, comp, ix.invitation_profile(i))}
 
 
 @router.post("/invitations", status_code=201, summary="Пригласить кандидата (вилка ЗП обязательна)",
              responses={409: {"model": Message}, 429: {"model": Message}})
 def invite(data: InvitationIn, comp: EmployerCompany, db: DB):
-    cand = _candidate(db, data.candidate_id)
-    if not cand.grade or not visible(cand):
+    base = _candidate(db, data.candidate_id)
+    cand = _visible_profile(base, data.resume_id)  # приглашение — по конкретному резюме (категории)
+    if not cand.grade or not visible(base):
         raise HTTPException(409, "Кандидат не участвует в подборе")
     if not cand.open_to_offers:
         raise HTTPException(409, "Кандидат сейчас не рассматривает предложения")
@@ -531,7 +557,8 @@ def invite(data: InvitationIn, comp: EmployerCompany, db: DB):
         title=data.title)
     need.salary_from, need.salary_to = data.salary_from, data.salary_to
     sc = score_candidates(need, [cand])[0]
-    inv = Invitation(company_id=comp.id, candidate_id=cand.id, vacancy_id=v.id if v else None, title=data.title,
+    inv = Invitation(company_id=comp.id, candidate_id=cand.id, resume_id=cand.resume_id, vacancy_id=v.id if v else None,
+                     title=data.title,
                      message=data.message, salary_from=data.salary_from, salary_to=data.salary_to,
                      work_format=data.work_format or (v.work_format if v else None), contact_method=data.contact_method,
                      match_score=sc["score"], match_snapshot={"reasons": sc["reasons"], "components": sc["components"]},
@@ -567,8 +594,8 @@ def withdraw(inv_id: int, comp: EmployerCompany, db: DB):
 
 @router.get("/likelihood/{cid}", summary="Оценка вероятности принятия приглашения при заданной вилке")
 def likelihood(cid: int, comp: EmployerCompany, db: DB, salary_to: int, work_format: str | None = None,
-               city: str | None = None):
-    c = _candidate(db, cid)
+               city: str | None = None, resume_id: int = 0):
+    c = _visible_profile(_candidate(db, cid), resume_id)
     need = Need(specialization=c.grade_specialization or "backend", grades=[c.grade or "middle"], must_skills=[],
                 nice_skills=[], salary_to=salary_to, work_format=work_format, city=city)
     out = response_likelihood(need, c)
