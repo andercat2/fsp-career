@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     task_offer_interval_days: int = 7  # регулярные задания — раз в неделю
 
     seed_demo: bool = True
-    seed_candidates: int = 320
+    seed_candidates: int = 700
 
     @property
     def fsp_internal(self) -> str:

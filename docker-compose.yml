@@ -71,7 +71,7 @@ services:
       FSP_CLIENT_SECRET: ${FSP_CLIENT_SECRET:-fsp-career-secret}
       FSP_REGISTRY_API_KEY: ${FSP_REGISTRY_API_KEY:-registry-demo-key}
       SEED_DEMO: ${SEED_DEMO:-true}
-      SEED_CANDIDATES: ${SEED_CANDIDATES:-320}
+      SEED_CANDIDATES: ${SEED_CANDIDATES:-700}
     ports:
       - "8000:8000"
     mem_limit: 1g

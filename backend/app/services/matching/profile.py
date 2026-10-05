@@ -46,14 +46,34 @@ DOMAIN_CORE_SKILLS = {
 }
 
 
+THETA_FLOOR, THETA_CEIL = -2.0, 2.5  # практические границы открытых полос «Стажёр» и «Senior»
+
+
+def _band_position(theta: float, lo: float, hi: float) -> float:
+    lo = THETA_FLOOR if math.isinf(lo) else lo
+    hi = THETA_CEIL if math.isinf(hi) else hi
+    return max(0.0, min(1.0, 0.15 + 0.85 * (theta - lo) / (hi - lo)))
+
+
 def test_position(cand: CandidateProfile) -> float:
+    """Положение θ внутри полосы присвоенного грейда — тестовая часть хранимой силы профиля."""
     if not cand.grade or cand.grade_theta is None:
         return 0.0
-    lo, hi = grade_band(cand.grade)
-    lo = -2.0 if math.isinf(lo) else lo
-    hi = lo + 1.5 if math.isinf(hi) else hi
-    pos = (cand.grade_theta - lo) / (hi - lo)
-    return max(0.0, min(1.0, 0.15 + 0.85 * pos))
+    return _band_position(cand.grade_theta, *grade_band(cand.grade))
+
+
+def strength_for(cand: CandidateProfile, grades: list[str]) -> float:
+    """Сила профиля относительно потребности: тестовая часть считается по полосе ЗАПРОШЕННЫХ грейдов.
+
+    Хранимая сила меряет θ внутри собственного грейда кандидата, поэтому Junior у верхней границы своей полосы
+    выглядел бы «сильнее» Middle у нижней. Для подборки на Middle важен уровень на общей шкале θ относительно
+    требований; внутри одной категории порядок кандидатов при этом не меняется (монотонное преобразование θ)."""
+    if not cand.grade or cand.grade_theta is None or not grades:
+        return cand.strength or 0.0
+    lo = min(grade_band(g)[0] for g in grades)
+    hi = max(grade_band(g)[1] for g in grades)
+    shift = W_TEST * (_band_position(cand.grade_theta, lo, hi) - test_position(cand))
+    return max(0.0, min(1.0, (cand.strength or 0.0) + shift))
 
 
 def activity_score(cand: CandidateProfile) -> float:

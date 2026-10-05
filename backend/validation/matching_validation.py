@@ -68,7 +68,7 @@ def to_profile(c: SynthCandidate, rng: random.Random, *, use_test: bool = True, 
         id=c.idx + 1, public_id=f"S{c.idx:04d}", grade=grade, grade_specialization=c.spec if grade else None,
         grade_theta=theta, grade_se=se, domain_scores=(domains or {}) if use_verification else {}, skills=list(c.declared_skills), desired_salary=c.desired_salary,
         work_formats=c.work_formats, city=c.city, relocation=c.relocation, headline=c.headline, about=c.about,
-        experience=c.experience, open_to_offers=True, tasks_done=0, privacy={}, specialization=c.spec,
+        experience=c.experience, open_to_offers=True, tasks_done=0, privacy={}, specialization=c.spec, primary_language=c.lang,
         claimed_grade=c.claimed_grade, last_active_at=utcnow(),
         fsp_profile=getattr(c, "_fsp", None) if use_fsp else None,
     )

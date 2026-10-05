@@ -6,10 +6,11 @@
   score = (0.30·skills + 0.25·strength + 0.20·category + 0.15·conditions + 0.10·text) · availability
 
   skills       — покрытие обязательных навыков с учётом свидетельств теста на уровне требуемого грейда (см.
-                 skill_value): проверенный навык 0.35 + 0.65·владение, непроверенный заявленный 0.65, смежный 0.3;
+                 skill_value): подтверждён тестом 0.8, заявлен 0.65, не подтвердился 0.4, смежный навык 0.3;
                  плюс бонус за «желательные» навыки. Проверяются только навыки, которые домен теста измеряет
                  напрямую (profile.VERIFIABLE);
-  strength     — сила подтверждённого профиля (тест + ФСП + активность), см. profile.py;
+  strength     — сила подтверждённого профиля (тест + ФСП + активность), см. profile.py; тестовая часть
+                 считается относительно полосы запрошенных грейдов (profile.strength_for);
   category     — специализация (смежные — с коэффициентом) × соответствие грейду: половина — совпадение
                  присвоенного грейда, половина — апостериорная вероятность, что уровень θ лежит в запрошенных
                  грейдах (учитывает погрешность теста у границ);
@@ -32,7 +33,7 @@ from sqlalchemy.orm import Session
 from app.core.db import utcnow
 from app.models import CandidateProfile, User
 from app.services.fsp.scoring import fsp_summary
-from app.services.matching.profile import verifier_domain
+from app.services.matching.profile import strength_for, verifier_domain
 from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import (
     DOMAINS,
@@ -42,6 +43,7 @@ from app.services.reference.taxonomy import (
     SPEC_BY_CODE,
     SPEC_NAMES,
     WORK_FORMATS,
+    grade_band,
     grade_center,
 )
 
@@ -119,39 +121,54 @@ def _related_skill(sid: str, cand_skills: set[str]) -> str | None:
     return None
 
 
-def skill_value(sid: str, cand: CandidateProfile, level: float = 0.5) -> tuple[float, str, str | None]:
-    """(значение, статус, связанный навык) с учётом свидетельств теста НА УРОВНЕ ТРЕБОВАНИЙ потребности.
+SKILL_VALUES = {"verified": 0.8, "declared": 0.65, "refuted": 0.4, "domain": 0.3, "related": 0.3, "missing": 0.0}
 
-    Если навык измеряется доменом теста, берём доменную оценку θ_d кандидата и считаем владение относительно
-    центра требуемого грейда: prof = σ(1.3·(θ_d − level)). Заявленный и проверенный навык: 0.35 + 0.65·prof
-    (prof ≥ 0.5 — «подтверждён на уровне вакансии», prof < 0.3 — «не подтвердился»). Не заявлен, но домен
-    силён — 0.35·prof. Не проверялся тестом: заявлен 0.65, смежный навык 0.3, иначе 0.
+
+def requirement_level(grades: list[str]) -> float:
+    """Минимальный уровень θ, с которого кандидат «тянет» требования: нижняя граница младшего запрошенного грейда
+    (для стажёра, у которого полоса открыта снизу, — центр полосы)."""
+    lowest = min(grades, key=lambda g: GRADE_INDEX[g])
+    lo = grade_band(lowest)[0]
+    return grade_center(lowest) if math.isinf(lo) else lo
+
+
+def skill_value(sid: str, cand: CandidateProfile, level: float = 0.0) -> tuple[float, str, str | None]:
+    """(значение, статус, связанный навык) с учётом свидетельств теста на уровне требований потребности.
+
+    Тест здесь отвечает на вопрос «владеет ли кандидат навыком на уровне требований», а не «насколько он силён»:
+    уровень уже учтён компонентами категории и силы профиля, повторный учёт θ поднимал бы переквалифицированных.
+    Если навык измеряется доменом теста, по доменной оценке θ_d считаем p = σ(1.3·(θ_d − level)), где level —
+    нижняя граница требуемого грейда: заявлен и p ≥ 0.5 — «подтверждён» (0.8), p < 0.3 при ≥ 2 заданиях домена —
+    «не подтвердился» (0.4), иначе «заявлен» (0.65). Не заявлен, но домен уверенно выше уровня (p ≥ 0.6) — 0.3.
+    Не проверялся тестом: заявлен 0.65, смежный навык 0.3, иначе 0. Значения — SKILL_VALUES; вариант с непрерывной
+    шкалой владения проигрывал на валидации (validation/matching_validation.py).
     Статусы: verified | declared | refuted | domain | related | missing."""
     declared = set(cand.skills or []) | set(cand.verified_skills or [])
+    if cand.primary_language in SKILL_BY_ID:
+        declared.add(cand.primary_language)  # основной язык заявлен в опросе и проверен тестом
     scores = cand.domain_scores or {}
     vd = verifier_domain(sid)
     tested = scores.get(vd) if vd else None
+    status = None
     if tested and tested.get("n", 0) >= 1:
         th = tested.get("theta")
         prof = 1 / (1 + math.exp(-1.3 * (th - level))) if th is not None else tested.get("score", 0.5)
         if sid in declared:
-            if prof >= 0.5:
-                return 0.35 + 0.65 * prof, "verified", None
-            if prof < 0.3 and tested.get("n", 0) >= 2:
-                return 0.35 + 0.65 * prof, "refuted", None
-            return 0.35 + 0.65 * prof, "declared", None
-        if prof >= 0.6:
-            return 0.35 * prof, "domain", None
+            status = "verified" if prof >= 0.5 else "refuted" if prof < 0.3 and tested.get("n", 0) >= 2 else "declared"
+        elif prof >= 0.6:
+            status = "domain"
     elif sid in declared:
-        return 0.65, "declared", None
+        status = "declared"
+    if status:
+        return SKILL_VALUES[status], status, None
     rel = _related_skill(sid, declared)
     if rel:
-        return 0.3, "related", rel
+        return SKILL_VALUES["related"], "related", rel
     return 0.0, "missing", None
 
 
 def skills_component(need: Need, cand: CandidateProfile) -> tuple[float, list[dict]]:
-    level = grade_center(min(need.grades, key=lambda g: GRADE_INDEX[g]))
+    level = requirement_level(need.grades)
     implicit = False
     must = need.must_skills
     if not must:
@@ -218,7 +235,6 @@ def band_probability(need_grades: list[str], cand: CandidateProfile) -> float | 
     """P(θ кандидата лежит в полосах запрошенных грейдов) по нормальной аппроксимации апостериорного θ."""
     if cand.grade_theta is None or not cand.grade_se:
         return None
-    from app.services.reference.taxonomy import grade_band
 
     def phi(x: float) -> float:
         return 0.5 * (1 + math.erf(x / math.sqrt(2)))
@@ -276,9 +292,10 @@ def _reasons(need: Need, cand: CandidateProfile, comp: dict, skill_details: list
     grade_name = GRADE_NAMES.get(cand.grade or "", "—")
     spec_name = SPEC_NAMES.get(cand.grade_specialization or "", "—")
     pct = round(100 * 0.5 * (1 + math.erf((cand.grade_theta or 0) / math.sqrt(2))))
-    if comp["category"] >= 0.99:
+    if spec_factor(need.specialization, cand.grade_specialization) >= 1 and cand.grade in need.grades:
+        near = " (уровень у границы грейда)" if comp["category"] < 0.9 else ""
         r.append({"kind": "plus", "text": f"Категория «{spec_name} · {grade_name}» подтверждена тестом — результат выше, "
-                                          f"чем у {pct}% кандидатов"})
+                                          f"чем у {pct}% кандидатов{near}"})
     else:
         why = []
         if spec_factor(need.specialization, cand.grade_specialization) < 1:
@@ -357,7 +374,7 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
         pb = band_probability(need.grades, cand)
         comp = {
             "skills": round(sk, 4),
-            "strength": round(cand.strength or 0.0, 4),
+            "strength": round(strength_for(cand, need.grades), 4),
             "category": round(sf * (gf if pb is None else 0.5 * gf + 0.5 * pb), 4),
             "conditions": round(cond_v, 4),
             "text": round(sim, 4),

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 01:52",
+  "generated_at": "2026-10-05 09:19",
   "config": {
     "min_items": 12,
     "max_items": 24,
@@ -2171,5 +2171,5 @@
     },
     "se_from_info": "SE(θ) ≈ 1/√I(θ)"
   },
-  "runtime_sec": 99.8
+  "runtime_sec": 102.4
 }

@@ -111,7 +111,10 @@ class SynthCandidate:
     sessions: list[tuple] = field(default_factory=list)  # (target, CatState, result) — для сида БД
 
 
-def generate_population(n: int, seed: int = 42, inflation_rate: float = 0.35) -> list[SynthCandidate]:
+def generate_population(n: int, seed: int = 42, inflation_rate: float = 0.35,
+                        skill_gap: float = 0.6) -> list[SynthCandidate]:
+    """skill_gap — насколько ниже способность в «предметном» домене, если кандидат не владеет ни одним его
+    навыком (в SD шкалы θ). Базовое значение 0.6; чувствительность выводов к нему — в matching_validation."""
     rng = random.Random(seed)
     out = []
     for i in range(n):
@@ -129,7 +132,7 @@ def generate_population(n: int, seed: int = 42, inflation_rate: float = 0.35) ->
         # Владение навыком проявляется в тесте: в «предметных» доменах, где кандидат не владеет ни одним навыком,
         # его способность ниже. Истинный уровень — компетентность по блюпринту специализации.
         known = {SKILL_VERIFIER[s] for s in true_skills if s in SKILL_VERIFIER}
-        domain_theta = {d: theta_base + rng.gauss(0, 0.35) - (0.6 if d in SPECIFIC_DOMAINS and d not in known else 0.0)
+        domain_theta = {d: theta_base + rng.gauss(0, 0.35) - (skill_gap if d in SPECIFIC_DOMAINS and d not in known else 0.0)
                         for d in bp}
         theta = max(-2.8, min(2.8, sum(w * domain_theta[d] for d, w in bp.items()) + 0.15))
         grade_true = theta_to_grade(theta)
