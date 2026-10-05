@@ -363,3 +363,47 @@ def test_multiple_resumes_give_multiple_categories(client):
     assert client.delete(f"{API}/candidate/resumes/{rid}", headers=h).status_code == 200
     assert client.delete(f"{API}/candidate/resumes/0", headers=h).status_code == 409
     assert len(client.get(f"{API}/candidate/resumes", headers=h).json()) == 2
+
+
+def _answer_by_difficulty(session_token: str, response_id: int, b_max: float):
+    """Модель кандидата «уровня b_max»: решает задания легче b_max, на остальные отвечает «Не знаю»."""
+    from app.core.db import SessionLocal
+    from app.models import TestResponse
+
+    with SessionLocal() as db:
+        r = db.scalar(select(TestResponse).where(TestResponse.id == response_id))
+        return r.answer_key["key"] if r.payload["irt"]["b"] < b_max else None
+
+
+def test_lower_grade_can_be_accepted_from_same_test(client):
+    """Не подтвердил Middle, но тест уверенно показал уровень не ниже Junior — Junior можно принять сразу."""
+    from app.services.testing.cat import AnsweredItem, CatConfig, CatState, decide
+
+    st = CatState({"python": 1.0}, "middle", "python")
+    for i in range(20):
+        b = -2.0 + 0.2 * i
+        st.answered.append(AnsweredItem(f"f{i}", "python", 1.6, b, 0.0, b < -0.4))
+    res = decide(st, CatConfig())
+    assert res["decision"] == "not_confirmed" and res["suggested_grade"] == "junior"
+    assert res["suggested_assignable"] and res["suggested_p"] >= 0.8
+
+    h = _new_candidate(client, "lower@example.com", grade="middle")
+    view = client.post(f"{API}/testing/sessions", headers=h, json={"grade": "middle"}).json()
+    token = view["token"]
+    for _ in range(50):
+        if view["status"] != "in_progress":
+            break
+        q = view["question"]
+        view = client.post(f"{API}/testing/sessions/{token}/answer", headers=h,
+                           json={"response_id": q["id"], "answer": _answer_by_difficulty(token, q["id"], -0.3)}).json()
+    res = view["result"]
+    assert res["decision"] == "not_confirmed" and res["assigned_grade"] is None
+    if not res["suggested_assignable"]:  # граница случайна: проверяем, что принять нельзя
+        assert client.post(f"{API}/testing/sessions/{token}/accept-suggested", headers=h).status_code == 409
+        return
+    r = client.post(f"{API}/testing/sessions/{token}/accept-suggested", headers=h)
+    assert r.status_code == 200, r.text
+    assert r.json()["result"]["assigned_grade"] == res["suggested_grade"]
+    prof = client.get(f"{API}/candidate/profile", headers=h).json()
+    assert prof["category"]["grade"] == res["suggested_grade"]
+    assert client.post(f"{API}/testing/sessions/{token}/accept-suggested", headers=h).status_code == 409

@@ -58,10 +58,22 @@ def recovery_and_classification(pop, params, rng) -> tuple[dict, dict]:
     exposures: Counter = Counter()
     admin_log = []  # (family, correct, theta_true)
     by_lang = defaultdict(list)
+    lower_offered = lower_ok = not_confirmed_with_suggestion = 0
+    strong_ok = strong_n = 0
     for c in pop:
         state, res = simulate_cat(c.domain_theta, c.spec, c.lang, c.claimed_grade, rng, params, CFG)
-        lo, _ = band_for_decision(c.claimed_grade)
+        lo, hi = band_for_decision(c.claimed_grade)
         truth = c.theta >= lo
+        # грейд ниже по тому же тесту: верно, если истинный уровень не ниже нижней границы предложенного грейда
+        if res["decision"] == "not_confirmed" and res["suggested_grade"]:
+            not_confirmed_with_suggestion += 1
+            if res["suggested_assignable"]:
+                lower_offered += 1
+                lower_ok += c.theta >= band_for_decision(res["suggested_grade"])[0]
+        # «уверенный» результат: доля тех, чей истинный уровень действительно выше следующей границы
+        if res["decision"] == "confirmed_strong":
+            strong_n += 1
+            strong_ok += c.theta >= hi
         confirmed = res["decision"] != "not_confirmed"
         decisions[res["decision"]] += 1
         correct_dec += confirmed == truth
@@ -96,6 +108,16 @@ def recovery_and_classification(pop, params, rng) -> tuple[dict, dict]:
         },
         "bias_by_language_backend": {k: {"n": len(v), "bias": r3(np.mean(v)), "rmse": r3(math.sqrt(np.mean(np.square(v))))}
                                      for k, v in sorted(by_lang.items())},
+        "lower_grade_from_same_test": {
+            "threshold": CFG.lower_accept_prob, "not_confirmed_with_suggestion": not_confirmed_with_suggestion,
+            "offered_share": r3(lower_offered / max(1, not_confirmed_with_suggestion)),
+            "precision": r3(lower_ok / max(1, lower_offered)),
+            "note": "Доля верных решений «принять грейд ниже по этому же тесту»: истинный уровень не ниже нижней "
+                    "границы предложенного грейда."},
+        "higher_grade_from_same_test": {
+            "confirmed_strong": strong_n, "precision": r3(strong_ok / max(1, strong_n)),
+            "note": "Если бы «уверенный» результат сразу повышал грейд: доля кандидатов, чей истинный уровень выше "
+                    "следующей границы. Низкая точность — поэтому повышение подтверждается отдельным тестом."},
         "scatter_sample": [[r3(t), r3(h)] for t, h in list(zip(thetas, hats, strict=True))[:400]],
     }
     return rec, {"exposures": exposures, "admin_log": admin_log}

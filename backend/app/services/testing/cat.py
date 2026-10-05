@@ -36,6 +36,11 @@ class CatConfig:
     confirm_prob: float = 0.60  # грейд подтверждается, если P(θ ≥ нижней границы) ≥ 0.6
     parametric_bonus: float = 1.0  # множитель информации для параметрических семейств (предпочтение при равенстве)
     strong_margin: float = 0.80  # P(θ ≥ верхней границы), при которой предлагается повышение
+    # Грейд ниже заявленного можно принять по тому же тесту, если P(θ ≥ нижней границы этого грейда) ≥ 0.8:
+    # на валидации точность такого решения 99.8%. Повышение по тому же тесту не допускается — при «уверенном»
+    # результате истинный уровень выше следующей границы лишь у ~65% (validation/cat_validation.py), поэтому
+    # следующий уровень подтверждается отдельным тестом.
+    lower_accept_prob: float = 0.80
 
 
 @dataclass
@@ -208,6 +213,9 @@ def decide(state: CatState, cfg: CatConfig, penalty: float = 0.0) -> dict:
     suggested = theta_to_grade(theta) if theta >= INTERN_FLOOR else None
     if decision == "not_confirmed" and suggested and GRADE_INDEX[suggested] >= idx:
         suggested = GRADE_CODES[idx - 1] if idx > 0 else None
+    p_suggested = None
+    if decision == "not_confirmed" and suggested:
+        p_suggested = irt.posterior_prob_above(scored, band_for_decision(suggested)[0] + penalty)
     # процентиль относительно «рынка» N(0,1) — понятная работодателю шкала
     percentile = round(100 * 0.5 * (1 + math.erf(theta / math.sqrt(2))), 1)
     return {
@@ -218,6 +226,8 @@ def decide(state: CatState, cfg: CatConfig, penalty: float = 0.0) -> dict:
         "p_above_upper": round(p_hi, 3),
         "band": [None if math.isinf(lo) else lo, None if math.isinf(hi) else hi],
         "suggested_grade": suggested,
+        "suggested_p": None if p_suggested is None else round(p_suggested, 3),
+        "suggested_assignable": p_suggested is not None and p_suggested >= cfg.lower_accept_prob,
         "next_grade": GRADE_CODES[idx + 1] if decision == "confirmed_strong" else None,
         "percentile": percentile,
         "n_items": len(scored),

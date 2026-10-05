@@ -152,6 +152,14 @@ def proctoring(token: str, data: ProctoringEventIn, cand: Candidate, db: DB):
     return service.record_proctoring(db, sess, data.kind, data.method, data.away_ms)
 
 
+@router.post("/sessions/{token}/accept-suggested", summary="Принять грейд ниже заявленного по этому же тесту",
+             responses={409: {"model": Message}})
+def accept_suggested(token: str, cand: Candidate, db: DB):
+    """Если заявленный грейд не подтверждён, но тест с вероятностью ≥ 0.8 показал уровень не ниже грейда на ступень
+    ниже, этот грейд можно принять сразу, без отдельного теста. Повысить грейд по тому же тесту нельзя."""
+    return service.accept_suggested(db, _own_session(db, cand, token))
+
+
 @router.post("/sessions/{token}/abandon", summary="Прервать тест", response_model=Message)
 def abandon(token: str, cand: Candidate, db: DB):
     service.abandon(db, _own_session(db, cand, token))

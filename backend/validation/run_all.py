@@ -42,6 +42,10 @@ def summary_md(cat: dict, match: dict, nlp: dict) -> str:
         f"| Грейд в пределах ±1 ступени | {pct(gr['grade_within_one'])} |",
         f"| Завышение грейда | {pct(gr['overgrading_rate_test'])} (самооценка: {pct(gr['overgrading_rate_self_declared'])}) |",
         f"| Повторное прохождение: тот же грейд | {pct(gr['retest']['grade_agreement'])}, взвешенная κ = {gr['retest']['weighted_kappa']}, r(θ̂₁, θ̂₂) = {gr['retest']['theta_test_retest_r']} |",
+        f"| Грейд ниже по тому же тесту (P ≥ {rec['lower_grade_from_same_test']['threshold']}): предлагается / точность | "
+        f"{pct(rec['lower_grade_from_same_test']['offered_share'])} неподтверждений / {pct(rec['lower_grade_from_same_test']['precision'])} |",
+        f"| Если бы «уверенный» результат сразу повышал грейд: точность | {pct(rec['higher_grade_from_same_test']['precision'])} "
+        f"({rec['higher_grade_from_same_test']['confirmed_strong']} сессий) — поэтому повышение только отдельным тестом |",
         f"| Дискриминативность заданий: медиана D / доля D ≥ 0.3 | {cat['discrimination']['median_D']} / {pct(cat['discrimination']['share_D_ge_0_3'])} |",
         f"| Использовано семейств банка / макс. экспозиция | {pct(cat['exposure']['used_share'])} / {pct(cat['exposure']['max_exposure_rate'])} |",
         f"| Совпадение идентичных вопросов у двух кандидатов одного уровня | {pct(cat['overlap']['mean_identical_question_overlap'])} |",

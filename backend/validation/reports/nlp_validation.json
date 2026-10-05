@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 18:39",
+  "generated_at": "2026-10-05 19:08",
   "vacancies": {
     "n": 28,
     "specialization_accuracy": {
@@ -95,5 +95,5 @@
       "free": 0.971
     }
   },
-  "runtime_sec": 3.6
+  "runtime_sec": 4.7
 }

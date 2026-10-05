@@ -260,10 +260,17 @@ function Result({ view }: { view: any }) {
   const { push } = useToast()
   const qc = useQueryClient()
   const d = DECISION[r.decision as keyof typeof DECISION]
-  const ok = r.decision !== 'not_confirmed' && !r.review_required
+  const accepted = !!r.accepted_suggested
+  const ok = (r.decision !== 'not_confirmed' || accepted) && !r.review_required
+  const canAccept = r.decision === 'not_confirmed' && r.suggested_assignable && !accepted && !r.review_required
   const start = useMutation({
-    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g } }),
+    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g, resume_id: view.resume_id ?? 0 } }),
     onSuccess: (s: any) => { qc.invalidateQueries(); nav(`/candidate/testing/${s.token}`) },
+    onError: (e: any) => push(e.message, 'error'),
+  })
+  const accept = useMutation({
+    mutationFn: () => api(`/testing/sessions/${view.token}/accept-suggested`, { method: 'POST' }),
+    onSuccess: (v: any) => { qc.setQueryData(['session', view.token], v); qc.invalidateQueries({ queryKey: ['eligibility'] }); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }); qc.invalidateQueries({ queryKey: ['cand-profile'] }); qc.invalidateQueries({ queryKey: ['cand-resumes'] }); push(`Грейд ${r.suggested_grade_name} присвоен по результатам теста`) },
     onError: (e: any) => push(e.message, 'error'),
   })
   return (
@@ -288,17 +295,20 @@ function Result({ view }: { view: any }) {
           )}
           <div className="min-w-0 flex-1">
             <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.5, ease: EASE }}
-              className={clsx('text-[26px] font-extrabold tracking-tight', ok && 'text-white')}>{d.title(r.target_grade_name)}</motion.h2>
+              className={clsx('text-[26px] font-extrabold tracking-tight', ok && 'text-white')}>{accepted ? `Присвоен грейд ${r.suggested_grade_name}` : d.title(r.target_grade_name)}</motion.h2>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
               className={clsx('mt-2 max-w-2xl text-sm leading-relaxed', ok ? 'text-white/75' : 'text-amber-900')}>
               {r.review_required ? 'Результат отправлен на перепроверку: часть ответов совпала с ответами других вариантов заданий. Категория не изменена — пройдите тест повторно под наблюдением.' :
+                accepted ? `Заявленный ${r.target_grade_name} не подтверждён, но тест уверенно показал уровень не ниже ${r.suggested_grade_name} — категория «${view.specialization_name} · ${r.suggested_grade_name}» присвоена и видна работодателям. Следующий уровень подтверждается отдельным тестом.` :
+                canAccept ? `Ваш уровень с вероятностью ${Math.round(r.suggested_p * 100)}% не ниже ${r.suggested_grade_name}. Эту категорию можно принять сразу по этому тесту — или пройти отдельный тест на ${r.suggested_grade_name}.` :
                 r.assigned_grade ? `Категория «${view.specialization_name} · ${r.target_grade_name}» присвоена и видна работодателям.` :
                   r.kept_grade ? 'Ваш текущий грейд сохранён — грейд не понижается по результатам теста.' :
                     r.decision === 'not_confirmed' ? 'Категория пока не присвоена. Это не приговор: пройдите тест уровнем ниже — сразу, без ожидания.' : 'Результат учтён в профиле.'}
             </motion.p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {r.next_grade && <Button onClick={() => start.mutate(r.next_grade)} loading={start.isPending} icon={<TrendingUp className="h-4 w-4" />}>Пройти тест на {r.next_grade_name} сейчас</Button>}
-              {r.decision === 'not_confirmed' && r.suggested_grade && <Button onClick={() => start.mutate(r.suggested_grade)} loading={start.isPending} icon={<ArrowRight className="h-4 w-4" />}>Пройти тест на {r.suggested_grade_name}</Button>}
+              {canAccept && <Button onClick={() => accept.mutate()} loading={accept.isPending} icon={<Check className="h-4 w-4" />}>Принять {r.suggested_grade_name} по этому тесту</Button>}
+              {r.decision === 'not_confirmed' && r.suggested_grade && !accepted && <Button variant={canAccept ? 'secondary' : 'primary'} onClick={() => start.mutate(r.suggested_grade)} loading={start.isPending} icon={<ArrowRight className="h-4 w-4" />}>Пройти тест на {r.suggested_grade_name}</Button>}
               <ButtonLink to="/candidate/grade" variant="secondary" icon={<Award className="h-4 w-4" />}>Категория и грейд</ButtonLink>
               <span className={clsx('ml-1 text-sm', ok ? 'text-white/70' : 'text-amber-800')}>{r.n_correct} из {r.n_items} верно</span>
             </div>

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 18:38",
+  "generated_at": "2026-10-05 19:06",
   "config": {
     "min_items": 12,
     "max_items": 24,
@@ -66,6 +66,18 @@
         "bias": -0.157,
         "rmse": 0.382
       }
+    },
+    "lower_grade_from_same_test": {
+      "threshold": 0.8,
+      "not_confirmed_with_suggestion": 670,
+      "offered_share": 0.733,
+      "precision": 0.998,
+      "note": "Доля верных решений «принять грейд ниже по этому же тесту»: истинный уровень не ниже нижней границы предложенного грейда."
+    },
+    "higher_grade_from_same_test": {
+      "confirmed_strong": 48,
+      "precision": 0.729,
+      "note": "Если бы «уверенный» результат сразу повышал грейд: доля кандидатов, чей истинный уровень выше следующей границы. Низкая точность — поэтому повышение подтверждается отдельным тестом."
     },
     "scatter_sample": [
       [
@@ -2171,5 +2183,5 @@
     },
     "se_from_info": "SE(θ) ≈ 1/√I(θ)"
   },
-  "runtime_sec": 101.2
+  "runtime_sec": 104.7
 }

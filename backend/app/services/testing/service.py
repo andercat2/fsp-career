@@ -16,7 +16,15 @@ from app.core.db import utcnow
 from app.core.security import derive_seed
 from app.models import CandidateProfile, GradeHistory, ItemStat, TestResponse, TestSession
 from app.services.notify import notify
-from app.services.reference.taxonomy import DOMAINS, GRADE_CODES, GRADE_INDEX, GRADE_NAMES, SPEC_NAMES, resolve_blueprint
+from app.services.reference.taxonomy import (
+    DOMAINS,
+    GRADE_CODES,
+    GRADE_INDEX,
+    GRADE_NAMES,
+    SPEC_NAMES,
+    grade_center,
+    resolve_blueprint,
+)
 from app.services.resumes import target_for
 from app.services.testing import integrity, irt
 from app.services.testing.bank import REGISTRY, check_answer
@@ -408,6 +416,43 @@ def record_proctoring(db: Session, sess: TestSession, kind: str, method: str | N
     db.commit()
     return {"action": action, "strikes": strikes, "max_strikes": PROCTOR_MAX_STRIKES,
             "view": question_view(sess, current_response(sess))}
+
+
+def accept_suggested(db: Session, sess: TestSession) -> dict:
+    """Принять грейд ниже заявленного по результатам этого же теста — без повторного прохождения. Доступно, если
+    тест с вероятностью ≥ lower_accept_prob показал уровень не ниже этого грейда (точность на валидации — 99.8%)."""
+    from app.services.matching.profile import recompute_candidate  # локальный импорт: избегаем цикла модулей
+
+    r = dict(sess.result or {})
+    if sess.status != "completed" or r.get("decision") != "not_confirmed" or not r.get("suggested_assignable"):
+        raise HTTPException(409, "По этому тесту нельзя присвоить грейд ниже — пройдите тест на этот уровень")
+    if r.get("accepted_suggested") or r.get("review_required"):
+        raise HTTPException(409, "Решение по этому тесту уже принято")
+    cand = db.get(CandidateProfile, sess.candidate_id)
+    target = next((x for x in cand.resumes if x.id == sess.resume_id), None) if sess.resume_id else cand
+    if target is None:
+        raise HTTPException(409, "Резюме этого теста удалено")
+    grade = r["suggested_grade"]
+    current = _current_grade(target)
+    if current and GRADE_INDEX[current] >= GRADE_INDEX[grade]:
+        raise HTTPException(409, "У вас уже есть грейд не ниже предложенного")
+    db.add(GradeHistory(candidate_id=cand.id, resume_id=sess.resume_id, specialization=sess.specialization,
+                        old_grade=current, new_grade=grade, theta=r["theta"], session_id=sess.id))
+    if current is not None:
+        target.grade_changed_at = utcnow()
+    target.grade, target.grade_specialization = grade, sess.specialization
+    target.grade_assigned_at = target.grade_assigned_at or utcnow()
+    # доменные оценки в профиле — относительно принятого грейда (в сессии они посчитаны для заявленного)
+    center = grade_center(grade)
+    domains = {d: {**v, "score": round(1 / (1 + math.exp(-1.3 * (v["theta"] - center))), 3)}
+               for d, v in r["domains"].items()}
+    target.grade_theta, target.grade_se, target.domain_scores = r["theta"], r["se"], domains
+    sess.result = {**r, "accepted_suggested": True, "assigned_grade": grade, "kept_grade": None}
+    recompute_candidate(db, cand)
+    notify(db, cand.user_id, "test_result", f"Грейд {GRADE_NAMES[grade]} присвоен по результатам теста",
+           "Категория видна работодателям. Следующий уровень можно подтвердить отдельным тестом.", "/candidate/grade")
+    db.commit()
+    return question_view(sess, None)
 
 
 def abandon(db: Session, sess: TestSession) -> None:

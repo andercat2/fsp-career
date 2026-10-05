@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 18:39",
+  "generated_at": "2026-10-05 19:08",
   "setup": {
     "candidates": 900,
     "needs": 60,
@@ -129,8 +129,8 @@
     "grades_exact": 1.0
   },
   "latency_ms": {
-    "mean": 39.585,
-    "p95": 64.195,
+    "mean": 40.277,
+    "p95": 67.224,
     "pool": "до 900 кандидатов, без кэширования"
   },
   "example": {
@@ -283,5 +283,5 @@
       ]
     }
   },
-  "runtime_sec": 23.1
+  "runtime_sec": 23.5
 }
