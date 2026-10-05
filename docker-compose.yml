@@ -1,0 +1,89 @@
+# ФСП Карьера — полный стенд одной командой:  docker compose up --build
+#   Приложение:        http://localhost:8080
+#   API (Swagger):     http://localhost:8080/docs
+#   Почта (Mailpit):   http://localhost:8025   — письма с кодами подтверждения
+#   ФСП ID (mock):     http://localhost:8090   — OIDC-провайдер (пути как у Keycloak) и реестр достижений
+name: fsp-career
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  db:
+    <<: *common
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: fsp_career
+      POSTGRES_USER: fsp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fsp_dev_password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fsp -d fsp_career"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 512m
+
+  mailpit:
+    <<: *common
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+    mem_limit: 128m
+
+  fsp-mock:
+    <<: *common
+    build: ./fsp-mock
+    environment:
+      PUBLIC_ISSUER: ${FSP_PUBLIC_ISSUER:-http://localhost:8090/realms/fsp}
+      ALLOWED_REDIRECT_PREFIXES: ${PUBLIC_URL:-http://localhost:8080}/,http://localhost:8000/
+      CLIENT_ID: fsp-career
+      CLIENT_SECRET: ${FSP_CLIENT_SECRET:-fsp-career-secret}
+      REGISTRY_API_KEY: ${FSP_REGISTRY_API_KEY:-registry-demo-key}
+    ports:
+      - "8090:8090"
+    mem_limit: 192m
+
+  backend:
+    <<: *common
+    build: ./backend
+    depends_on:
+      db: { condition: service_healthy }
+      fsp-mock: { condition: service_started }
+      mailpit: { condition: service_started }
+    environment:
+      ENVIRONMENT: docker
+      DATABASE_URL: postgresql+psycopg://fsp:${POSTGRES_PASSWORD:-fsp_dev_password}@db:5432/fsp_career
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production-0123456789abcdef}
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      EMAIL_DEV_MODE: ${EMAIL_DEV_MODE:-true}
+      FRONTEND_URL: ${PUBLIC_URL:-http://localhost:8080}
+      BACKEND_PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8080}
+      CORS_ORIGINS: ${PUBLIC_URL:-http://localhost:8080},http://localhost:5173
+      FSP_OIDC_ISSUER: ${FSP_PUBLIC_ISSUER:-http://localhost:8090/realms/fsp}
+      FSP_OIDC_INTERNAL_URL: http://fsp-mock:8090/realms/fsp
+      FSP_REGISTRY_URL: http://fsp-mock:8090/registry/api/v1
+      FSP_CLIENT_SECRET: ${FSP_CLIENT_SECRET:-fsp-career-secret}
+      FSP_REGISTRY_API_KEY: ${FSP_REGISTRY_API_KEY:-registry-demo-key}
+      SEED_DEMO: ${SEED_DEMO:-true}
+      SEED_CANDIDATES: ${SEED_CANDIDATES:-320}
+    ports:
+      - "8000:8000"
+    mem_limit: 1g
+
+  frontend:
+    <<: *common
+    build: ./frontend
+    depends_on:
+      backend: { condition: service_healthy }
+    ports:
+      - "8080:80"
+    mem_limit: 128m
+
+volumes:
+  pgdata:
