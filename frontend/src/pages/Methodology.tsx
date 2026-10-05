@@ -5,6 +5,8 @@ import {
   XAxis, YAxis, ZAxis,
 } from 'recharts'
 import clsx from 'clsx'
+import { motion } from 'framer-motion'
+import { Blobs, EASE, Reveal } from '@/lib/motion'
 import { Fingerprint, Gauge, Repeat, Scale, ShieldCheck, Sigma, Target, Timer } from 'lucide-react'
 import { api } from '@/lib/api'
 import { PageLoader, Select } from '@/components/ui'
@@ -17,11 +19,13 @@ const pct = (x?: number | null, d = 0) => (x == null ? '—' : `${(x * 100).toFi
 
 function Section({ id, kicker, title, lead, children }: { id: string; kicker: string; title: string; lead?: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-20 border-t border-slate-100 py-14">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-fsp-pink">{kicker}</p>
-      <h2 className="mt-2 text-3xl font-extrabold tracking-tight">{title}</h2>
-      {lead && <p className="mt-3 max-w-3xl text-slate-600">{lead}</p>}
-      <div className="mt-8">{children}</div>
+    <section id={id} className="scroll-mt-32 border-t border-line py-16">
+      <Reveal>
+        <p className="eyebrow">{kicker}</p>
+        <h2 className="mt-2 text-3xl font-extrabold tracking-tight">{title}</h2>
+        {lead && <p className="mt-3 max-w-3xl leading-relaxed text-slate-500">{lead}</p>}
+      </Reveal>
+      <Reveal delay={0.08} className="mt-8">{children}</Reveal>
     </section>
   )
 }
@@ -69,7 +73,7 @@ const METHOD: Record<string, string> = { keyword: 'Поиск по ключев�
 export function Methodology() {
   const { data, isLoading } = useQuery({ queryKey: ['methodology'], queryFn: () => api('/public/methodology') })
   const [spec, setSpec] = useState('backend')
-  if (isLoading || !data) return <div className="min-h-screen bg-white"><section className="bg-hero pb-12"><PublicHeader /></section><PageLoader /></div>
+  if (isLoading || !data) return <div className="min-h-screen bg-white"><PublicHeader solid /><section className="bg-hero h-72" /><div className="mx-auto max-w-6xl px-4 py-10"><PageLoader /></div></div>
   const cat = data.cat_validation
   const mv = data.matching_validation
   const nlp = data.nlp_validation
@@ -86,11 +90,13 @@ export function Methodology() {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="bg-hero pb-16">
-        <PublicHeader />
-        <div className="mx-auto max-w-6xl px-4 pt-6 text-white sm:px-6">
+      <PublicHeader />
+      <section className="bg-hero noise relative overflow-hidden pb-20 pt-32">
+        <Blobs className="opacity-50" />
+        <div className="relative mx-auto max-w-6xl px-4 text-white sm:px-6">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-fsp-blush">Методика и валидация</p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-extrabold leading-tight text-white sm:text-5xl">Как мы проверяем, что тесту и выдаче можно доверять</h1>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}
+            className="mt-3 max-w-3xl text-4xl font-extrabold leading-tight tracking-tightest text-white sm:text-[52px]">Как мы проверяем, что тесту и выдаче <span className="text-gradient">можно доверять</span></motion.h1>
           <p className="mt-4 max-w-3xl text-white/75">Эталонной разметки на хакатоне нет, поэтому мы построили собственную процедуру: синтетическую популяцию
             с известной «истиной» (истинный уровень, реальные навыки, честное или завышенное резюме) и прогоняем через неё и тестирование, и подбор,
             и атаки на утечку заданий. Все эксперименты воспроизводимы командой <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">python -m validation.run_all</code>.</p>
@@ -105,7 +111,7 @@ export function Methodology() {
         </div>
       </section>
 
-      <nav className="sticky top-0 z-20 border-b border-slate-100 bg-white/90 backdrop-blur">
+      <nav className="sticky top-16 z-30 border-b border-line bg-white/85 backdrop-blur-xl">
         <div className="scrollbar-thin mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 text-sm font-semibold sm:px-6">
           {[['mechanics', 'Механика теста'], ['bank', 'Банк заданий'], ['cat', 'Точность и стабильность'], ['leaks', 'Устойчивость к утечкам'],
             ['matching', 'Подбор'], ['nlp', 'NLP'], ['limits', 'Ограничения']].map(([id, l]) => (

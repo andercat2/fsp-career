@@ -1,31 +1,48 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Building2, KeyRound, Mail, ShieldCheck, UserRound } from 'lucide-react'
 import clsx from 'clsx'
+import { Blobs, EASE } from '@/lib/motion'
 import { api } from '@/lib/api'
 import { homeFor, useAuth } from '@/lib/auth'
 import { useToast } from '@/lib/toast'
 import { Alert, Button, Checkbox, Field, Input, PageLoader } from '@/components/ui'
 import { Logo } from '@/components/Layout'
 
+const FEATURES = [
+  { icon: <ShieldCheck className="h-4 w-4" />, t: 'Категория подтверждается адаптивным тестом' },
+  { icon: <Mail className="h-4 w-4" />, t: 'Приглашения сразу с вилкой зарплаты' },
+  { icon: <KeyRound className="h-4 w-4" />, t: 'Контакты — только после вашего согласия' },
+]
+
 function AuthLayout({ title, subtitle, children }: { title: string; subtitle?: ReactNode; children: ReactNode }) {
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1fr_1.05fr]">
-      <aside className="bg-hero relative hidden flex-col justify-between overflow-hidden p-10 text-white lg:flex">
-        <Logo dark />
-        <div>
-          <p className="text-3xl font-extrabold leading-tight">Категория по тесту,<br />а не по ключевым словам</p>
-          <p className="mt-4 max-w-md text-white/75">Адаптивное тестирование, достижения ФСП и прозрачные условия: работодатель видит подтверждённый уровень, кандидат — вилку зарплаты до начала общения.</p>
+    <div className="grid min-h-screen bg-white lg:grid-cols-[1fr_1.05fr]">
+      <aside className="bg-hero noise relative hidden flex-col justify-between overflow-hidden p-10 text-white lg:flex">
+        <Blobs className="opacity-60" />
+        <div className="relative"><Logo dark /></div>
+        <div className="relative">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: EASE }}
+            className="text-[40px] font-extrabold leading-[1.05] tracking-tightest">Категория по тесту,<br /><span className="text-gradient">а не по ключевым словам</span></motion.p>
+          <div className="mt-8 space-y-3">
+            {FEATURES.map((f, i) => (
+              <motion.div key={f.t} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, ease: EASE, delay: 0.3 + i * 0.12 }}
+                className="flex w-fit items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white/85 backdrop-blur-xl">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-fsp-pink/25 text-[#ffc2d6]">{f.icon}</span>{f.t}
+              </motion.div>
+            ))}
+          </div>
         </div>
-        <img src="/brand/fsp-logo-white.png" alt="ФСП" className="h-8 w-auto self-start opacity-80" />
+        <img src="/brand/fsp-logo-white.png" alt="ФСП" className="relative h-8 w-auto self-start opacity-70" />
       </aside>
-      <main className="flex flex-col justify-center px-4 py-10 sm:px-10">
-        <div className="mx-auto w-full max-w-md">
-          <div className="mb-8 lg:hidden"><Logo /></div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
-          {subtitle && <p className="mt-1.5 text-sm text-slate-500">{subtitle}</p>}
+      <main className="relative flex flex-col justify-center px-4 py-10 sm:px-10">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: EASE }} className="mx-auto w-full max-w-md">
+          <div className="mb-10 lg:hidden"><Logo /></div>
+          <h1 className="text-[30px] font-extrabold tracking-tight">{title}</h1>
+          {subtitle && <p className="mt-2 text-sm text-slate-500">{subtitle}</p>}
           <div className="mt-8">{children}</div>
-        </div>
+        </motion.div>
       </main>
     </div>
   )
@@ -79,15 +96,17 @@ export function Login() {
       <div className="my-6 flex items-center gap-3 text-xs text-slate-400"><span className="h-px flex-1 bg-slate-200" />или<span className="h-px flex-1 bg-slate-200" /></div>
       <Button variant="dark" size="lg" className="w-full" onClick={() => startFspLogin(push)}
               icon={<img src="/brand/fsp-star-white.png" alt="" className="h-5 w-5" />}>Войти через ФСП ID</Button>
-      <div className="mt-8 rounded-2xl bg-surface p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Демо-аккаунты · пароль demo12345</p>
-        <div className="mt-2 grid gap-1.5">
-          {DEMO.map(d => (
-            <button key={d.email} type="button" onClick={() => { setEmail(d.email); setPassword('demo12345') }}
-              className="flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2 text-left text-sm ring-1 ring-slate-100 hover:ring-fsp-lavender">
-              <span className="flex items-center gap-2 text-fsp-deep">{d.icon}{d.label}</span>
+      <div className="mt-8 rounded-[20px] border border-line bg-surface/60 p-4">
+        <p className="px-1 text-xs font-semibold text-slate-500">Демо-аккаунты · пароль demo12345</p>
+        <div className="mt-2.5 grid gap-1.5">
+          {DEMO.map((d, i) => (
+            <motion.button key={d.email} type="button" onClick={() => { setEmail(d.email); setPassword('demo12345') }}
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05 }} whileTap={{ scale: 0.98 }}
+              className={clsx('group flex items-center justify-between gap-3 rounded-xl border bg-white px-3 py-2.5 text-left text-sm transition',
+                email === d.email ? 'border-fsp-pink/50 shadow-[0_0_0_3px_rgba(255,0,83,.07)]' : 'border-line hover:border-[#D9D4E7]')}>
+              <span className="flex items-center gap-2.5 font-medium text-fsp-deep"><span className="text-slate-400 transition group-hover:text-fsp-pink">{d.icon}</span>{d.label}</span>
               <span className="text-xs text-slate-400">{d.email}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -118,13 +137,14 @@ export function Register() {
 
   return (
     <AuthLayout title="Регистрация" subtitle={<>Уже есть аккаунт? <Link to="/login" className="link">Войти</Link></>}>
-      <div className="mb-6 grid grid-cols-2 gap-2 rounded-2xl bg-surface p-1.5">
+      <div className="mb-6 grid grid-cols-2 gap-1 rounded-2xl border border-line bg-surface/70 p-1">
         {(['candidate', 'employer'] as const).map(r => (
           <button key={r} type="button" onClick={() => setRole(r)}
-            className={clsx('flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition',
-              role === r ? 'bg-white text-fsp-deep shadow-card' : 'text-slate-500 hover:text-fsp-deep')}>
-            {r === 'candidate' ? <UserRound className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
-            {r === 'candidate' ? 'Я кандидат' : 'Я работодатель'}
+            className={clsx('relative flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-colors',
+              role === r ? 'text-fsp-deep' : 'text-slate-500 hover:text-fsp-deep')}>
+            {role === r && <motion.span layoutId="role-pill" transition={{ type: 'spring', stiffness: 400, damping: 32 }} className="absolute inset-0 rounded-xl bg-white shadow-card" />}
+            <span className="relative flex items-center gap-2">{r === 'candidate' ? <UserRound className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
+              {r === 'candidate' ? 'Я кандидат' : 'Я работодатель'}</span>
           </button>
         ))}
       </div>
@@ -133,7 +153,7 @@ export function Register() {
         {role === 'employer' && <Field label="Компания" required><Input required value={company} onChange={e => setCompany(e.target.value)} placeholder="ООО «Пример»" /></Field>}
         <Field label="E-mail" required hint="Пришлём код подтверждения"><Input type="email" required autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /></Field>
         <Field label="Пароль" required hint="Не короче 8 символов"><Input type="password" required minLength={8} autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} /></Field>
-        <div className="rounded-2xl bg-surface p-3.5">
+        <div className="rounded-2xl border border-line bg-surface/60 p-3.5">
           <Checkbox checked={consent} onChange={setConsent} label={<span className="text-xs leading-relaxed text-slate-600">
             Даю согласие на обработку персональных данных в соответствии с Федеральным законом № 152-ФЗ
             для целей подбора персонала. Согласие можно отозвать в настройках.</span>} />

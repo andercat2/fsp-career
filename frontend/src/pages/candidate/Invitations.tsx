@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
+import { EASE } from '@/lib/motion'
 import { Building2, CircleCheck, Flag, Mail, MapPin, MessageSquare, Phone, Send, ShieldCheck, Sparkles, Wallet, X } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useReference } from '@/lib/reference'
@@ -44,9 +46,10 @@ export function CandidateInvitations() {
       <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
         <div className="space-y-3">
           {!items.length && <EmptyState icon={<Mail className="h-5 w-5" />} title="Здесь пока пусто" text="Как только работодатель найдёт вас в подборке своей категории, приглашение появится здесь." />}
-          {items.map(i => (
-            <button key={i.id} onClick={() => setOpenId(i.id)}
-              className={clsx('card w-full p-4 text-left transition hover:ring-fsp-lavender', openId === i.id && 'ring-2 ring-fsp-pink')}>
+          {items.map((i, idx) => (
+            <motion.button key={i.id} onClick={() => setOpenId(i.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: idx * 0.05, ease: EASE }} whileTap={{ scale: 0.99 }}
+              className={clsx('card card-hover w-full p-4 text-left', openId === i.id && '!border-fsp-pink/50 shadow-[0_0_0_3px_rgba(255,0,83,.07)]')}>
               <div className="flex items-start gap-3">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-surface text-lg font-bold text-fsp-deep">{i.company.name[0]}</div>
                 <div className="min-w-0 flex-1">
@@ -59,12 +62,14 @@ export function CandidateInvitations() {
                     <Wallet className="h-4 w-4 text-fsp-pink" />{salaryRange(i.salary_from, i.salary_to)}</p>
                 </div>
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
 
         <div className="lg:sticky lg:top-24 lg:self-start">
-          {!current ? <EmptyState icon={<Sparkles className="h-5 w-5" />} title="Выберите приглашение" text="Откроется полное описание: условия, компания и почему вас пригласили." /> : (
+          <AnimatePresence mode="wait">
+          {!current ? <EmptyState key="empty" icon={<Sparkles className="h-5 w-5" />} title="Выберите приглашение" text="Откроется полное описание: условия, компания и почему вас пригласили." /> : (
+            <motion.div key={current.id} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.3, ease: EASE }}>
             <Card>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -75,8 +80,8 @@ export function CandidateInvitations() {
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl bg-brand-gradient p-4 text-white">
-                  <p className="text-xs uppercase tracking-wide text-white/60">Вилка, ₽/мес</p>
-                  <p className="mt-1 text-xl font-extrabold">{salaryRange(current.salary_from, current.salary_to)}</p>
+                  <p className="text-xs text-white/60">Вилка, ₽ в месяц</p>
+                  <p className="mt-1 text-lg font-extrabold leading-snug">{salaryRange(current.salary_from, current.salary_to)}</p>
                 </div>
                 <div className="rounded-2xl bg-surface p-4 text-sm">
                   <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-fsp-pink" />{current.work_format_name ?? 'Формат обсуждается'}{current.vacancy?.city && `, ${current.vacancy.city}`}</p>
@@ -118,7 +123,9 @@ export function CandidateInvitations() {
                 </div>
               )}
             </Card>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
       </div>
 

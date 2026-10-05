@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
 import { Search as SearchIcon, Users } from 'lucide-react'
 import { api, qs } from '@/lib/api'
 import { useReference } from '@/lib/reference'
@@ -8,6 +9,7 @@ import { Button, Card, Checkbox, EmptyState, Input, PageHeader, PageLoader, Sele
 import { SkillPicker } from '@/components/SkillPicker'
 import { InviteModal, type InviteTarget } from '@/components/InviteModal'
 import { CandidateRow, useShortlistToggle } from './Selection'
+import { container } from '@/lib/motion'
 
 export function CandidateSearch() {
   const { ref } = useReference()
@@ -49,7 +51,7 @@ export function CandidateSearch() {
       </Card>
       <div className="mb-3 text-sm text-slate-500">{data ? <>Найдено <b className="text-fsp-deep">{data.total}</b></> : ''} {isFetching && '· обновление…'}</div>
       {isLoading || !data ? <PageLoader /> : !data.results.length ? <EmptyState icon={<Users className="h-5 w-5" />} title="Никого не найдено" text="Попробуйте ослабить фильтры." /> : (
-        <div className="space-y-3">
+        <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={`${page}-${JSON.stringify(f)}`}>
           {data.results.map((c: any) => (
             <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on })}
               onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons })} />
@@ -59,7 +61,7 @@ export function CandidateSearch() {
             <span className="text-sm text-slate-500">стр. {page} из {Math.max(1, Math.ceil(data.total / 20))}</span>
             <Button variant="secondary" size="sm" disabled={page * 20 >= data.total} onClick={() => setPage(p => p + 1)}>Далее</Button>
           </div>
-        </div>
+        </motion.div>
       )}
       <InviteModal target={invite} onClose={() => setInvite(null)} vacancyId={vac?.id ?? null} />
     </div>

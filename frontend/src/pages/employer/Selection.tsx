@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
 import clsx from 'clsx'
 import {
   ArrowLeft, ChevronDown, ChevronUp, Filter, MapPin, RefreshCw, Send, Sparkles, Star, Trophy, Users, Wallet, Wand2, X,
@@ -13,6 +14,7 @@ import { Badge, Button, Card, Checkbox, EmptyState, Field, Input, PageHeader, Pa
 import { CategoryPill, Components, MatchRing, Reasons, StatusBadge } from '@/components/Domain'
 import { SkillPicker } from '@/components/SkillPicker'
 import { InviteModal, type InviteTarget } from '@/components/InviteModal'
+import { container, fadeUp } from '@/lib/motion'
 
 export function useShortlistToggle() {
   const qc = useQueryClient()
@@ -23,55 +25,65 @@ export function useShortlistToggle() {
   })
 }
 
+const INV_LABEL: Record<string, string> = { sent: 'приглашён', viewed: 'просмотрел', accepted: 'принял', declined: 'отклонил',
+  expired: 'истекло', withdrawn: 'отозвано' }
+
 export function CandidateRow({ c, onInvite, onShortlist }: { c: any; onInvite: () => void; onShortlist: (on: boolean) => void }) {
   const [more, setMore] = useState(false)
   const lhTone = c.likelihood?.label === 'высокая' ? 'green' : c.likelihood?.label === 'средняя' ? 'amber' : 'red'
+  const skills: string[] = c.verified_skills ?? []
+  const extra = skills.length - 6
   return (
-    <div className="card p-4 sm:p-5">
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {c.match != null && <MatchRing value={c.match} size={68} />}
+    <motion.div layout variants={fadeUp} className="card card-hover group p-5">
+      <div className="flex flex-col gap-5 sm:flex-row">
+        {c.match != null && <MatchRing value={c.match} size={64} />}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Link to={`/employer/candidates/${c.id}`} className="text-lg font-bold text-fsp-deep hover:text-fsp-pink">{c.display_name}</Link>
+            <Link to={`/employer/candidates/${c.id}`} className="text-[17px] font-bold tracking-tight text-fsp-deep transition hover:text-fsp-pink">{c.display_name}</Link>
             <CategoryPill spec={c.specialization_name} grade={c.grade_name} />
-            {c.percentile != null && <Badge tone="pink">выше {Math.round(c.percentile)}%</Badge>}
-            {c.invitation_status && <StatusBadge status={c.invitation_status} label={`приглашение: ${({ sent: 'отправлено', viewed: 'просмотрено', accepted: 'принято', declined: 'отклонено', expired: 'истекло', withdrawn: 'отозвано' } as any)[c.invitation_status]}`} />}
+            {c.percentile != null && <span className="text-xs font-semibold text-emerald-600">выше {Math.round(c.percentile)}%</span>}
           </div>
           <p className="mt-1 text-sm text-slate-600">{c.headline}</p>
-          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
             {c.city && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{c.city}{c.relocation && ' · готов к переезду'}</span>}
             {!!c.work_formats?.length && <span>{c.work_formats.map((f: string) => WORK_FORMATS[f]).join(' / ')}</span>}
             {c.experience_years != null && <span>опыт {String(c.experience_years).replace('.', ',')} г.</span>}
-            {c.desired_salary ? <span className="inline-flex items-center gap-1"><Wallet className="h-3.5 w-3.5" />ожидания от {rub(c.desired_salary)}</span> : <span>ожидания скрыты</span>}
+            <span className="inline-flex items-center gap-1"><Wallet className="h-3.5 w-3.5" />{c.desired_salary ? `от ${rub(c.desired_salary)}` : 'ожидания скрыты'}</span>
           </p>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {c.verified_skills.slice(0, 8).map((s: string) => <Badge key={s} tone="pink">✓ {s}</Badge>)}
-            {c.declared_skills.slice(0, 5).map((s: string) => <Badge key={s} tone="gray">{s}</Badge>)}
+            {skills.slice(0, 6).map((sk: string) => <Badge key={sk} tone="pink">✓ {sk}</Badge>)}
+            {extra > 0 && <Badge tone="gray">+{extra}</Badge>}
             {c.fsp_headline && <Badge tone="purple" icon={<Trophy className="h-3 w-3" />}>{c.fsp_headline}</Badge>}
           </div>
-          {c.components && <div className="mt-4 max-w-xl"><Components components={c.components} /></div>}
+          {c.components && <div className="mt-4 max-w-lg"><Components components={c.components} /></div>}
           {c.reasons && (
-            <div className="mt-3">
-              <Reasons reasons={c.reasons} limit={more ? undefined : 3} />
-              {c.reasons.length > 3 && <button onClick={() => setMore(m => !m)} className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-fsp-lavender">
-                {more ? <>Свернуть <ChevronUp className="h-3 w-3" /></> : <>Почему в подборке — все причины ({c.reasons.length}) <ChevronDown className="h-3 w-3" /></>}</button>}
+            <div className="mt-4">
+              <Reasons reasons={c.reasons} limit={more ? undefined : 2} />
+              {c.reasons.length > 2 && (
+                <button onClick={() => setMore(m => !m)} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-fsp-lavender transition hover:text-fsp-deep">
+                  {more ? <>Свернуть <ChevronUp className="h-3.5 w-3.5" /></> : <>Почему в подборке — ещё {c.reasons.length - 2} <ChevronDown className="h-3.5 w-3.5" /></>}
+                </button>
+              )}
             </div>
           )}
         </div>
-        <div className="flex shrink-0 flex-row items-center gap-2 sm:flex-col sm:items-end">
+        <div className="flex shrink-0 flex-row flex-wrap items-center gap-2 sm:flex-col sm:items-end">
           {c.likelihood && <Badge tone={lhTone as any}>отклик: {c.likelihood.label}</Badge>}
+          {c.invitation_status && <StatusBadge status={c.invitation_status} label={INV_LABEL[c.invitation_status]} />}
           <div className="flex gap-2 sm:mt-auto">
-            <button onClick={() => onShortlist(!c.shortlisted)} title={c.shortlisted ? 'Убрать из избранного' : 'В избранное'}
-              className={clsx('grid h-10 w-10 place-items-center rounded-xl ring-1 transition', c.shortlisted ? 'bg-amber-50 text-amber-500 ring-amber-200' : 'bg-white text-slate-400 ring-slate-200 hover:text-amber-500')}>
-              <Star className={clsx('h-4 w-4', c.shortlisted && 'fill-amber-400')} />
-            </button>
+            <motion.button whileTap={{ scale: 0.88 }} onClick={() => onShortlist(!c.shortlisted)} title={c.shortlisted ? 'Убрать из избранного' : 'В избранное'}
+              className={clsx('grid h-10 w-10 place-items-center rounded-xl border transition', c.shortlisted ? 'border-amber-200 bg-amber-50 text-amber-500' : 'border-line bg-white text-slate-300 hover:text-amber-500')}>
+              <motion.span key={String(c.shortlisted)} initial={{ scale: 0.5, rotate: -40 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 18 }}>
+                <Star className={clsx('h-4 w-4', c.shortlisted && 'fill-amber-400')} />
+              </motion.span>
+            </motion.button>
             <Button onClick={onInvite} disabled={!c.open_to_offers || ['sent', 'viewed', 'accepted'].includes(c.invitation_status)} icon={<Send className="h-4 w-4" />}>
               {c.invitation_status === 'accepted' ? 'Контакт открыт' : ['sent', 'viewed'].includes(c.invitation_status) ? 'Приглашён' : c.open_to_offers ? 'Пригласить' : 'Не ищет'}
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -112,11 +124,11 @@ export function SelectionPage() {
 
       <section className="mb-6">
         <h2 className="mb-3 flex items-center gap-2 text-base font-bold"><Users className="h-4 w-4 text-fsp-pink" /> Рекомендованные категории</h2>
-        <div className="scrollbar-thin -mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
+        <motion.div className="scrollbar-thin -mx-1 flex gap-3 overflow-x-auto px-1 pb-3 pt-1" variants={container(0.06)} initial="hidden" animate="show">
           {s.categories.map((c: any) => (
-            <button key={`${c.specialization}-${c.grade}`} onClick={() => toggleCat(c)}
-              className={clsx('w-60 shrink-0 rounded-2xl p-4 text-left ring-1 transition',
-                activeCat(c) ? 'bg-fsp-deep text-white ring-fsp-deep' : c.primary ? 'bg-white ring-fsp-pink/40 hover:ring-fsp-pink' : 'bg-white ring-slate-200 hover:ring-fsp-lavender')}>
+            <motion.button key={`${c.specialization}-${c.grade}`} onClick={() => toggleCat(c)} variants={fadeUp} whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}
+              className={clsx('w-60 shrink-0 rounded-[20px] border p-4 text-left transition-colors duration-300',
+                activeCat(c) ? 'border-fsp-deep bg-fsp-deep text-white shadow-lift' : c.primary ? 'border-fsp-pink/30 bg-white shadow-soft hover:shadow-lift' : 'border-line bg-white shadow-soft hover:shadow-lift')}>
               <div className="flex items-center justify-between gap-2">
                 <span className={clsx('text-[11px] font-semibold uppercase tracking-wide', activeCat(c) ? 'text-white/60' : c.primary ? 'text-fsp-pink' : 'text-slate-400')}>{REL[String(c.relevance)] ?? 'смежная'}</span>
                 <span className={clsx('text-2xl font-extrabold', activeCat(c) ? 'text-white' : 'text-fsp-deep')}>{c.count}</span>
@@ -127,9 +139,9 @@ export function SelectionPage() {
                 <p>В вашей вилке: <b>{c.share_in_budget != null ? `${Math.round(c.share_in_budget * 100)}%` : '—'}</b></p>
                 <p>С достижениями ФСП: <b>{c.with_fsp}</b> · открыты: <b>{c.open_to_offers}</b></p>
               </div>
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[300px_1fr]">
@@ -162,13 +174,13 @@ export function SelectionPage() {
             {isFetching && <span className="text-xs">обновление…</span>}
           </div>
           {!s.results.length ? <EmptyState icon={<Filter className="h-5 w-5" />} title="Никого не осталось" text="Ослабьте фильтры — исходная подборка сохранена." action={<Button size="sm" variant="secondary" onClick={reset}>Сбросить</Button>} /> : (
-            <div className="space-y-3">
+            <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={JSON.stringify(f)}>
               {s.results.map((c: any) => (
                 <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on })}
                   onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons })} />
               ))}
               {s.total > s.results.length && <div className="pt-2 text-center"><Button variant="secondary" onClick={() => setSize(x => x + 20)}>Показать ещё</Button></div>}
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

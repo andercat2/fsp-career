@@ -9,36 +9,66 @@
 @tailwind utilities;
 
 @layer base {
-  html { -webkit-tap-highlight-color: transparent; }
-  body { @apply bg-surface text-fsp-ink antialiased; font-feature-settings: 'tnum' 0; }
-  h1, h2, h3 { @apply text-fsp-deep; }
+  html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+  body {
+    @apply bg-[#FAFAFC] text-[15px] text-fsp-ink antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 { @apply font-bold tracking-tight text-fsp-deep; }
   ::selection { @apply bg-fsp-blush text-fsp-deep; }
-  :focus-visible { @apply outline-none ring-2 ring-fsp-lavender ring-offset-2; }
+  :focus-visible { @apply outline-none ring-2 ring-fsp-lavender/70 ring-offset-2 ring-offset-white; }
+  * { scrollbar-width: thin; scrollbar-color: #d9d5e6 transparent; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #dcd8e8; border-radius: 99px; border: 3px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: #c5bfd9; background-clip: content-box; border: 3px solid transparent; }
+  input[type='number']::-webkit-inner-spin-button { opacity: .4; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
 }
 
 @layer components {
-  .card { @apply rounded-2xl bg-white shadow-card ring-1 ring-black/[0.03]; }
+  .card { @apply rounded-[20px] border border-line bg-white shadow-soft; }
   .card-pad { @apply p-5 sm:p-6; }
+  .card-hover { @apply transition duration-300 ease-out hover:-translate-y-0.5 hover:border-[#E2DEEE] hover:shadow-lift; }
   .input {
-    @apply w-full rounded-xl border border-[#E4E1EE] bg-white px-3.5 py-2.5 text-sm text-fsp-ink placeholder:text-slate-400
-      transition focus:border-fsp-lavender focus:outline-none focus:ring-2 focus:ring-fsp-lavender/30 disabled:bg-slate-50;
+    @apply w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-fsp-ink shadow-soft
+      transition duration-200 placeholder:text-slate-400 hover:border-[#DCD8E8]
+      focus:border-fsp-lavender focus:outline-none focus:ring-4 focus:ring-fsp-lavender/15 disabled:bg-slate-50;
   }
-  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .chip { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium; }
-  .link { @apply font-semibold text-fsp-pink hover:underline; }
+  .label { @apply mb-1.5 block text-xs font-semibold text-slate-500; }
+  .chip { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-[3px] text-xs font-medium; }
+  .link { @apply font-semibold text-fsp-pink underline-offset-4 transition hover:underline; }
   .muted { @apply text-sm text-slate-500; }
+  .eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.18em] text-fsp-pink; }
+  .glass { @apply border border-white/50 bg-white/70 backdrop-blur-xl; }
   .md-body :where(p) { @apply my-2 leading-relaxed; }
-  .md-body :where(code) { @apply rounded bg-fsp-blush/50 px-1 py-0.5 font-mono text-[0.85em] text-fsp-deep; }
+  .md-body :where(code) { @apply rounded-md bg-[#F3F0FA] px-1.5 py-0.5 font-mono text-[0.85em] text-fsp-deep; }
   .md-body :where(pre code) { @apply bg-transparent p-0 text-inherit; }
-  .md-body :where(table) { @apply my-3 w-full overflow-hidden rounded-xl text-sm ring-1 ring-slate-200; }
+  .md-body :where(table) { @apply my-3 w-full overflow-hidden rounded-xl text-sm ring-1 ring-line; }
   .md-body :where(th) { @apply bg-surface px-3 py-1.5 text-left text-xs font-semibold text-slate-600; }
-  .md-body :where(td) { @apply border-t border-slate-100 px-3 py-1.5; }
+  .md-body :where(td) { @apply border-t border-line px-3 py-1.5; }
   .md-body :where(ul) { @apply my-2 list-disc pl-5; }
   .md-body :where(strong) { @apply font-semibold text-fsp-deep; }
 }
 
-.bg-brand-gradient { background: linear-gradient(160deg, #310F53 0%, #520978 70%, #6b1386 100%); }
-.bg-hero { background: radial-gradient(1200px 500px at 85% -10%, rgba(255,0,83,.35), transparent 60%),
-                       radial-gradient(900px 500px at -10% 110%, rgba(138,131,209,.45), transparent 60%),
-                       linear-gradient(160deg, #2a0c48 0%, #520978 100%); }
+@layer utilities {
+  .text-gradient { @apply bg-gradient-to-r from-fsp-pink via-[#ff4d8a] to-fsp-lavender bg-clip-text text-transparent; }
+  .bg-grid { background-image: radial-gradient(rgba(49, 15, 83, .08) 1px, transparent 1px); background-size: 22px 22px; }
+}
+
+.bg-brand-gradient { background: linear-gradient(140deg, #2a0c48 0%, #4a0a6f 55%, #6b1386 100%); }
+.bg-hero {
+  background:
+    radial-gradient(900px 480px at 85% -10%, rgba(255, 0, 83, .38), transparent 60%),
+    radial-gradient(700px 480px at -5% 105%, rgba(138, 131, 209, .5), transparent 60%),
+    linear-gradient(160deg, #1f0838 0%, #3a0a5c 55%, #520978 100%);
+}
+.bg-app { background: radial-gradient(1200px 380px at 70% -120px, rgba(138, 131, 209, .14), transparent 70%), #FAFAFC; }
+.noise::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.mask-fade-x { mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
 .scrollbar-thin { scrollbar-width: thin; }
