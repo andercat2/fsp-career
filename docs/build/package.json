@@ -1,0 +1,7 @@
+{
+  "name": "fsp-career-docs-build",
+  "private": true,
+  "description": "Сборка сопроводительной документации: Markdown → DOCX → PDF",
+  "scripts": { "build": "python build_pdf.py" },
+  "dependencies": { "docx": "9.8.1" }
+}

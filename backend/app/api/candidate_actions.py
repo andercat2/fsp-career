@@ -167,6 +167,10 @@ def apply(vac_id: int, data: ApplyIn, cand: Candidate, db: DB):
            f"Кандидат {cand.public_id}" + (f", категория {GRADE_NAMES[cand.grade]}" if cand.grade else ", без категории"),
            f"/employer/vacancies/{v.id}")
     db.commit()
+    # Отклик — инициатива кандидата: контакты открываются компании, поэтому их можно передать в ATS
+    contacts = own_view(cand)["contacts"] | {"public_id": cand.public_id, "full_name": cand.full_name}
+    ix.notify_ats(v.company, "application.created",
+                  {"application_id": a.id, "vacancy_id": v.id, "vacancy_title": v.title, "candidate": contacts})
     return ix.application_for_candidate(a)
 
 

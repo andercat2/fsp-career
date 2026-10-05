@@ -14,6 +14,7 @@
 | Почта (Mailpit) | http://localhost:8025 |
 | ФСП ID (mock, OIDC как в Keycloak) | http://localhost:8090 |
 | Методика и результаты валидации | http://localhost:8080/methodology |
+| Сопроводительная документация | [`docs/fsp-career-documentation.pdf`](docs/fsp-career-documentation.pdf) · [DOCX](docs/fsp-career-documentation.docx) · [Markdown](docs/documentation.md) |
 
 ---
 
@@ -192,7 +193,7 @@ backend/
   tests/            pytest
 fsp-mock/           OIDC-провайдер «ФСП ID» (совместим по путям с Keycloak) + реестр достижений
 frontend/           React + TypeScript + Vite + Tailwind + framer-motion
-docs/               сопроводительная документация
+docs/               сопроводительная документация (PDF, DOCX, Markdown), иллюстрации, таблица API, сборка
 docker-compose.yml
 ```
 
