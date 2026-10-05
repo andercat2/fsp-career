@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { CircleAlert, CircleCheck, CircleMinus, ExternalLink, Info, Medal, ShieldCheck, Trophy } from 'lucide-react'
+import { CircleAlert, CircleCheck, CircleDot, ExternalLink, Info, Medal, ShieldCheck, Trophy } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Badge } from './ui'
 import { date } from '@/lib/format'
@@ -148,14 +148,14 @@ export function FspAchievements({ fsp, empty }: { fsp?: FspSummary | null; empty
         {fsp.sport_rank && <Badge tone="purple">{fsp.sport_rank}</Badge>}
         {fsp.rating && <Badge tone="lavender">Рейтинг ФСП: {fsp.rating.points}</Badge>}
       </div>
-      <ol className="relative space-y-4 pl-6">
+      <ol className="relative space-y-4 pl-9">
         <motion.span className="absolute left-[11px] top-1 w-0.5 rounded-full bg-gradient-to-b from-fsp-pink/60 to-fsp-lavender/20"
           initial={{ height: 0 }} animate={{ height: 'calc(100% - 8px)' }} transition={{ duration: 0.9, ease: EASE }} />
         {fsp.achievements.map((a, i) => (
           <motion.li key={i} className="relative" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.1 + i * 0.07, ease: EASE }}>
-            <span className={clsx('absolute -left-6 top-0.5 grid h-6 w-6 place-items-center rounded-full ring-4 ring-white',
+            <span className={clsx('absolute -left-9 top-0.5 grid h-6 w-6 place-items-center rounded-full ring-4 ring-white',
               a.place && a.place <= 3 ? 'bg-gradient-to-br from-fsp-pink to-[#ff5c95] text-white shadow-glow' : 'bg-[#FFF0F5] text-fsp-pink')}>
-              {a.place && a.place <= 3 ? <Medal className="h-3.5 w-3.5" /> : <CircleMinus className="h-3.5 w-3.5" />}
+              {a.place && a.place <= 3 ? <Medal className="h-3.5 w-3.5" /> : <CircleDot className="h-3.5 w-3.5" />}
             </span>
             <p className="text-sm font-semibold text-fsp-deep">{a.event}</p>
             <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
