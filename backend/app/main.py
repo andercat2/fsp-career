@@ -30,6 +30,11 @@ def _warmup() -> None:
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(engine)
+    from app.core.db import ensure_columns
+
+    added = ensure_columns()
+    if added:
+        log.info("Добавлены столбцы: %s", ", ".join(added))
     from app.services.testing.service import sync_item_stats
 
     with SessionLocal() as db:

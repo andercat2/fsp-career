@@ -10,10 +10,12 @@ import { Alert, Badge, Button, Card, Field, Input, Modal, PageHeader, PageLoader
 import { SkillPicker } from '@/components/SkillPicker'
 
 type Exp = { company: string | null; position: string | null; start: string | null; end: string | null; description: string | null }
+type Edu = { title: string; year?: number | null; level?: string | null; specialty?: string | null }
+type Lang = { name: string; level?: string | null }
 type Form = {
   full_name: string; phone: string; telegram: string; contact_email: string; city: string; relocation: boolean
   work_formats: string[]; desired_salary: number | null; headline: string; about: string; experience_years: number | null
-  experience: Exp[]; education: { title: string }[]; skills: string[]; roles: string[]; soft_skills: string[]
+  experience: Exp[]; education: Edu[]; languages: Lang[]; skills: string[]; roles: string[]; soft_skills: string[]
   links: Record<string, string>; open_to_offers: boolean
 }
 
@@ -22,15 +24,18 @@ const toForm = (p: any): Form => ({
   contact_email: p.contacts?.email ?? '', city: p.city ?? '', relocation: !!p.relocation, work_formats: p.work_formats ?? [],
   desired_salary: p.desired_salary ?? null, headline: p.headline ?? '', about: p.about ?? '',
   experience_years: p.experience_years ?? null, experience: p.experience ?? [], education: p.education ?? [],
+  languages: p.languages ?? [],
   skills: p.skills ?? [], roles: p.roles ?? [], soft_skills: p.soft_skills ?? [], links: p.links ?? {}, open_to_offers: p.open_to_offers ?? true,
 })
 
 const FIELD_LABEL: Record<string, string> = {
   full_name: 'ФИО', email: 'E-mail', phone: 'Телефон', telegram: 'Telegram', city: 'Город', headline: 'Должность',
   skills: 'Навыки', experience_years: 'Стаж', experience: 'Опыт работы', claimed_grade: 'Грейд по резюме', roles: 'Роли в команде',
-  soft_skills: 'Софт-скиллы', education: 'Образование', desired_salary: 'Ожидания по ЗП', work_format: 'Формат работы',
-  specialization: 'Специализация', github: 'GitHub',
+  soft_skills: 'Софт-скиллы', education: 'Образование', desired_salary: 'Ожидания по ЗП', work_formats: 'Формат работы',
+  specialization: 'Специализация', github: 'GitHub', languages: 'Языки', about: 'О себе', relocation: 'Переезд',
 }
+const LINK_LABEL: Record<string, string> = { github: 'GitHub', gitlab: 'GitLab', linkedin: 'LinkedIn', habr: 'Хабр Карьера',
+  kaggle: 'Kaggle', leetcode: 'LeetCode', vk: 'VK', hh: 'hh.ru' }
 
 export function CandidateProfile() {
   const qc = useQueryClient()
@@ -69,6 +74,8 @@ export function CandidateProfile() {
         ...f,
         full_name: p.full_name || f.full_name, phone: p.phone || f.phone, telegram: p.telegram || f.telegram,
         contact_email: p.email || f.contact_email, city: p.city || f.city, headline: p.headline || f.headline,
+        about: p.about || f.about, relocation: p.relocation ?? f.relocation,
+        languages: p.languages?.length ? p.languages : f.languages,
         skills: Array.from(new Set([...f.skills, ...(p.skills ?? [])])),
         roles: Array.from(new Set([...f.roles, ...(p.roles ?? [])])),
         soft_skills: Array.from(new Set([...f.soft_skills, ...(p.soft_skills ?? [])])),
@@ -76,8 +83,8 @@ export function CandidateProfile() {
         experience: p.experience?.length ? p.experience : f.experience,
         education: p.education?.length ? p.education : f.education,
         desired_salary: p.desired_salary ?? f.desired_salary,
-        work_formats: p.work_format && !f.work_formats.includes(p.work_format) ? [...f.work_formats, p.work_format] : f.work_formats,
-        links: p.github ? { ...f.links, github: p.github } : f.links,
+        work_formats: Array.from(new Set([...f.work_formats, ...(p.work_formats ?? [])])),
+        links: { ...f.links, ...(p.links ?? {}) },
       }
     })
     setParsed(null)
@@ -90,7 +97,8 @@ export function CandidateProfile() {
     <div className="space-y-6 pb-24">
       <PageHeader title="Профиль и резюме"
         subtitle="Резюме помогает работодателю понять ваш опыт, но категорию определяет тест. Навыки, подтверждённые тестом, отмечены ✓."
-        actions={<Button variant="secondary" icon={<Download className="h-4 w-4" />} onClick={() => download('/candidate/profile/pdf', `profile-${profile.public_id}.pdf`).catch(e => push(e.message, 'error'))}>Стандартизированный PDF</Button>} />
+        actions={<Button variant="secondary" icon={<Download className="h-4 w-4" />} title="Стандартизированный PDF-профиль для работодателя"
+          onClick={() => download('/candidate/profile/pdf', `profile-${profile.public_id}.pdf`).catch(e => push(e.message, 'error'))}>Загрузить PDF-профиль</Button>} />
 
       <div onDragOver={e => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)}
            onDrop={e => { e.preventDefault(); setDrag(false); void upload(e.dataTransfer.files?.[0]) }}
@@ -99,11 +107,11 @@ export function CandidateProfile() {
         <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-fsp-blush text-fsp-pink"><FileUp className="h-7 w-7" /></div>
         <div className="flex-1">
           <p className="font-bold text-fsp-deep">Загрузите резюме в PDF — заполним профиль автоматически</p>
-          <p className="mt-1 text-sm text-slate-500">Распознаём ФИО (NER-модель), контакты, стек по онтологии из 120+ навыков, стаж по датам, роли и софт-скиллы.
+          <p className="mt-1 text-sm text-slate-500">Резюме с hh.ru и обычные PDF: ФИО, контакты и GitHub, желаемую должность и зарплату, формат работы, места работы с датами, стаж, образование, языки, навыки, роли и софт-скиллы.
             {profile.resume_filename && <> Последний файл: <b>{profile.resume_filename}</b>.</>}</p>
         </div>
         <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={e => { void upload(e.target.files?.[0]); e.target.value = '' }} />
-        <Button onClick={() => fileRef.current?.click()} loading={uploading} icon={<Upload className="h-4 w-4" />}>Выбрать PDF</Button>
+        <Button onClick={() => fileRef.current?.click()} loading={uploading} icon={<Upload className="h-4 w-4" />}>Загрузить PDF</Button>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -188,17 +196,37 @@ export function CandidateProfile() {
         </div>
       </Card>
 
-      <Card title="Образование" actions={<Button size="sm" variant="soft" icon={<Plus className="h-4 w-4" />} onClick={() => set('education', [...form.education, { title: '' }])}>Добавить</Button>}>
-        <div className="space-y-2">
-          {form.education.map((e, i) => (
-            <div key={i} className="flex gap-2">
-              <Input value={e.title} placeholder="ВУЗ, факультет, степень, год" onChange={ev => set('education', form.education.map((x, j) => j === i ? { title: ev.target.value } : x))} />
-              <Button variant="ghost" onClick={() => set('education', form.education.filter((_, j) => j !== i))} aria-label="Удалить"><Trash2 className="h-4 w-4" /></Button>
-            </div>
-          ))}
-          {!form.education.length && <p className="muted">Не указано</p>}
-        </div>
-      </Card>
+      <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+        <Card title="Образование и курсы" actions={<Button size="sm" variant="soft" icon={<Plus className="h-4 w-4" />} onClick={() => set('education', [...form.education, { title: '' }])}>Добавить</Button>}>
+          <div className="space-y-2">
+            {form.education.map((e, i) => {
+              const upd = (patch: Partial<Edu>) => set('education', form.education.map((x, j) => j === i ? { ...x, ...patch } : x))
+              return (
+                <div key={i} className="grid gap-2 rounded-2xl bg-surface p-3 sm:grid-cols-[1.2fr_1.4fr_90px_auto]">
+                  <Input value={e.title} placeholder="Вуз или курс" onChange={ev => upd({ title: ev.target.value })} />
+                  <Input value={[e.level, e.specialty].filter(Boolean).join(' · ')} placeholder="Уровень · специальность"
+                    onChange={ev => { const [lvl, ...rest] = ev.target.value.split(' · '); upd(rest.length ? { level: lvl || null, specialty: rest.join(' · ') || null } : { level: null, specialty: ev.target.value || null }) }} />
+                  <Input type="number" value={e.year ?? ''} placeholder="Год" onChange={ev => upd({ year: ev.target.value ? Number(ev.target.value) : null })} />
+                  <Button variant="ghost" onClick={() => set('education', form.education.filter((_, j) => j !== i))} aria-label="Удалить"><Trash2 className="h-4 w-4" /></Button>
+                </div>
+              )
+            })}
+            {!form.education.length && <p className="muted">Не указано</p>}
+          </div>
+        </Card>
+        <Card title="Языки" actions={<Button size="sm" variant="soft" icon={<Plus className="h-4 w-4" />} onClick={() => set('languages', [...form.languages, { name: '', level: '' }])}>Добавить</Button>}>
+          <div className="space-y-2">
+            {form.languages.map((l, i) => (
+              <div key={i} className="flex gap-2">
+                <Input value={l.name} placeholder="Язык" onChange={ev => set('languages', form.languages.map((x, j) => j === i ? { ...x, name: ev.target.value } : x))} />
+                <Input value={l.level ?? ''} placeholder="Уровень (B2, родной…)" onChange={ev => set('languages', form.languages.map((x, j) => j === i ? { ...x, level: ev.target.value } : x))} />
+                <Button variant="ghost" onClick={() => set('languages', form.languages.filter((_, j) => j !== i))} aria-label="Удалить"><Trash2 className="h-4 w-4" /></Button>
+              </div>
+            ))}
+            {!form.languages.length && <p className="muted">Не указано</p>}
+          </div>
+        </Card>
+      </div>
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:pl-72">
         <div className="mx-auto flex max-w-[1280px] items-center justify-end gap-3 sm:px-6 lg:px-10">
@@ -225,12 +253,26 @@ export function CandidateProfile() {
               <p><span className="text-slate-500">Город:</span> {parsed.city ?? '—'}</p>
               <p><span className="text-slate-500">Стаж:</span> {years(parsed.experience_years)}</p>
               <p><span className="text-slate-500">Грейд по резюме:</span> {parsed.claimed_grade ? gradeName(parsed.claimed_grade) : '—'}</p>
+              <p><span className="text-slate-500">Зарплата:</span> {parsed.desired_salary ? rub(parsed.desired_salary) : '—'}</p>
+              <p><span className="text-slate-500">Формат:</span> {parsed.work_formats?.length ? parsed.work_formats.map((f: string) => WORK_FORMATS[f] ?? f).join(', ') : '—'}
+                {parsed.relocation != null && <span className="text-slate-500"> · {parsed.relocation ? 'готов к переезду' : 'без переезда'}</span>}</p>
+              {Object.keys(parsed.links ?? {}).length > 0 && <p className="sm:col-span-2"><span className="text-slate-500">Ссылки:</span> {Object.entries(parsed.links).map(([k, v]) => `${LINK_LABEL[k] ?? k}: ${v}`).join(' · ')}</p>}
               <p className="sm:col-span-2"><span className="text-slate-500">Специализация (классификатор):</span> {parsed.specialization ? `${specName(parsed.specialization)} · уверенность ${Math.round(parsed.specialization_confidence * 100)}%` : '—'}</p>
             </div>
             <div>
               <p className="label">Навыки ({parsed.skills.length})</p>
               <div className="flex flex-wrap gap-1.5">{parsed.skills.map((s: string) => <Badge key={s} tone="pink">{skillName(s)}</Badge>)}</div>
             </div>
+            {!!parsed.skills_unrecognized?.length && <p className="text-xs text-slate-500">Не нашлось в онтологии навыков: {parsed.skills_unrecognized.join(', ')} — их можно добавить вручную.</p>}
+            {!!parsed.soft_skills?.length && (
+              <div>
+                <p className="label">Софт-скиллы</p>
+                <div className="flex flex-wrap gap-1.5">{parsed.soft_skills.map((s: string) => (
+                  <Badge key={s} tone="lavender">{ref.soft_skills[s] ?? s}{parsed.soft_skills_evidence?.[s] ? ' · по опыту' : ''}</Badge>))}</div>
+                {Object.entries(parsed.soft_skills_evidence ?? {}).map(([k, v]) => (
+                  <p key={k} className="mt-1 text-xs text-slate-500"><b>{ref.soft_skills[k] ?? k}:</b> {String(v)}</p>))}
+              </div>
+            )}
             {!!parsed.roles?.length && <div><p className="label">Роли</p><div className="flex flex-wrap gap-1.5">{parsed.roles.map((r: string) => <Badge key={r} tone="lavender">{ref.team_roles[r] ?? r}</Badge>)}</div></div>}
             {!!parsed.experience?.length && (
               <div>
@@ -240,6 +282,15 @@ export function CandidateProfile() {
                 ))}</ul>
               </div>
             )}
+            {!!parsed.education?.length && (
+              <div>
+                <p className="label">Образование</p>
+                <ul className="space-y-1 text-sm">{parsed.education.map((e: Edu, i: number) => (
+                  <li key={i}><b>{e.title}</b>{[e.level, e.specialty, e.year].filter(Boolean).length ? ` · ${[e.level, e.specialty, e.year].filter(Boolean).join(', ')}` : ''}</li>))}</ul>
+              </div>
+            )}
+            {!!parsed.languages?.length && <p className="text-sm"><span className="text-slate-500">Языки:</span> {parsed.languages.map((l: Lang) => `${l.name}${l.level ? ` (${l.level})` : ''}`).join(', ')}</p>}
+            {parsed.about && <p className="line-clamp-3 text-sm text-slate-600"><span className="text-slate-500">О себе:</span> {parsed.about}</p>}
           </div>
         )}
       </Modal>

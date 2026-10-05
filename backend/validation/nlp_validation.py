@@ -2,8 +2,9 @@
 
 1. Разбор вакансий — 28 вручную написанных текстов разных стилей (validation/data/vacancies_eval.json) с эталоном:
    специализация (гибрид vs только модель vs только правила), грейды, навыки (P/R/F1), вилка, формат, город.
-2. Разбор резюме — синтетические резюме в двух шаблонах (выгрузка «как с hh.ru» и свободная форма), отрендеренные
-   в PDF (ReportLab) и распознанные обратно (pdfminer): точность ФИО, контактов, стажа, навыков, города.
+2. Разбор резюме — синтетические резюме в двух шаблонах: вёрстка экспорта hh.ru (две колонки, кегли и подписи как
+   в оригинале) и свободная форма; рендер в PDF (ReportLab) и распознавание (pdfminer): точность каждого поля —
+   ФИО, контакты, GitHub, город, переезд, должность, зарплата, формат, стаж, места работы, вуз, языки, «О себе», навыки.
 
 Запуск: python -m validation.nlp_validation
 """
@@ -85,6 +86,14 @@ def vacancy_eval() -> dict:
 
 # --------------------------------------------------------------------------- резюме
 
+SPECIALTIES = ["Программная инженерия", "Прикладная математика и информатика", "Информатика и вычислительная техника",
+               "Информационная безопасность", "Бизнес-информатика", "Математическое обеспечение и администрирование ИС"]
+HH_FORMAT = {"office": "на месте работодателя", "hybrid": "гибрид", "remote": "удалённо"}
+FREE_FORMAT = {"office": "офис", "hybrid": "гибрид", "remote": "удалённо"}
+LANG_POOL = [("Английский", ["A2 — Элементарный", "B1 — Средний", "B2 — Средне-продвинутый", "C1 — Продвинутый"]),
+             ("Немецкий", ["A1 — Начальный", "A2 — Элементарный"]), ("Французский", ["A1 — Начальный"])]
+
+
 def _fmt_month(ym: str) -> str:
     y, m = ym.split("-")
     return f"{MONTHS_RU[int(m) - 1]} {y}"
@@ -99,35 +108,206 @@ def _months(start: str, end: str | None) -> int:
     return max(0, (y2 - y1) * 12 + (m2 - m1))
 
 
-def resume_text(c, rng: random.Random, style: str) -> tuple[str, dict]:
-    email = f"{c.full_name.split()[1].lower()}.{c.idx}@mail-demo.ru"
+def _union_months(entries: list[dict]) -> int:
+    """Стаж без двойного счёта пересекающихся мест работы (так считает и hh.ru)."""
+    spans = []
+    for e in entries:
+        y1, m1 = map(int, e["start"].split("-"))
+        y2, m2 = map(int, e["end"].split("-")) if e["end"] else (date.today().year, date.today().month)
+        spans.append((y1 * 12 + m1, y2 * 12 + m2))
+    spans.sort()
+    total, (a, b) = 0, spans[0]
+    for x, y in spans[1:]:
+        if x <= b:
+            b = max(b, y)
+        else:
+            total += b - a
+            a, b = x, y
+    return total + (b - a)
+
+
+def _plural(n: int, one: str, few: str, many: str) -> str:
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return few
+    return many
+
+
+def _duration(months: int) -> str:
+    y, m = divmod(months, 12)
+    parts = []
+    if y:
+        parts.append(f"{y} {_plural(y, 'год', 'года', 'лет')}")
+    if m or not y:
+        parts.append(f"{m} {_plural(m, 'месяц', 'месяца', 'месяцев')}")
+    return " ".join(parts)
+
+
+def _gold(c, rng: random.Random) -> dict:
+    """Эталон резюме синтетического кандидата и сгенерированные для него «бумажные» поля."""
+    login = f"dev{c.idx}{rng.randint(10, 99)}"
     phone = f"+7 (9{rng.randint(10, 99)}) {rng.randint(100, 999)}-{rng.randint(10, 99)}-{rng.randint(10, 99)}"
-    tg = f"dev_{c.idx}_{rng.randint(10, 99)}"
-    skills = [SKILL_BY_ID[s].name for s in c.declared_skills if s in SKILL_BY_ID]
-    months = sum(_months(e["start"], e["end"]) for e in c.experience)
-    gold = {"full_name": c.full_name, "email": email, "phone_digits": "7" + phone.replace(" ", "").replace("(", "").replace(")", "")
-            .replace("-", "")[2:], "telegram": f"@{tg}", "city": c.city, "skills": set(c.declared_skills),
-            "years": months / 12}
-    if style == "hh":
-        y, m = divmod(months, 12)
-        lines = [c.full_name, f"{rng.choice(['Мужчина', 'Женщина'])}, {rng.randint(21, 40)} лет", phone, email,
-                 f"Telegram: @{tg}", f"Проживает: {c.city}", "Гражданство: Россия", "",
-                 "Желаемая должность и зарплата", c.headline, f"{c.desired_salary:,} ₽".replace(",", " "), "",
-                 f"Опыт работы — {y} лет {m} месяцев" if y else f"Опыт работы — {m} месяцев"]
-        for e in c.experience:
-            lines += ["", f"{_fmt_month(e['start'])} — {_fmt_month(e['end']) if e['end'] else 'настоящее время'}",
-                      e["company"], e["position"], e["description"]]
-        lines += ["", "Образование", "Высшее", c.education[0]["title"], "", "Навыки", ", ".join(skills), "",
-                  "Обо мне", c.about]
-    else:
-        lines = [f"{c.full_name} — {c.headline}", f"{c.city} | {email} | {phone} | tg: @{tg}", "", f"О себе: {c.about}",
-                 f"Стек: {', '.join(skills)}", "", "Опыт:"]
-        for e in c.experience:
-            s_y, s_m = e["start"].split("-")
-            end = f"{e['end'].split('-')[1]}.{e['end'].split('-')[0]}" if e["end"] else "н. в."
-            lines += [f"{s_m}.{s_y} – {end}  {e['company']}, {e['position']}", e["description"]]
-        lines += ["", f"Образование: {c.education[0]['title']}"]
-    return "\n".join(lines), gold
+    langs = [("Русский", "Родной")]
+    for name, levels in rng.sample(LANG_POOL, rng.randint(1, 2)):
+        langs.append((name, rng.choice(levels)))
+    uni = c.education[0]["title"].split(",")[0]
+    months = _union_months(c.experience)
+    return {
+        "full_name": c.full_name, "email": f"{login}@mail-demo.ru", "phone": phone,
+        "phone_digits": "7" + "".join(ch for ch in phone if ch.isdigit())[1:], "telegram": f"@{login}_tg",
+        "github": f"github.com/{login}" if rng.random() < 0.6 else None, "city": c.city, "relocation": c.relocation,
+        "headline": c.headline, "salary": c.desired_salary, "formats": set(c.work_formats), "months": months,
+        "experience": c.experience, "university": uni, "edu_year": 2026 - rng.randint(0, 12),
+        "specialty": rng.choice(SPECIALTIES), "languages": langs, "skills": set(c.declared_skills),
+        "skill_names": [SKILL_BY_ID[s].name for s in c.declared_skills if s in SKILL_BY_ID], "about": c.about,
+    }
+
+
+def hh_pdf(c, g: dict, rng: random.Random) -> bytes:
+    """Резюме в вёрстке экспорта hh.ru: две колонки (подписи и даты слева на x≈42, содержимое справа на x≈128),
+    кегли как в оригинале (ФИО 25, заголовки 11, компания и должность 12, текст 9, даты 8), колонтитул на каждой странице."""
+    import textwrap
+
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+
+    from app.services.pdf.profile_pdf import _fonts
+
+    _fonts()
+    buf = io.BytesIO()
+    cv = canvas.Canvas(buf, pagesize=A4)
+    W, H = A4
+    L, R, BUL = 42.5, 127.6, 141.7
+    y = H - 61
+    surname_name = " ".join(g["full_name"].split()[:2])
+
+    def footer():
+        cv.setFont("Mont", 8)
+        cv.drawString(L, 28.7, f"{surname_name}  •  Резюме обновлено 28 сентября 2026 в 11:10")
+
+    def need(h: float):
+        nonlocal y
+        if y - h < 60:
+            footer()
+            cv.showPage()
+            y = H - 55
+
+    def put(x: float, s: str, size: float, bold: bool = False, at: float | None = None):
+        cv.setFont("Mont-Bold" if bold else "Mont", size)
+        cv.drawString(x, y if at is None else at, s)
+
+    put(L, g["full_name"], 25, True)
+    y -= 27
+    for s in [f"{rng.choice(['Мужчина', 'Женщина'])}, {rng.randint(21, 40)} лет", "",
+              f"{g['phone']} — предпочитаемый способ связи", g["email"], f"telegram: {g['telegram']}", "",
+              f"Проживает: {g['city']}", "Гражданство: Россия, есть разрешение на работу: Россия",
+              ("Готов к переезду" if g["relocation"] else "Не готов к переезду") + ", готов к редким командировкам"]:
+        if s:
+            put(L, s, 9)
+        y -= 13
+    gh_in_header = bool(g["github"]) and rng.random() < 0.4
+    if gh_in_header:
+        put(L, f"Мой профиль: https://{g['github']}", 9)
+        y -= 13
+    y -= 24
+    put(L, "Желаемая должность и зарплата", 11, True)
+    y -= 20
+    put(L, g["headline"], 12, True)
+    put(449.8, f"{g['salary']:,} ₽ на руки".replace(",", " "), 16, True)
+    y -= 18
+    put(L, "Специализации:", 9)
+    y -= 13
+    put(56.7, "—  Программист, разработчик", 9)
+    y -= 13
+    put(L, "Тип занятости: полная занятость", 9)
+    y -= 13
+    put(L, "Формат работы: " + ", ".join(HH_FORMAT[f] for f in sorted(g["formats"])), 9)
+    y -= 37
+    need(60)
+    put(L, f"Опыт работы — {_duration(g['months'])}", 11, True)
+    y -= 20
+    for e in g["experience"]:
+        desc = textwrap.wrap(e["description"], 95) or [""]
+        need(110)
+        top = y
+        put(L, f"{_fmt_month(e['start'])} —", 8, at=top)
+        put(L, _fmt_month(e["end"]) if e["end"] else "настоящее время", 8, at=top - 11)
+        put(L, _duration(_months(e["start"], e["end"])), 8, at=top - 22)
+        put(R, e["company"], 12, True, at=top)
+        put(R, f"Россия, www.{rng.choice(['alpha', 'neo', 'stream', 'logos'])}{c.idx}.ru/", 9, at=top - 15)
+        put(R, "Информационные технологии, системная интеграция, интернет", 9, at=top - 28)
+        put(BUL, "• Разработка программного обеспечения", 9, at=top - 41)
+        y = top - 59
+        put(R, e["position"], 12, True)
+        y -= 21
+        for ln in desc:
+            need(14)
+            put(R, ln, 9)
+            y -= 13
+        y -= 24
+    need(80)
+    put(L, "Образование", 11, True)
+    y -= 20
+    put(L, "Высшее", 11, True)
+    y -= 26
+    put(L, str(g["edu_year"]), 8)
+    put(R, g["university"], 12, True)
+    y -= 15
+    put(R, f"{g['specialty']}, факультет информационных технологий", 9)
+    y -= 40
+    need(90)
+    put(L, "Навыки", 11, True)
+    y -= 20
+    put(L, "Знание языков", 8)
+    for name, level in g["languages"]:
+        put(R, f"{name} — {level}", 9)
+        y -= 13
+    y -= 20
+    put(L, "Навыки", 8)
+    row, rows = "", []
+    for t in g["skill_names"]:
+        cand = (row + "      " + t) if row else t
+        if len(cand) > 70:
+            rows.append(row)
+            row = t
+        else:
+            row = cand
+    rows.append(row)
+    for r in rows:
+        need(18)
+        put(R, r, 10)
+        y -= 18
+    y -= 22
+    need(60)
+    put(L, "Дополнительная информация", 11, True)
+    y -= 20
+    put(L, "Обо мне", 8)
+    about = g["about"] + (f" Код: {g['github']}." if g["github"] and not gh_in_header else "")
+    for ln in textwrap.wrap(about, 95):
+        need(14)
+        put(R, ln, 9)
+        y -= 13
+    footer()
+    cv.save()
+    return buf.getvalue()
+
+
+def free_text(g: dict) -> str:
+    lines = [f"{g['full_name']} — {g['headline']}",
+             f"{g['city']} | {g['email']} | {g['phone']} | tg: {g['telegram']}"
+             + (f" | https://{g['github']}" if g["github"] else ""),
+             ("Готов к переезду" if g["relocation"] else "Не готов к переезду")
+             + f". Формат: {', '.join(FREE_FORMAT[f] for f in sorted(g['formats']))}",
+             f"Ожидания по зарплате: {g['salary']:,} ₽".replace(",", " "), "",
+             f"О себе: {g['about']}", f"Стек: {', '.join(g['skill_names'])}", "", "Опыт работы"]
+    for e in g["experience"]:
+        s_y, s_m = e["start"].split("-")
+        end = f"{e['end'].split('-')[1]}.{e['end'].split('-')[0]}" if e["end"] else "н. в."
+        lines += [f"{s_m}.{s_y} – {end}  {e['company']}, {e['position']}", e["description"]]
+    lines += ["", f"Образование: {g['university']}, {g['specialty']}, {g['edu_year']}",
+              "Языки: " + "; ".join(f"{n} — {lv}" for n, lv in g["languages"])]
+    return "\n".join(lines)
 
 
 def text_to_pdf(text: str) -> bytes:
@@ -148,34 +328,64 @@ def text_to_pdf(text: str) -> bytes:
     return buf.getvalue()
 
 
-def resume_eval(n: int = 60, seed: int = 404) -> dict:
+def _norm(s: str | None) -> str:
+    return " ".join((s or "").lower().replace("ё", "е").split())
+
+
+def resume_eval(n: int = 80, seed: int = 404) -> dict:
+    """Синтетические резюме в вёрстке hh.ru (две колонки, как в настоящем экспорте) и в свободной форме → PDF →
+    распознавание. Сравнение с эталоном по каждому полю."""
     rng = random.Random(seed)
     pop = [c for c in generate_population(n * 2, seed=seed) if c.experience][:n]
-    stats = {"name": 0, "email": 0, "phone": 0, "telegram": 0, "city": 0, "years_within_0_5": 0}
-    skill_f1, years_err = [], []
-    by_style = {"hh": [], "free": []}
+    fields = ["name", "email", "phone", "telegram", "github", "city", "relocation", "headline", "salary", "formats",
+              "years_within_0_5", "experience_count", "company", "position", "start_date", "university", "edu_year",
+              "languages", "about"]
+    stats = {s: {f: [] for f in fields} for s in ("hh", "free")}
+    skill_f1 = {"hh": [], "free": []}
+    years_err = []
     for i, c in enumerate(pop):
         style = "hh" if i % 2 == 0 else "free"
-        text, gold = resume_text(c, rng, style)
-        _, p = parse_resume_pdf(text_to_pdf(text))
-        ok_name = (p["full_name"] or "").replace("ё", "е") == gold["full_name"].replace("ё", "е")
-        stats["name"] += ok_name
-        stats["email"] += p["email"] == gold["email"]
-        stats["phone"] += (p["phone"] or "").replace(" ", "").replace("-", "").replace("+", "") == gold["phone_digits"]
-        stats["telegram"] += p["telegram"] == gold["telegram"]
-        stats["city"] += p["city"] == gold["city"]
-        err = abs((p["experience_years"] or 0) - gold["years"])
+        g = _gold(c, rng)
+        data = hh_pdf(c, g, rng) if style == "hh" else text_to_pdf(free_text(g))
+        _, p = parse_resume_pdf(data)
+        st = stats[style]
+        st["name"].append(_norm(p["full_name"]) == _norm(g["full_name"]))
+        st["email"].append(p["email"] == g["email"])
+        st["phone"].append("".join(ch for ch in (p["phone"] or "") if ch.isdigit()) == g["phone_digits"])
+        st["telegram"].append(p["telegram"] == g["telegram"])
+        if g["github"]:
+            st["github"].append((p["github"] or "").lower() == g["github"].lower())
+        st["city"].append(p["city"] == g["city"])
+        st["relocation"].append(p["relocation"] == g["relocation"])
+        st["headline"].append(_norm(p["headline"]) == _norm(g["headline"]))
+        st["salary"].append(p["desired_salary"] == g["salary"])
+        st["formats"].append(set(p["work_formats"]) == g["formats"])
+        err = abs((p["experience_years"] or 0) - g["months"] / 12)
         years_err.append(err)
-        stats["years_within_0_5"] += err <= 0.5
-        f1 = prf(set(p["skills"]), gold["skills"])[2]
-        skill_f1.append(f1)
-        by_style[style].append(f1)
+        st["years_within_0_5"].append(err <= 0.5)
+        pe, ge = p["experience"], g["experience"]
+        st["experience_count"].append(len(pe) == len(ge))
+        for k, e in enumerate(ge):
+            q = pe[k] if k < len(pe) else {}
+            st["company"].append(_norm(q.get("company")) == _norm(e["company"]))
+            st["position"].append(_norm(q.get("position")) == _norm(e["position"]))
+            st["start_date"].append(q.get("start") == e["start"])
+        edu = p["education"][0] if p["education"] else {}
+        st["university"].append(_norm(g["university"]) in _norm(edu.get("title")))
+        st["edu_year"].append(edu.get("year") == g["edu_year"])
+        st["languages"].append({x["name"] for x in p["languages"]} == {n_ for n_, _ in g["languages"]})
+        st["about"].append(bool(p["about"]) and _norm(g["about"])[:40] in _norm(p["about"]))
+        skill_f1[style].append(prf(set(p["skills"]), g["skills"])[2])
+    acc = {s: {f: r3(np.mean(v)) if v else None for f, v in st.items()} for s, st in stats.items()}
+    overall = {f: r3(np.mean(stats["hh"][f] + stats["free"][f])) if stats["hh"][f] + stats["free"][f] else None
+               for f in fields}
     return {
-        "n": len(pop), "pipeline": "текст → PDF (ReportLab) → pdfminer.six → парсер",
-        "field_accuracy": {k: r3(v / len(pop)) for k, v in stats.items()},
+        "n": len(pop), "pipeline": "эталон → PDF (вёрстка hh.ru на ReportLab или свободный текст) → pdfminer.six → парсер",
+        "field_accuracy": overall,
+        "field_accuracy_by_template": acc,
         "experience_mae_years": r3(np.mean(years_err)),
-        "skills_f1": r3(np.mean(skill_f1)),
-        "skills_f1_by_template": {k: r3(np.mean(v)) for k, v in by_style.items()},
+        "skills_f1": r3(np.mean(skill_f1["hh"] + skill_f1["free"])),
+        "skills_f1_by_template": {k: r3(np.mean(v)) for k, v in skill_f1.items()},
     }
 
 

@@ -50,7 +50,7 @@ export function CandidateDashboard() {
         subtitle={cat.grade ? 'Ваша категория видна работодателям — предложения приходят без откликов вслепую.' :
           'Пройдите опрос и тест — после присвоения категории работодатели смогут найти вас сами.'}
         actions={<Button variant="secondary" icon={<Download className="h-4 w-4" />}
-          onClick={() => download('/candidate/profile/pdf', `profile-${p.public_id}.pdf`).catch(e => push(e.message, 'error'))}>PDF-профиль</Button>} />
+          onClick={() => download('/candidate/profile/pdf', `profile-${p.public_id}.pdf`).catch(e => push(e.message, 'error'))}>Загрузить PDF-профиль</Button>} />
 
       <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
         {cat.grade ? (

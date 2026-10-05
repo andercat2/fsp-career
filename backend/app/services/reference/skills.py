@@ -109,10 +109,13 @@ SKILLS: list[Skill] = [
     _s("numpy", "NumPy", DATA, ["numpy", "scipy"], ["data_tools"], ["ml"]),
     _s("scikit_learn", "scikit-learn", DATA, ["scikit-learn", "sklearn", "scikit learn"], ["ml"], ["ml"]),
     _s("gradient_boosting", "Градиентный бустинг", DATA, ["catboost", "xgboost", "lightgbm", "градиентный бустинг", "gradient boosting"], ["ml"], ["ml"]),
+    _s("machine_learning", "Машинное обучение", DATA, ["machine learning", "машинное обучение", "ml-модел", "ml-инженер"], ["ml"], ["ml"]),
+    _s("deep_learning", "Глубокое обучение", DATA, ["deep learning", "глубокое обучение", "нейронные сети", "нейросет"], ["deep_learning"], ["ml"]),
     _s("pytorch", "PyTorch", DATA, ["pytorch", "torch"], ["deep_learning"], ["ml"]),
     _s("tensorflow", "TensorFlow / Keras", DATA, ["tensorflow", "keras"], ["deep_learning"], ["ml"]),
-    _s("nlp", "NLP", DATA, ["nlp", "обработка естественного языка", "transformers", "bert", "llm", "huggingface", "rag"], ["deep_learning", "ml"], ["ml"]),
-    _s("cv", "Компьютерное зрение", DATA, ["computer vision", "компьютерное зрение", "opencv", "yolo", "cv-модел"], ["deep_learning"], ["ml"]),
+    _s("nlp", "NLP", DATA, ["nlp", "обработка естественного языка", "transformers", "bert", "llm", "huggingface", "rag", "langchain", "ollama", "vllm"], ["deep_learning", "ml"], ["ml"]),
+    _s("cv", "Компьютерное зрение", DATA, ["computer vision", "компьютерное зрение", "opencv", "yolo", "cv-модел", "vlm", "object detection", "детекция объектов", "сегментация изображ"], ["deep_learning"], ["ml"]),
+    _s("ocr", "OCR", DATA, ["ocr", "tesseract", "paddleocr", "easyocr", "распознавание текста"], ["deep_learning"], ["ml"]),
     _s("mlops", "MLOps", DATA, ["mlops", "mlflow", "airflow", "kubeflow", "dvc", "feature store"], ["ml", "cicd"], ["ml"]),
     _s("statistics", "Статистика", DATA, ["статистик", "statistics", "теория вероятност", "матстат", "hypothesis testing", "проверка гипотез"], ["statistics"], ["ml", "data_analyst"]),
     _s("ab_testing", "A/B-тестирование", DATA, ["a/b", "ab-тест", "a/b-тест", "ab testing", "сплит-тест", "a/b тест"], ["analytics", "statistics"], ["data_analyst"]),
@@ -144,33 +147,44 @@ SKILL_BY_ID: dict[str, Skill] = {s.id: s for s in SKILLS}
 _NO_NAME_MATCH = {"go", "c", "r_lang"}
 
 
-def _compile(skill: Skill) -> re.Pattern:
+# Общеупотребительные слова-синонимы: в тексте вакансии они уместны, а в описании задач резюме дают ложные навыки
+# («вёрстка документов», «мониторинг этапов изготовления»). Строгий режим их не использует.
+WEAK_ALIASES = {"вёрстка", "верстка", "мониторинг", "доступность", "контейнер", "индекс", "транзакц", "алгоритм",
+                "логирован", "облачн", "балансиров", "визуализац", "статистик", "конверси", "когорт", "нагрузочн",
+                "асинхронн", "многопоточ", "граничные значения", "чек-лист", "распознавание текста", "нейросет"}
+
+
+def _compile(skill: Skill, strict: bool = False) -> re.Pattern:
     """Латинские синонимы ищем как отдельные токены (с учётом символов вроде c++, c#, .net),
     кириллические — как основу слова (префикс), чтобы ловить падежные формы: «микросервисами»."""
     parts = []
     # Однобуквенные/двухбуквенные имена (C, R, Go) слишком неоднозначны — ищем только по синонимам.
     names = skill.synonyms if skill.id in _NO_NAME_MATCH else (*skill.synonyms, skill.name)
     for syn in names:
+        if strict and syn.lower() in WEAK_ALIASES:
+            continue
         s = syn.lower().replace("ё", "е")
         if re.search(r"[а-я]", s):
             parts.append(rf"(?<![а-яa-z]){re.escape(s)}")
         else:
             parts.append(rf"(?<![a-z0-9+#]){re.escape(s)}(?![a-z0-9+#])")
-    return re.compile("|".join(parts))
+    return re.compile("|".join(parts)) if parts else re.compile(r"(?!x)x")
 
 
 _COMPILED = [(s, _compile(s)) for s in SKILLS]
+_COMPILED_STRICT = [(s, _compile(s, strict=True)) for s in SKILLS]
 _GO_CONTEXT = re.compile(r"golang|backend|бэкенд|разработ|developer|микросерв|горутин|grpc")
 
 
-def extract_skills(text: str, context: str | None = None) -> list[dict]:
+def extract_skills(text: str, context: str | None = None, strict: bool = False) -> list[dict]:
     """Находит навыки в тексте. Возвращает [{id, name, count, first_pos}] по убыванию частоты.
-    context — более широкий текст (вся вакансия) для разрешения неоднозначных упоминаний вроде «Go»."""
+    context — более широкий текст (вся вакансия) для разрешения неоднозначных упоминаний вроде «Go»;
+    strict — без общеупотребительных слов-синонимов (для описаний опыта в резюме)."""
     if not text:
         return []
     low = text.lower().replace("ё", "е")
     found: dict[str, dict] = {}
-    for skill, pat in _COMPILED:
+    for skill, pat in (_COMPILED_STRICT if strict else _COMPILED):
         matches = list(pat.finditer(low))
         if skill.id == "go" and not matches and _GO_CONTEXT.search((context or text).lower()):
             # «go» как отдельное слово частотно в английском — учитываем только в ИТ-контексте

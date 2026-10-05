@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 09:21",
+  "generated_at": "2026-10-05 16:11",
   "vacancies": {
     "n": 28,
     "specialization_accuracy": {
@@ -21,22 +21,79 @@
     "errors": []
   },
   "resumes": {
-    "n": 60,
-    "pipeline": "текст → PDF (ReportLab) → pdfminer.six → парсер",
+    "n": 80,
+    "pipeline": "эталон → PDF (вёрстка hh.ru на ReportLab или свободный текст) → pdfminer.six → парсер",
     "field_accuracy": {
-      "name": 0.95,
+      "name": 1.0,
       "email": 1.0,
       "phone": 1.0,
       "telegram": 1.0,
-      "city": 0.983,
-      "years_within_0_5": 0.983
+      "github": 1.0,
+      "city": 1.0,
+      "relocation": 1.0,
+      "headline": 1.0,
+      "salary": 1.0,
+      "formats": 1.0,
+      "years_within_0_5": 1.0,
+      "experience_count": 1.0,
+      "company": 1.0,
+      "position": 1.0,
+      "start_date": 1.0,
+      "university": 1.0,
+      "edu_year": 1.0,
+      "languages": 1.0,
+      "about": 1.0
     },
-    "experience_mae_years": 0.05,
-    "skills_f1": 0.954,
+    "field_accuracy_by_template": {
+      "hh": {
+        "name": 1.0,
+        "email": 1.0,
+        "phone": 1.0,
+        "telegram": 1.0,
+        "github": 1.0,
+        "city": 1.0,
+        "relocation": 1.0,
+        "headline": 1.0,
+        "salary": 1.0,
+        "formats": 1.0,
+        "years_within_0_5": 1.0,
+        "experience_count": 1.0,
+        "company": 1.0,
+        "position": 1.0,
+        "start_date": 1.0,
+        "university": 1.0,
+        "edu_year": 1.0,
+        "languages": 1.0,
+        "about": 1.0
+      },
+      "free": {
+        "name": 1.0,
+        "email": 1.0,
+        "phone": 1.0,
+        "telegram": 1.0,
+        "github": 1.0,
+        "city": 1.0,
+        "relocation": 1.0,
+        "headline": 1.0,
+        "salary": 1.0,
+        "formats": 1.0,
+        "years_within_0_5": 1.0,
+        "experience_count": 1.0,
+        "company": 1.0,
+        "position": 1.0,
+        "start_date": 1.0,
+        "university": 1.0,
+        "edu_year": 1.0,
+        "languages": 1.0,
+        "about": 1.0
+      }
+    },
+    "experience_mae_years": 0.013,
+    "skills_f1": 0.957,
     "skills_f1_by_template": {
-      "hh": 0.944,
-      "free": 0.964
+      "hh": 0.943,
+      "free": 0.971
     }
   },
-  "runtime_sec": 2.3
+  "runtime_sec": 4.7
 }

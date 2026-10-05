@@ -39,6 +39,7 @@ class CandidateProfile(Base):
     skills: Mapped[list] = mapped_column(JSON, default=list)  # канонические id навыков (самоописание)
     roles: Mapped[list] = mapped_column(JSON, default=list)
     soft_skills: Mapped[list] = mapped_column(JSON, default=list)
+    languages: Mapped[list] = mapped_column(JSON, default=list)  # [{name, level}]
     links: Mapped[dict] = mapped_column(JSON, default=dict)
     resume_text: Mapped[str | None] = mapped_column(Text)
     resume_filename: Mapped[str | None] = mapped_column(String(255))

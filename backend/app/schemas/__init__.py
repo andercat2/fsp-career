@@ -78,7 +78,15 @@ class ExperienceItem(BaseModel):
 
 
 class EducationItem(BaseModel):
-    title: str
+    title: str = Field(max_length=300, description="Учебное заведение или курс")
+    year: int | None = Field(None, ge=1950, le=2100, description="Год окончания")
+    level: str | None = Field(None, max_length=60, description="Высшее, бакалавр, магистр, курсы…")
+    specialty: str | None = Field(None, max_length=300, description="Факультет, специальность")
+
+
+class LanguageItem(BaseModel):
+    name: str = Field(max_length=40)
+    level: str | None = Field(None, max_length=80)
 
 
 class CandidateProfileIn(BaseModel):
@@ -98,6 +106,7 @@ class CandidateProfileIn(BaseModel):
     skills: list[str] = Field([], description="Канонические id навыков из /reference/skills")
     roles: list[str] = []
     soft_skills: list[str] = []
+    languages: list[LanguageItem] = []
     links: dict[str, str] = {}
     open_to_offers: bool = True
 

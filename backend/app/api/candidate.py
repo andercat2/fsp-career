@@ -41,6 +41,7 @@ def put_profile(data: CandidateProfileIn, cand: Candidate, db: DB):
     payload["skills"] = [s for s in dict.fromkeys(payload["skills"]) if s in SKILL_BY_ID]
     payload["experience"] = [e for e in payload["experience"] if any(e.values())]
     payload["education"] = [e for e in payload["education"] if e.get("title")]
+    payload["languages"] = [x for x in payload["languages"] if x.get("name")]
     for k, v in payload.items():
         setattr(cand, k, v)
     recompute_candidate(db, cand)

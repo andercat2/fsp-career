@@ -189,3 +189,28 @@ HTML, CSS, JavaScript.
     assert "mentoring" in p["roles"] and "code_review" in p["roles"]
     assert p["specialization"] == "frontend"
     assert p["city"] == "Москва"
+
+
+def test_resume_parsing_hh_layout():
+    """Экспорт hh.ru: двухколоночная вёрстка (даты и подписи слева, содержимое справа) — все ключевые поля."""
+    import random
+
+    from app.seed.synthetic import generate_population
+    from app.services.nlp.resume_parser import parse_resume_pdf
+    from validation.nlp_validation import _gold, hh_pdf
+
+    rng = random.Random(7)
+    c = next(x for x in generate_population(40, seed=11) if len(x.experience) >= 2)
+    g = _gold(c, rng)
+    _, p = parse_resume_pdf(hh_pdf(c, g, rng))
+    assert p["source"] == "hh"
+    assert p["full_name"] == g["full_name"] and p["email"] == g["email"] and p["telegram"] == g["telegram"]
+    assert p["headline"] == g["headline"] and p["desired_salary"] == g["salary"]
+    assert set(p["work_formats"]) == g["formats"] and p["relocation"] == g["relocation"] and p["city"] == g["city"]
+    assert abs(p["experience_years"] - g["months"] / 12) < 0.1
+    assert [(e["company"], e["position"], e["start"]) for e in p["experience"]] == \
+        [(e["company"], e["position"], e["start"]) for e in g["experience"]]
+    assert g["university"] in p["education"][0]["title"] and p["education"][0]["year"] == g["edu_year"]
+    assert {x["name"] for x in p["languages"]} == {n for n, _ in g["languages"]}
+    assert p["about"] and g["about"][:30] in p["about"]
+    assert set(p["skills"]) & g["skills"]

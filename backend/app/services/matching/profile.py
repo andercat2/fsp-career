@@ -32,7 +32,8 @@ VERIFIABLE = {
     "http_api": ["rest"], "security": ["security_web"], "linux": ["linux", "bash"], "networks": ["networks"],
     "containers": ["docker"], "kubernetes": ["kubernetes"], "cicd": ["git", "gitlab_ci"],
     "observability": ["prometheus", "sre"], "statistics": ["statistics"], "analytics": ["product_metrics", "ab_testing"],
-    "data_tools": ["pandas", "numpy"], "ml": ["scikit_learn", "gradient_boosting"], "algorithms": ["algorithms"],
+    "data_tools": ["pandas", "numpy"], "ml": ["scikit_learn", "gradient_boosting", "machine_learning"],
+    "deep_learning": ["deep_learning", "pytorch", "tensorflow"], "algorithms": ["algorithms"],
     "testing_theory": ["test_design", "manual_testing"], "test_automation": ["pytest", "selenium"],
 }
 SKILL_VERIFIER = {sk: d for d, sks in VERIFIABLE.items() for sk in sks}

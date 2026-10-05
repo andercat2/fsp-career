@@ -161,7 +161,16 @@ def render_profile_pdf(view: dict) -> bytes:
     if edu:
         story.append(_p("Образование", st["h2"]))
         for e in edu:
-            story.append(_p(e.get("title") if isinstance(e, dict) else e, st["body"]))
+            if not isinstance(e, dict):
+                story.append(_p(str(e), st["body"]))
+                continue
+            details = ", ".join(str(x) for x in (e.get("level"), e.get("specialty"), e.get("year")) if x)
+            story.append(_p(f"{e.get('title')}" + (f" — {details}" if details else ""), st["body"]))
+    langs = view.get("languages") or []
+    if langs:
+        story.append(_p("Языки", st["h2"]))
+        story.append(_p(" · ".join(f"{x.get('name')}" + (f" — {x.get('level')}" if x.get("level") else "") for x in langs),
+                        st["body"]))
 
     story += [Spacer(1, 10), _p(f"Профиль сформирован платформой «ФСП Карьера» {utcnow():%d.%m.%Y}. Код профиля "
                                  f"{view.get('public_id')}. Категория и оценки получены по результатам адаптивного "
