@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     fsp_enabled: bool = True
 
     # Бизнес-правила
-    grade_change_cooldown_days: int = 90  # смена грейда — не чаще раза в 90 дней
+    grade_change_cooldown_days: int = 30  # смена грейда — не чаще раза в месяц
     same_level_retake_days: int = 30  # повторная попытка теста того же уровня
     invitation_ttl_days: int = 14
     invitations_per_day_limit: int = 60

@@ -9,6 +9,7 @@ import { useToast } from '@/lib/toast'
 import { date } from '@/lib/format'
 import { Alert, Badge, Button, Card, ChoiceCard, Field, Input, PageHeader, PageLoader, Progress } from '@/components/ui'
 import { MAX_RESUMES, ResumeTabs, resumeLabel, useResumes } from '@/components/Resumes'
+import { StartTestModal } from '@/components/StartTestModal'
 
 type Survey = {
   industries: string[]; specialization: string; language: string | null; experience: string; roles: string[]
@@ -186,7 +187,7 @@ function HowItWorks({ spec, lang }: { spec?: string | null; lang?: string | null
         <li className="flex gap-3"><Fingerprint className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Уникальный.</b> Каждое задание — ваш личный вариант: свои числа, данные, код. Ответы других кандидатов не помогут.</span></li>
         <li className="flex gap-3"><Timer className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С таймером по сложности.</b> От 1 до 5 минут: базовое время зависит от формата (выбор, код, расчёт) и увеличивается для трудных заданий. Вернуться к предыдущему нельзя.</span></li>
         <li className="flex gap-3"><Camera className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С прокторингом.</b> Снимок экрана, печать или копирование задания: первый раз — предупреждение, второй — тест завершается досрочно с пониженной оценкой. Уход со вкладки учитывается.</span></li>
-        <li className="flex gap-3"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Честные ограничения.</b> Смена грейда — не чаще раза в 90 дней, повтор того же уровня — через 30 дней. Не прошли — можно принять грейд ниже по этому же тесту (если тест уверенно его показал) или сразу пройти тест уровнем ниже; уверенно прошли — сразу тест уровнем выше.</span></li>
+        <li className="flex gap-3"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Честные ограничения.</b> Смена грейда и повтор того же уровня — не чаще раза в месяц. Не прошли — можно принять грейд ниже по этому же тесту (если тест уверенно его показал) или пройти тест уровнем ниже без ожидания; уверенно прошли — тест уровнем выше доступен без ожидания, начинаете его, когда будете готовы.</span></li>
       </ul>
       {bp && (
         <div className="mt-5 border-t border-slate-100 pt-4">
@@ -217,6 +218,7 @@ export function Testing() {
   const [resurvey, setResurvey] = useState(false)
   const [warnings, setWarnings] = useState<string[]>([])
   const [grade, setGrade] = useState<string | null>(null)
+  const [confirm, setConfirm] = useState<string | null>(null)
   const { data: resumes } = useResumes()
   const { data: el, isLoading } = useQuery({ queryKey: ['eligibility', rid], queryFn: () => api(`/testing/eligibility?resume_id=${rid}`), enabled: !isNew })
   useEffect(() => { setGrade(null); setResurvey(false) }, [rid, isNew])
@@ -270,13 +272,15 @@ export function Testing() {
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface p-4">
                 <p className="text-sm text-slate-600">Тест займёт 20–40 минут. Обеспечьте спокойную обстановку — время на задание ограничено.</p>
                 <Button size="lg" disabled={!selected || !el.grades.find((g: any) => g.grade === selected)?.allowed}
-                  loading={start.isPending} onClick={() => selected && start.mutate(selected)} icon={<Play className="h-5 w-5" />}>Начать тест</Button>
+                  onClick={() => selected && setConfirm(selected)} icon={<Play className="h-5 w-5" />}>Начать тест</Button>
               </div>
             </Card>
           </>)}
         </div>
         <HowItWorks spec={isNew ? null : el.specialization} lang={isNew ? null : el.language} />
       </div>
+      <StartTestModal grade={confirm} title={confirm ? el?.grades?.find((g: any) => g.grade === confirm)?.name : undefined}
+        loading={start.isPending} onClose={() => setConfirm(null)} onConfirm={() => confirm && start.mutate(confirm)} />
     </div>
   )
 }

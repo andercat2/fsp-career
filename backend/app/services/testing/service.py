@@ -31,7 +31,6 @@ from app.services.testing.bank import REGISTRY, check_answer
 from app.services.testing.cat import AnsweredItem, CatConfig, CatState, ItemState, decide, select_next, should_stop
 
 CFG = CatConfig()
-STRONG_UPGRADE_WINDOW_DAYS = 7
 SESSION_TTL_HOURS = 3
 TIME_GRACE_SEC = 15
 DRIFT_Z_FLAG = 3.0
@@ -148,11 +147,15 @@ def eligibility(db: Session, cand: CandidateProfile, resume_id: int | None = Non
         TestSession.candidate_id == cand.id, TestSession.specialization == prof.specialization,
         TestSession.status.in_(["completed", "abandoned"])).order_by(TestSession.started_at.desc())))
     current = _current_grade(prof)
+    # «Уверенный» результат открывает следующий уровень без ожидания, но тест не начинается сам: кандидат запускает
+    # его, когда будет готов (срока нет). Это одна попытка — после неё действуют обычные ограничения частоты.
     strong_next = None
     for s in sessions:
         if s.status == "completed" and s.result and s.result.get("decision") == "confirmed_strong":
-            if s.finished_at and s.finished_at > now - timedelta(days=STRONG_UPGRADE_WINDOW_DAYS):
-                strong_next = s.result.get("next_grade")
+            nxt = s.result.get("next_grade")
+            used = any(x.target_grade == nxt and x.started_at > s.started_at for x in sessions)
+            if nxt and not used and (current is None or GRADE_INDEX[nxt] > GRADE_INDEX[current]):
+                strong_next = nxt
             break
     grades = []
     for g in GRADE_CODES:
@@ -173,7 +176,8 @@ def eligibility(db: Session, cand: CandidateProfile, resume_id: int | None = Non
                                                   f"{settings.grade_change_cooldown_days} дней",
                             available_from=avail.isoformat())
         if strong_next == g:
-            item.update(recommended=True, reason="Вы уверенно прошли предыдущий уровень — можно сразу попробовать этот")
+            item.update(recommended=True, reason="Вы уверенно прошли предыдущий уровень — тест доступен без ожидания, "
+                                                 "когда будете готовы")
         grades.append(item)
     return {"ready": True, "reason": None, "grades": grades, "current_grade": current,
             "in_progress": active.token if active else None, "resume_id": resume_id or 0,

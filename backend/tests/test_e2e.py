@@ -407,3 +407,33 @@ def test_lower_grade_can_be_accepted_from_same_test(client):
     prof = client.get(f"{API}/candidate/profile", headers=h).json()
     assert prof["category"]["grade"] == res["suggested_grade"]
     assert client.post(f"{API}/testing/sessions/{token}/accept-suggested", headers=h).status_code == 409
+
+
+def test_strong_result_unlocks_next_level_on_demand_once(client):
+    """Уверенный результат не запускает следующий тест сам: уровень выше доступен без ожидания, когда кандидат
+    готов (без срока), — одна попытка, дальше действуют обычные ограничения (месяц)."""
+    from datetime import timedelta
+
+    from app.core.db import SessionLocal
+    from app.models import TestSession
+
+    h = _new_candidate(client, "strong@example.com", grade="junior")
+    view = _pass_test(client, h, "junior")
+    res = view["result"]
+    assert res["decision"] == "confirmed_strong" and res["next_grade"] == "middle"
+    el = client.get(f"{API}/testing/eligibility", headers=h).json()
+    assert el["cooldown_days"] == 30 and el["in_progress"] is None  # следующий тест сам не начался
+    # срока нет: и через 20 дней тест уровнем выше доступен без ожидания
+    with SessionLocal() as db:
+        s = db.scalar(select(TestSession).where(TestSession.token == view["token"]))
+        s.started_at -= timedelta(days=20)
+        s.finished_at -= timedelta(days=20)
+        db.commit()
+    by = {g["grade"]: g for g in client.get(f"{API}/testing/eligibility", headers=h).json()["grades"]}
+    assert by["middle"]["allowed"] and "когда будете готовы" in by["middle"]["reason"]
+    assert not by["senior"]["allowed"]  # смена грейда — не чаще раза в месяц
+    # одна попытка: после неё — обычные ограничения
+    v = client.post(f"{API}/testing/sessions", headers=h, json={"grade": "middle"}).json()
+    client.post(f"{API}/testing/sessions/{v['token']}/abandon", headers=h)
+    by = {g["grade"]: g for g in client.get(f"{API}/testing/eligibility", headers=h).json()["grades"]}
+    assert not by["middle"]["allowed"] and "через 30 дней" in by["middle"]["reason"]

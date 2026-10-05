@@ -27,7 +27,7 @@ export function GradePage() {
   const titles = Object.fromEntries(resumes.map(x => [x.id, x.title || x.specialization_name]))
   return (
     <div className="space-y-6">
-      <PageHeader title="Категория и грейд" subtitle="Текущий статус по каждому резюме, история опросов и тестов. Грейд не понижается принудительно; смена грейда — не чаще раза в 90 дней для каждой категории."
+      <PageHeader title="Категория и грейд" subtitle="Текущий статус по каждому резюме, история опросов и тестов. Грейд не понижается принудительно; смена грейда — не чаще раза в месяц для каждой категории."
         actions={<ButtonLink to={`/candidate/testing${r.id ? `?resume=${r.id}` : ''}`} icon={<Play className="h-4 w-4" />}>Пройти тест</ButtonLink>} />
       {resumes.length > 1 && <ResumeTabs resumes={resumes} active={r.id} onSelect={id => setParams(id ? { resume: String(id) } : {})} />}
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">

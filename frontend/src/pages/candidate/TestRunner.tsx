@@ -11,6 +11,7 @@ import { CountUp, EASE, SPRING } from '@/lib/motion'
 import { Alert, Badge, Button, ButtonLink, Card, Input, Modal, PageLoader } from '@/components/ui'
 import { CodeBlock, Markdown } from '@/components/Content'
 import { DomainBars } from '@/components/Domain'
+import { StartTestModal } from '@/components/StartTestModal'
 
 type Question = {
   id: number; seq: number; prompt: string; kind: 'single' | 'multi' | 'input' | 'numeric'
@@ -263,6 +264,7 @@ function Result({ view }: { view: any }) {
   const accepted = !!r.accepted_suggested
   const ok = (r.decision !== 'not_confirmed' || accepted) && !r.review_required
   const canAccept = r.decision === 'not_confirmed' && r.suggested_assignable && !accepted && !r.review_required
+  const [confirm, setConfirm] = useState<{ grade: string; name: string } | null>(null)
   const start = useMutation({
     mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g, resume_id: view.resume_id ?? 0 } }),
     onSuccess: (s: any) => { qc.invalidateQueries(); nav(`/candidate/testing/${s.token}`) },
@@ -306,15 +308,28 @@ function Result({ view }: { view: any }) {
                     r.decision === 'not_confirmed' ? 'Категория пока не присвоена. Это не приговор: пройдите тест уровнем ниже — сразу, без ожидания.' : 'Результат учтён в профиле.'}
             </motion.p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              {r.next_grade && <Button onClick={() => start.mutate(r.next_grade)} loading={start.isPending} icon={<TrendingUp className="h-4 w-4" />}>Пройти тест на {r.next_grade_name} сейчас</Button>}
               {canAccept && <Button onClick={() => accept.mutate()} loading={accept.isPending} icon={<Check className="h-4 w-4" />}>Принять {r.suggested_grade_name} по этому тесту</Button>}
-              {r.decision === 'not_confirmed' && r.suggested_grade && !accepted && <Button variant={canAccept ? 'secondary' : 'primary'} onClick={() => start.mutate(r.suggested_grade)} loading={start.isPending} icon={<ArrowRight className="h-4 w-4" />}>Пройти тест на {r.suggested_grade_name}</Button>}
+              {r.decision === 'not_confirmed' && r.suggested_grade && !accepted && <Button variant={canAccept ? 'secondary' : 'primary'} onClick={() => setConfirm({ grade: r.suggested_grade, name: r.suggested_grade_name })} icon={<ArrowRight className="h-4 w-4" />}>Пройти тест на {r.suggested_grade_name}</Button>}
               <ButtonLink to="/candidate/grade" variant="secondary" icon={<Award className="h-4 w-4" />}>Категория и грейд</ButtonLink>
               <span className={clsx('ml-1 text-sm', ok ? 'text-white/70' : 'text-amber-800')}>{r.n_correct} из {r.n_items} верно</span>
             </div>
           </div>
         </div>
       </motion.div>
+
+      {r.next_grade && !r.review_required && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.4, ease: EASE }}
+          className="flex flex-col gap-4 rounded-[22px] border border-line bg-white p-5 sm:flex-row sm:items-center">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-fsp-blush/60 text-fsp-pink"><TrendingUp className="h-5 w-5" /></span>
+          <div className="min-w-0 flex-1 text-sm leading-relaxed text-slate-600">
+            <p className="font-bold text-fsp-deep">Следующий уровень — когда будете готовы</p>
+            <p>Вы уверенно подтвердили {r.target_grade_name}, поэтому тест на {r.next_grade_name} доступен без месячного ожидания. Он не начнётся сам: запустите его в разделе «Опрос и тест», когда почувствуете готовность.</p>
+          </div>
+          <Button variant="secondary" onClick={() => setConfirm({ grade: r.next_grade, name: r.next_grade_name })} icon={<TrendingUp className="h-4 w-4" />}>Я готов(а) к {r.next_grade_name}</Button>
+        </motion.div>
+      )}
+      <StartTestModal grade={confirm?.grade ?? null} title={confirm?.name} loading={start.isPending}
+        onClose={() => setConfirm(null)} onConfirm={() => confirm && start.mutate(confirm.grade)} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         <Card title="Результаты по доменам" subtitle="Вероятность решить типичное задание уровня заявленного грейда">
