@@ -32,7 +32,7 @@ export function Item({ children, className, as = 'div' }: { children: ReactNode;
 export function Reveal({ children, className, delay = 0, y = 24 }: { children: ReactNode; className?: string; delay?: number; y?: number }) {
   return (
     <motion.div className={className} initial={{ opacity: 0, y }} whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.7, ease: EASE, delay }}>
+      viewport={{ once: true, margin: '0px 0px -80px 0px' }} transition={{ duration: 0.7, ease: EASE, delay }}>
       {children}
     </motion.div>
   )
@@ -43,7 +43,9 @@ export function CountUp({ value, decimals = 0, suffix = '', prefix = '', duratio
   value: number; decimals?: number; suffix?: string; prefix?: string; duration?: number; className?: string
 }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
+  // Отступ только снизу: при отступе со всех сторон узкий элемент у левого края (число в левой колонке на телефоне)
+  // никогда не пересекает область видимости и остаётся нулём
+  const inView = useInView(ref, { once: true, margin: '0px 0px -40px 0px' })
   const [shown, setShown] = useState(0)
   useEffect(() => {
     if (!inView || Number.isNaN(value)) return
