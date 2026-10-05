@@ -5,10 +5,12 @@ import type { ReactNode } from 'react'
 import { Badge } from './ui'
 import { date } from '@/lib/format'
 import { CountUp, EASE } from '@/lib/motion'
+import { useReference } from '@/lib/reference'
 
 export type DomainScore = { n: number; correct: number; score: number; theta?: number; name?: string }
 
 export function DomainBars({ domains, names, compact }: { domains: Record<string, DomainScore>; names?: Record<string, string>; compact?: boolean }) {
+  const { domainName } = useReference()
   const rows = Object.entries(domains ?? {}).sort((a, b) => b[1].score - a[1].score)
   if (!rows.length) return <p className="muted">Нет данных тестирования</p>
   return (
@@ -18,7 +20,7 @@ export function DomainBars({ domains, names, compact }: { domains: Record<string
         return (
           <div key={d}>
             <div className="mb-1.5 flex items-baseline justify-between gap-3 text-sm">
-              <span className="truncate text-slate-700">{v.name ?? names?.[d] ?? d}</span>
+              <span className="truncate text-slate-700">{v.name ?? names?.[d] ?? domainName(d)}</span>
               <span className="shrink-0 text-xs tabular-nums text-slate-400"><b className="font-semibold text-fsp-deep">{s}%</b> · {v.correct}/{v.n}</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-[#F1EFF6]">
