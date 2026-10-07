@@ -11,7 +11,7 @@ import secrets
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Application, CandidateProfile, Company, Invitation, Vacancy
+from app.models import Application, CandidateProfile, Company, Invitation, TestSession, Vacancy
 from app.models.candidate import DEFAULT_PRIVACY
 from app.services.fsp.scoring import fsp_summary
 from app.services.matching.profile import strength_breakdown
@@ -62,6 +62,35 @@ def contacts_unlocked(db: Session, cand: CandidateProfile, company_id: int) -> s
 def skill_list(ids: list[str]) -> list[dict]:
     return [{"id": s, "name": SKILL_BY_ID[s].name if s in SKILL_BY_ID else s,
              "group": SKILL_BY_ID[s].group if s in SKILL_BY_ID else None} for s in ids or []]
+
+
+def category_session(db: Session, prof) -> TestSession | None:
+    """Сессия теста, по которой присвоена текущая категория резюме (основного или дополнительного)."""
+    if not prof.grade:
+        return None
+    q = (select(TestSession).where(TestSession.candidate_id == prof.id, TestSession.status == "completed",
+                                   TestSession.specialization == prof.grade_specialization)
+         .order_by(TestSession.finished_at.desc()))
+    for s in db.scalars(q):
+        if (s.resume_id or None) == (prof.resume_id or None) and (s.result or {}).get("assigned_grade") == prof.grade:
+            return s
+    return None
+
+
+def category_integrity(db: Session, prof) -> dict | None:
+    """Что работодатель видит о честности теста, подтвердившего категорию: «без нарушений» — ни одного страйка
+    прокторинга и ни одного флага детекторов; «оценка снижена» — тест завершён за повторное нарушение. Единичное
+    предупреждение не показывается — это не нарушение, а повод для него."""
+    s = category_session(db, prof)
+    if s is None:
+        return None
+    pr = s.proctoring or {}
+    flags = ((s.result or {}).get("integrity") or {}).get("flags") or []
+    if pr.get("violation"):
+        return {"status": "penalized", "text": "Оценка снижена за нарушение правил теста"}
+    if not pr.get("strikes") and not flags:
+        return {"status": "clean", "text": "Тест пройден без нарушений"}
+    return {"status": "neutral", "text": None}
 
 
 def own_view(cand: CandidateProfile) -> dict:
@@ -119,6 +148,7 @@ def employer_view(db: Session, cand: CandidateProfile, company: Company | None) 
                       "links": cand.links or {}} if unlocked else None),
         # резюме (категории) кандидата: работодатель может переключиться и пригласить по нужной
         "resume_id": cand.resume_id or 0, "resume_title": cand.headline,
+        "integrity": category_integrity(db, cand),
         "resumes": [category_brief(p) for p in graded_profiles(base_candidate(cand))],
     }
     return view

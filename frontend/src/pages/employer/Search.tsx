@@ -38,7 +38,7 @@ export function CandidateSearch() {
           <Select value={f.work_format} onChange={e => set({ work_format: e.target.value })}>
             <option value="">Любой формат</option>{Object.entries(WORK_FORMATS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select>
           <Input value={f.city} onChange={e => set({ city: e.target.value })} placeholder="Город" />
-          <Input type="number" step={10000} value={f.salary_max} onChange={e => set({ salary_max: e.target.value })} placeholder="Ожидания не выше, ₽" />
+          <Input type="number" step={10000} value={f.salary_max} onChange={e => set({ salary_max: e.target.value })} placeholder="Ожидания не выше, ₽ (до НДФЛ)" />
           <Select value={f.vacancy_id} onChange={e => set({ vacancy_id: e.target.value })}>
             <option value="">Ранжировать по силе профиля</option>{vacancies?.map(v => <option key={v.id} value={v.id}>Совпадение с: {v.title}</option>)}</Select>
           <Select value={f.sort} onChange={e => set({ sort: e.target.value })}>
@@ -53,7 +53,7 @@ export function CandidateSearch() {
       {isLoading || !data ? <PageLoader /> : !data.results.length ? <EmptyState icon={<Users className="h-5 w-5" />} title="Никого не найдено" text="Попробуйте ослабить фильтры." /> : (
         <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={`${page}-${JSON.stringify(f)}`}>
           {data.results.map((c: any) => (
-            <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on })}
+            <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on, resume_id: c.resume_id })}
               onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories })} />
           ))}
           <div className="flex items-center justify-center gap-3 pt-2">

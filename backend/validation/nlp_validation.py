@@ -20,6 +20,7 @@ from pathlib import Path
 import numpy as np
 
 from app.seed.synthetic import generate_population
+from app.services.nlp.salary import net_to_gross_monthly
 from app.services.nlp.resume_parser import parse_resume_pdf
 from app.services.nlp.vacancy_parser import _model, classify_specialization, parse_need
 from app.services.reference.skills import SKILL_BY_ID
@@ -358,7 +359,9 @@ def resume_eval(n: int = 80, seed: int = 404) -> dict:
         st["city"].append(p["city"] == g["city"])
         st["relocation"].append(p["relocation"] == g["relocation"])
         st["headline"].append(_norm(p["headline"]) == _norm(g["headline"]))
-        st["salary"].append(p["desired_salary"] == g["salary"])
+        # hh.ru указывает зарплату «на руки» — парсер пересчитывает её до вычета НДФЛ (единое соглашение платформы)
+        want = net_to_gross_monthly(g["salary"]) if style == "hh" else g["salary"]
+        st["salary"].append(p["desired_salary"] == want)
         st["formats"].append(set(p["work_formats"]) == g["formats"])
         err = abs((p["experience_years"] or 0) - g["months"] / 12)
         years_err.append(err)

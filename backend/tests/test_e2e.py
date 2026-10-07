@@ -205,7 +205,11 @@ def test_resume_parsing_hh_layout():
     _, p = parse_resume_pdf(hh_pdf(c, g, rng))
     assert p["source"] == "hh"
     assert p["full_name"] == g["full_name"] and p["email"] == g["email"] and p["telegram"] == g["telegram"]
-    assert p["headline"] == g["headline"] and p["desired_salary"] == g["salary"]
+    from app.services.nlp.salary import net_to_gross_monthly
+
+    # hh.ru указывает зарплату «на руки»: на платформе все суммы до вычета НДФЛ — пересчёт, исходное значение сохранено
+    assert p["headline"] == g["headline"] and p["desired_salary_net"] == g["salary"]
+    assert p["desired_salary"] == net_to_gross_monthly(g["salary"])
     assert set(p["work_formats"]) == g["formats"] and p["relocation"] == g["relocation"] and p["city"] == g["city"]
     assert abs(p["experience_years"] - g["months"] / 12) < 0.1
     assert [(e["company"], e["position"], e["start"]) for e in p["experience"]] == \
@@ -437,3 +441,68 @@ def test_strong_result_unlocks_next_level_on_demand_once(client):
     client.post(f"{API}/testing/sessions/{v['token']}/abandon", headers=h)
     by = {g["grade"]: g for g in client.get(f"{API}/testing/eligibility", headers=h).json()["grades"]}
     assert not by["middle"]["allowed"] and "через 30 дней" in by["middle"]["reason"]
+
+
+def test_new_feature_refinements(client):
+    """Подсказка грейда по резюме, разбор PDF без сохранения, избранное по резюме, отметка о честности теста
+    в карточке работодателя и админ-список нарушений прокторинга."""
+    import random
+
+    from app.seed.synthetic import generate_population
+    from validation.nlp_validation import _gold, hh_pdf
+
+    h = _new_candidate(client, "hint@example.com")
+    client.put(f"{API}/candidate/profile", headers=h, json={"full_name": "Подсказкин Пётр", "experience_years": 3.5,
+                                                             "headline": "Python-разработчик"})
+    hint = client.get(f"{API}/testing/grade-hint", headers=h).json()
+    assert hint["grade"] == "middle" and "стаж" in hint["reason"]
+
+    rng = random.Random(3)
+    c = next(x for x in generate_population(20, seed=5) if x.experience)
+    pdf = hh_pdf(c, _gold(c, rng), rng)
+    r = client.post(f"{API}/candidate/resume?save=false", headers=h, files={"file": ("cv.pdf", pdf, "application/pdf")})
+    assert r.status_code == 200 and r.json()["full_name"]
+    assert client.get(f"{API}/candidate/profile", headers=h).json()["resume_filename"] is None  # профиль не тронут
+
+    # кандидат из теста про несколько резюме: категория подтверждена чисто, есть резюме QA без категории
+    mh = login(client, "multi@example.com", "secret-pass-1")
+    cid = client.get(f"{API}/candidate/profile", headers=mh).json()["id"]
+    qa = next(x for x in client.get(f"{API}/candidate/resumes", headers=mh).json() if x["specialization"] == "qa")
+    eh = login(client, "employer@demo.ru")
+    card = client.get(f"{API}/employer/candidates/{cid}", headers=eh).json()
+    # «оракул» отвечает мгновенно → детектор «слишком быстрых ответов» → нейтрально (без отметки «без нарушений»)
+    assert card["integrity"]["status"] in ("clean", "neutral")
+    assert client.post(f"{API}/employer/shortlist", headers=eh, json={"candidate_id": cid, "resume_id": qa["id"]}).json()["resume_id"] == qa["id"]
+    item = next(x for x in client.get(f"{API}/employer/shortlist", headers=eh).json() if x["candidate"]["id"] == cid)
+    assert item["candidate"]["resume_id"] == qa["id"] and item["candidate"]["shortlisted"]
+
+    ah = login(client, "admin@demo.ru")
+    data = client.get(f"{API}/admin/integrity", headers=ah).json()
+    assert data["summary"]["violations"] >= 1
+    s = next(x for x in data["sessions"] if x["violation"] == "screenshot")
+    assert s["terminated"] and any(e["kind"] == "screenshot" for e in s["events"])
+    assert client.get(f"{API}/admin/integrity", headers=eh).status_code == 403
+
+
+
+def test_category_from_penalized_session_is_marked_for_employer(client, monkeypatch):
+    """Категория, присвоенная тестом, завершённым за повторное нарушение, отмечается для работодателя."""
+    from app.services.testing import service
+
+    monkeypatch.setattr(service, "PROCTOR_DEDUPE_SEC", 0)
+    h = _new_candidate(client, "penalized@example.com", grade="junior")
+    client.post(f"{API}/candidate/consents", headers=h, json={"kind": "profile_publication", "granted": True})
+    view = client.post(f"{API}/testing/sessions", headers=h, json={"grade": "junior"}).json()
+    token = view["token"]
+    for _ in range(9):
+        q = view["question"]
+        view = client.post(f"{API}/testing/sessions/{token}/answer", headers=h,
+                           json={"response_id": q["id"], "answer": _answer_correctly(token, q["id"])}).json()
+    assert view["status"] == "in_progress"
+    url = f"{API}/testing/sessions/{token}/proctoring"
+    client.post(url, headers=h, json={"kind": "screenshot"})
+    res = client.post(url, headers=h, json={"kind": "screenshot"}).json()["view"]["result"]
+    assert res["proctoring"]["terminated"] and res["assigned_grade"] == "junior"
+    cid = client.get(f"{API}/candidate/profile", headers=h).json()["id"]
+    card = client.get(f"{API}/employer/candidates/{cid}", headers=login(client, "employer@demo.ru")).json()
+    assert card["integrity"]["status"] == "penalized"

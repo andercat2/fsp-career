@@ -13,6 +13,7 @@ import random
 import re
 from functools import lru_cache
 
+from app.services.nlp.salary import is_net, net_to_gross_monthly
 from app.services.reference.skills import SKILL_BY_ID, extract_skills, skills_for_spec
 from app.services.reference.taxonomy import GRADE_CODES, SPEC_BY_CODE, SPECIALIZATIONS
 
@@ -241,6 +242,11 @@ def parse_need(text: str, title: str = "") -> dict:
     must, nice = split_must_nice(full)
     grades, years = extract_grades(full)
     s_from, s_to = extract_salary(full)
+    # единое соглашение: суммы до вычета НДФЛ; «на руки» в тексте пересчитываем в gross
+    salary_net = bool((s_from or s_to) and is_net(full))
+    if salary_net:
+        s_from = net_to_gross_monthly(s_from) if s_from else None
+        s_to = net_to_gross_monthly(s_to) if s_to else None
     code = spec["specialization"]
     return {
         "specialization": code,
@@ -256,5 +262,7 @@ def parse_need(text: str, title: str = "") -> dict:
         "city": extract_city(full),
         "salary_from": s_from,
         "salary_to": s_to,
+        "salary_basis": "gross",
+        "salary_note": "В тексте сумма «на руки» — пересчитано до вычета НДФЛ" if salary_net else None,
         "require_fsp": bool(re.search(r"фсп|спортивн\w+ программировани|олимпиад|хакатон", full.lower())),
     }

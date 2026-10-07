@@ -81,7 +81,7 @@ export function VacancyDetail() {
           <h1 className="mt-3 text-2xl font-bold">{v.title}</h1>
           <p className="text-slate-500">{v.company.name}{v.company.industry && ` · ${v.company.industry}`}</p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <span className="rounded-xl bg-fsp-blush/50 px-3 py-2 text-base font-extrabold text-fsp-deep">{salaryRange(v.salary_from, v.salary_to)}</span>
+            <span className="rounded-xl bg-fsp-blush/50 px-3 py-2 text-base font-extrabold text-fsp-deep">{salaryRange(v.salary_from, v.salary_to)} <span className="text-xs font-semibold text-slate-500">в месяц, до вычета НДФЛ</span></span>
             <span className="rounded-xl bg-surface px-3 py-2 text-sm text-slate-600">{v.work_format_name}{v.city && `, ${v.city}`}</span>
           </div>
           <div className="mt-6"><Markdown>{v.description}</Markdown></div>

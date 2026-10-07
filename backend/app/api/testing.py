@@ -19,6 +19,7 @@ from app.services.reference.taxonomy import (
     WORK_FORMATS,
 )
 from app.services.resumes import get_resume, taken_specializations, target_for
+from app.services.nlp.resume_parser import claimed_grade_from
 from app.services.testing import service
 
 router = APIRouter(prefix="/testing", tags=["Кандидат: опрос и тестирование"])
@@ -32,9 +33,10 @@ EXPECTED_GRADE = {"none": "intern", "lt1": "intern", "1-2": "junior", "2-5": "mi
 def survey():
     return {
         "questions": [
-            {"id": "industries", "type": "multi", "max": 3, "title": "Отрасли, в которых у вас есть опыт или интерес",
+            {"id": "industries", "type": "multi", "max": 3,
+             "title": "Предметные области, где есть опыт или интерес (необязательно)",
              "options": [{"value": i, "label": i} for i in INDUSTRIES]},
-            {"id": "specialization", "type": "single", "title": "Ваша основная специализация",
+            {"id": "specialization", "type": "single", "title": "ИТ-направление и специализация",
              "options": [{"value": s["code"], "label": s["name"], "hint": s["description"], "group": s["direction"]}
                          for s in SPECIALIZATIONS]},
             {"id": "language", "type": "single", "title": "Основной язык / стек", "depends_on": "specialization",
@@ -107,6 +109,22 @@ def survey_history(cand: Candidate, db: DB):
              "specialization_name": SPEC_NAMES.get(r.specialization),
              "claimed_grade": r.claimed_grade, "warnings": r.warnings, "answers": r.answers, "created_at": r.created_at}
             for r in rows]
+
+
+@router.get("/grade-hint", summary="Подсказка грейда по резюме: стаж и должности (выбор грейда — за кандидатом)")
+def grade_hint(cand: Candidate, resume_id: int = 0):
+    """Постановщики допускают подсказку грейда по резюме; выбирает грейд сам кандидат, тест подтверждает или нет."""
+    prof = target_for(cand, resume_id)
+    title = (prof.title if resume_id else cand.headline) or ""
+    positions = " ".join((e.get("position") or "") for e in (cand.experience or []))
+    grade = claimed_grade_from(f"{title} {positions}", cand.experience_years)
+    if not grade:
+        return {"grade": None, "grade_name": None, "reason": None}
+    by_title = claimed_grade_from(f"{title} {positions}", None) == grade
+    years = cand.experience_years
+    reason = (f"по должности в резюме" if by_title else
+              f"по стажу {str(round(years, 1)).replace('.', ',')} г." if years is not None else "по резюме")
+    return {"grade": grade, "grade_name": GRADE_NAMES[grade], "reason": reason}
 
 
 @router.get("/eligibility", summary="Какие уровни теста доступны сейчас (с учётом ограничений по частоте)")

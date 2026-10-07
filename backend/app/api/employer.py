@@ -493,8 +493,10 @@ def get_shortlist(comp: EmployerCompany, db: DB):
     for it in items:
         c = db.get(CandidateProfile, it.candidate_id)
         if c:
+            res = next((r for r in c.resumes if r.id == it.resume_id and r.visible), None) if it.resume_id else None
+            prof = ResumeView(c, res) if res else c  # скрытое или удалённое резюме — показываем основное
             out.append({"id": it.id, "note": it.note, "vacancy_id": it.vacancy_id, "created_at": it.created_at,
-                        "candidate": _card(db, comp, c, {"invitation_status": inv.get(c.id)})})
+                        "candidate": _card(db, comp, prof, {"invitation_status": inv.get(c.id), "shortlisted": True})})
     return out
 
 
@@ -506,8 +508,9 @@ def add_shortlist(data: ShortlistIn, comp: EmployerCompany, db: DB):
     if not it:
         it = ShortlistItem(company_id=comp.id, candidate_id=data.candidate_id, vacancy_id=data.vacancy_id, note=data.note)
         db.add(it)
-        db.commit()
-    return {"id": it.id}
+    it.resume_id = data.resume_id or None  # запоминаем резюме, с которым кандидата отметили последним
+    db.commit()
+    return {"id": it.id, "resume_id": it.resume_id or 0}
 
 
 @router.delete("/shortlist/{candidate_id}", summary="Убрать из избранного", response_model=Message)

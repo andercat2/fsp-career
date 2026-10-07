@@ -14,7 +14,7 @@ const DECISION_RU: Record<string, [string, 'green' | 'pink' | 'amber' | 'gray']>
 
 export function GradePage() {
   const [params, setParams] = useSearchParams()
-  const { gradeName } = useReference()
+  const { gradeName, ref } = useReference()
   const rid = Number(params.get('resume') ?? 0) || 0
   const { data: resumes, isLoading } = useResumes()
   const { data: el } = useQuery({ queryKey: ['eligibility', rid], queryFn: () => api(`/testing/eligibility?resume_id=${rid}`) })
@@ -36,7 +36,8 @@ export function GradePage() {
           <div className="mt-4 divide-y divide-slate-100">
             <KV k="Специализация из опроса" v={r.specialization_name ? `${r.specialization_name}${r.language_name ? ` · ${r.language_name}` : ''}` : '—'} />
             <KV k="Заявленный грейд" v={r.claimed_grade_name ? <Badge tone="lavender">{r.claimed_grade_name}</Badge> : '—'} />
-            <KV k="Отрасли" v={r.industries?.join(', ') || '—'} />
+            <KV k="Отрасль (ИТ-направление)" v={ref?.specializations.find(s => s.code === r.specialization)?.direction ?? '—'} />
+            <KV k="Предметные области" v={r.industries?.join(', ') || '—'} />
             <KV k="Оценка уровня θ" v={cat.theta != null ? `${cat.theta.toFixed(2)} ± ${cat.se?.toFixed(2)}` : '—'} />
             <KV k="Выше рынка" v={cat.percentile != null ? `${Math.round(cat.percentile)}%` : '—'} />
             <KV k="Присвоена" v={date(cat.assigned_at)} />

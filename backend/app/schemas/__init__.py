@@ -268,6 +268,7 @@ class ApplicationStatusIn(BaseModel):
 
 class ShortlistIn(BaseModel):
     candidate_id: int
+    resume_id: int | None = Field(None, ge=0, description="Резюме (категория), с которым кандидат добавлен; 0 — основное")
     vacancy_id: int | None = None
     note: str | None = None
 

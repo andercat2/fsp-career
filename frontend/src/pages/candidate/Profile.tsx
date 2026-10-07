@@ -127,7 +127,7 @@ export function CandidateProfile() {
             <Field label="Стаж, лет" hint={form.experience_years != null ? years(form.experience_years) : undefined}>
               <Input type="number" step="0.5" min={0} value={form.experience_years ?? ''} onChange={e => set('experience_years', e.target.value === '' ? null : Number(e.target.value))} />
             </Field>
-            <Field label="Ожидания по доходу, ₽/мес" hint={form.desired_salary ? rub(form.desired_salary) : 'Можно скрыть в настройках приватности'}>
+            <Field label="Ожидания по доходу, ₽/мес до вычета НДФЛ" hint={form.desired_salary ? `${rub(form.desired_salary)} до вычета НДФЛ — так на платформе считаются все суммы` : 'Все суммы на платформе — до вычета НДФЛ. Ожидания можно скрыть в настройках приватности'}>
               <Input type="number" min={0} step={5000} value={form.desired_salary ?? ''} onChange={e => set('desired_salary', e.target.value === '' ? null : Number(e.target.value))} />
             </Field>
             <Field label="Формат работы">
@@ -257,7 +257,7 @@ export function CandidateProfile() {
               <p><span className="text-slate-500">Город:</span> {parsed.city ?? '—'}</p>
               <p><span className="text-slate-500">Стаж:</span> {years(parsed.experience_years)}</p>
               <p><span className="text-slate-500">Грейд по резюме:</span> {parsed.claimed_grade ? gradeName(parsed.claimed_grade) : '—'}</p>
-              <p><span className="text-slate-500">Зарплата:</span> {parsed.desired_salary ? rub(parsed.desired_salary) : '—'}</p>
+              <p><span className="text-slate-500">Зарплата (до вычета НДФЛ):</span> {parsed.desired_salary ? rub(parsed.desired_salary) : '—'}{parsed.desired_salary_net ? ` — в резюме ${rub(parsed.desired_salary_net)} «на руки», пересчитано` : ''}</p>
               <p><span className="text-slate-500">Формат:</span> {parsed.work_formats?.length ? parsed.work_formats.map((f: string) => WORK_FORMATS[f] ?? f).join(', ') : '—'}
                 {parsed.relocation != null && <span className="text-slate-500"> · {parsed.relocation ? 'готов к переезду' : 'без переезда'}</span>}</p>
               {Object.keys(parsed.links ?? {}).length > 0 && <p className="sm:col-span-2"><span className="text-slate-500">Ссылки:</span> {Object.entries(parsed.links).map(([k, v]) => `${LINK_LABEL[k] ?? k}: ${v}`).join(' · ')}</p>}

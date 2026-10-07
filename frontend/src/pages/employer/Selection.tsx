@@ -20,7 +20,9 @@ export function useShortlistToggle() {
   const qc = useQueryClient()
   const { push } = useToast()
   return useMutation({
-    mutationFn: ({ id, on }: { id: number; on: boolean }) => on ? api('/employer/shortlist', { body: { candidate_id: id } }) : api(`/employer/shortlist/${id}`, { method: 'DELETE' }),
+    mutationFn: ({ id, on, resume_id }: { id: number; on: boolean; resume_id?: number }) => on
+      ? api('/employer/shortlist', { body: { candidate_id: id, resume_id: resume_id || null } })
+      : api(`/employer/shortlist/${id}`, { method: 'DELETE' }),
     onSuccess: (_d, v) => { push(v.on ? 'Добавлено в избранное' : 'Убрано из избранного'); qc.invalidateQueries({ queryKey: ['selection'] }); qc.invalidateQueries({ queryKey: ['emp-search'] }); qc.invalidateQueries({ queryKey: ['shortlist'] }) },
   })
 }
@@ -143,7 +145,7 @@ export function SelectionPage() {
               </div>
               <p className={clsx('mt-1 font-bold leading-tight', activeCat(c) ? 'text-white' : 'text-fsp-deep')}>{c.specialization_name}<br />{c.grade_name}</p>
               <div className={clsx('mt-3 space-y-0.5 text-xs', activeCat(c) ? 'text-white/75' : 'text-slate-500')}>
-                <p>Медиана ожиданий: <b>{c.median_salary ? rub(c.median_salary) : '—'}</b></p>
+                <p>Медиана ожиданий (до НДФЛ): <b>{c.median_salary ? rub(c.median_salary) : '—'}</b></p>
                 <p>В вашей вилке: <b>{c.share_in_budget != null ? `${Math.round(c.share_in_budget * 100)}%` : '—'}</b></p>
                 <p>С достижениями ФСП: <b>{c.with_fsp}</b> · открыты: <b>{c.open_to_offers}</b></p>
               </div>
@@ -169,7 +171,7 @@ export function SelectionPage() {
               <Field label="Формат"><Select value={f.work_format} onChange={e => setF({ ...f, work_format: e.target.value })}>
                 <option value="">Любой</option>{Object.entries(WORK_FORMATS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
               <Field label="Город"><Input value={f.city} onChange={e => setF({ ...f, city: e.target.value })} placeholder="Казань" /></Field>
-              <Field label="Ожидания не выше, ₽"><Input type="number" step={10000} value={f.salary_max} onChange={e => setF({ ...f, salary_max: e.target.value })} /></Field>
+              <Field label="Ожидания не выше, ₽ (до вычета НДФЛ)"><Input type="number" step={10000} value={f.salary_max} onChange={e => setF({ ...f, salary_max: e.target.value })} /></Field>
               <Field label={`Совпадение от ${f.min_match || 0}%`}><input type="range" min={0} max={90} step={5} value={f.min_match || 0} onChange={e => setF({ ...f, min_match: Number(e.target.value) || '' })} className="w-full accent-[#FF0053]" /></Field>
               {filtersOn && <Button variant="ghost" size="sm" onClick={reset} icon={<X className="h-4 w-4" />}>Сбросить фильтры</Button>}
             </div>
@@ -184,7 +186,7 @@ export function SelectionPage() {
           {!s.results.length ? <EmptyState icon={<Filter className="h-5 w-5" />} title="Никого не осталось" text="Ослабьте фильтры — исходная подборка сохранена." action={<Button size="sm" variant="secondary" onClick={reset}>Сбросить</Button>} /> : (
             <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={JSON.stringify(f)}>
               {s.results.map((c: any) => (
-                <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on })}
+                <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on, resume_id: c.resume_id })}
                   onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories })} />
               ))}
               {s.total > s.results.length && <div className="pt-2 text-center"><Button variant="secondary" onClick={() => setSize(x => x + 20)}>Показать ещё</Button></div>}

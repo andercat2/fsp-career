@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from datetime import date
 from functools import lru_cache
 
+from app.services.nlp.salary import is_net, net_to_gross_monthly
 from app.services.nlp.vacancy_parser import classify_specialization, extract_city, extract_format, extract_grades
 from app.services.reference.skills import extract_skills
 from app.services.reference.taxonomy import SOFT_SKILLS
@@ -419,6 +420,9 @@ def parse_hh_layout(lines: list[Line]) -> dict:
     res["hh_specializations"] = [re.sub(r"^[—–-]\s*", "", x.text).strip() for x in desired if re.match(r"^[—–-]\s", x.text)]
     salary_line = next((x.text for x in sorted(desired, key=lambda x: -x.size) if SALARY_RE.search(x.text)), None)
     res["desired_salary"] = parse_salary(salary_line) if salary_line else None
+    if res["desired_salary"] and salary_line and is_net(salary_line):
+        res["desired_salary_net"] = res["desired_salary"]
+        res["desired_salary"] = net_to_gross_monthly(res["desired_salary"])
     fmt_text = " ".join(x.text for x in desired if re.match(r"^(формат работы|график работы|занятость|тип занятости|"
                                                             r"work format|schedule)", x.text, re.I))
     res["work_formats"] = parse_formats(fmt_text)
@@ -681,6 +685,10 @@ def parse_generic(text: str) -> dict:
     sal = re.search(r"(?:желаем\w* (?:зарплат|доход)\w*|ожидани\w*(?: по (?:зарплат|доход)\w*)?|зарплат\w*|"
                     r"salary)[^\d\n]{0,20}([^\n]{0,30})", full, re.I)
     res["desired_salary"] = parse_salary(sal.group(1)) if sal else parse_salary(desired)
+    sal_text = sal.group(0) if sal else desired
+    if res["desired_salary"] and is_net(sal_text or ""):
+        res["desired_salary_net"] = res["desired_salary"]
+        res["desired_salary"] = net_to_gross_monthly(res["desired_salary"])
     fmt_line = re.search(r"(?:формат\w*(?: работы)?|график\w*(?: работы)?|work format|schedule)\s*:\s*([^\n]+)", full, re.I)
     res["work_formats"] = (parse_formats(fmt_line.group(1)) if fmt_line else []) or parse_formats(desired) or \
         ([extract_format(full)] if extract_format(full) else [])
@@ -737,7 +745,7 @@ def _finalize(base: dict, full_text: str) -> dict:
         "github": links.get("github"), "links": links,
         "city": base.get("city"), "relocation": base.get("relocation"),
         "headline": base.get("headline"),
-        "desired_salary": base.get("desired_salary"),
+        "desired_salary": base.get("desired_salary"), "desired_salary_net": base.get("desired_salary_net"),
         "work_formats": formats, "work_format": formats[0] if formats else None,
         "experience_years": years,
         "experience": [{k: v for k, v in e.items() if k != "site"} for e in base.get("experience") or []],

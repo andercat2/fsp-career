@@ -125,7 +125,7 @@ def delete_resume(rid: int, cand: Candidate, db: DB):
              description="Возвращает распознанные поля для проверки; профиль не меняется, пока кандидат не сохранит его. "
                          "resume_id — к какому резюме относится файл (0 — основное).",
              responses={400: {"model": Message}, 413: {"model": Message}})
-async def upload_resume(cand: Candidate, db: DB, file: UploadFile = File(...), resume_id: int = 0):
+async def upload_resume(cand: Candidate, db: DB, file: UploadFile = File(...), resume_id: int = 0, save: bool = True):
     data = await file.read()
     if len(data) > MAX_PDF:
         raise HTTPException(413, "Файл больше 5 МБ")
@@ -137,10 +137,11 @@ async def upload_resume(cand: Candidate, db: DB, file: UploadFile = File(...), r
         raise HTTPException(400, f"Не удалось прочитать PDF: {exc}") from exc
     if len(text.strip()) < 30:
         raise HTTPException(400, "В PDF не найден текст (возможно, это скан). Заполните профиль вручную.")
-    target = get_resume(cand, resume_id) if resume_id else cand
-    target.resume_text = text[:50000]
-    target.resume_filename = (file.filename or "resume.pdf")[:255]
-    db.commit()
+    if save:  # save=false — только разбор (например, чтобы заполнить новое резюме до его создания)
+        target = get_resume(cand, resume_id) if resume_id else cand
+        target.resume_text = text[:50000]
+        target.resume_filename = (file.filename or "resume.pdf")[:255]
+        db.commit()
     parsed["skills_detail"] = [{"id": s, "name": SKILL_BY_ID[s].name} for s in parsed["skills"] if s in SKILL_BY_ID]
     return parsed
 

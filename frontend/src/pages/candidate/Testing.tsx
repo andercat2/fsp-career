@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { ArrowLeft, ArrowRight, Camera, Clock, Fingerprint, Layers, Lock, Play, Repeat, RotateCcw, ShieldCheck, Sparkles, Timer } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Clock, FileUp, Fingerprint, Layers, Lock, Play, Repeat, RotateCcw, ShieldCheck, Sparkles, Timer, Upload } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
@@ -27,24 +27,55 @@ function SurveyWizard({ onDone, initial, mode = 'main', resumeId = 0, taken = []
   const { push } = useToast()
   const [step, setStep] = useState(0)
   const [title, setTitle] = useState('')
+  // новое резюме из PDF: заголовок, навыки, ожидания и «о себе» — из файла, специализация и грейд — подсказкой
+  const [prefill, setPrefill] = useState<{ skills?: string[]; desired_salary?: number | null; about?: string | null; grade?: string | null; file?: File } | null>(null)
+  const [parsing, setParsing] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const { data: hint } = useQuery({ queryKey: ['grade-hint', resumeId, mode], queryFn: () => api<any>(`/testing/grade-hint?resume_id=${mode === 'new' ? 0 : resumeId}`) })
   const [a, setA] = useState<Survey>({
     industries: [], specialization: '', language: null, experience: '', roles: [], work_formats: [], claimed_grade: '',
     fsp_participant: false, ...initial,
   })
   const submit = useMutation({
     mutationFn: () => mode === 'new'
-      ? api('/candidate/resumes', { body: { ...a, title: title.trim() || null } })
+      ? api('/candidate/resumes', { body: { ...a, title: title.trim() || null, skills: prefill?.skills, desired_salary: prefill?.desired_salary ?? null, about: prefill?.about ?? null } })
       : api('/testing/survey', { body: { ...a, resume_id: resumeId } }),
-    onSuccess: (r: any) => onDone(r.warnings, mode === 'new' ? r.resume.id : resumeId),
+    onSuccess: (r: any) => {
+      if (mode === 'new' && prefill?.file) {  // сохраняем текст PDF в новом резюме (фоном, без ожидания)
+        const fd = new FormData()
+        fd.append('file', prefill.file)
+        void api(`/candidate/resume?resume_id=${r.resume.id}`, { form: fd }).catch(() => undefined)
+      }
+      onDone(r.warnings, mode === 'new' ? r.resume.id : resumeId)
+    },
     onError: (e: any) => push(e.message, 'error'),
   })
+  const fromPdf = async (file?: File | null) => {
+    if (!file || !survey) return
+    setParsing(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    try {
+      const p = await api<any>('/candidate/resume?save=false', { form: fd })
+      const qs = Object.fromEntries(survey.questions.map((x: any) => [x.id, x]))
+      const spec = p.specialization && !taken.includes(p.specialization) ? p.specialization : null
+      const langs = spec ? qs.language.options_by[spec].map((o: any) => o.value) : []
+      const lang = langs.find((l: string) => (p.skills ?? []).includes(l)) ?? langs[0] ?? null
+      setA(s => ({ ...s, ...(spec ? { specialization: spec, language: lang } : {}),
+        experience: p.experience_years == null ? s.experience : p.experience_years < 0.25 ? 'none' : p.experience_years < 1 ? 'lt1' : p.experience_years < 2 ? '1-2' : p.experience_years < 5 ? '2-5' : '5+' }))
+      if (p.headline) setTitle(p.headline)
+      setPrefill({ skills: p.skills, desired_salary: p.desired_salary, about: p.about, grade: p.claimed_grade, file })
+      push(spec ? 'Заполнено из PDF: специализация, заголовок, навыки и ожидания — проверьте' : 'Заголовок, навыки и ожидания заполнены из PDF; специализацию выберите сами', 'info')
+    } catch (e: any) { push(e.message, 'error') } finally { setParsing(false) }
+  }
+  const gradeHint = prefill?.grade ? { grade: prefill.grade, reason: 'по загруженному резюме' } : hint?.grade ? hint : null
   if (!survey) return <PageLoader />
   const q = Object.fromEntries(survey.questions.map((x: any) => [x.id, x]))
   const langs = a.specialization ? q.language.options_by[a.specialization] : []
   const steps = [
     { title: 'Специализация', valid: !!a.specialization },
     { title: 'Опыт и грейд', valid: !!a.experience && !!a.claimed_grade },
-    { title: 'Отрасль и формат', valid: true },
+    { title: 'Предметная область и формат', valid: true },
     { title: 'ФСП', valid: true },
   ]
   const groups = Array.from(new Set(q.specialization.options.map((o: any) => o.group))) as string[]
@@ -63,10 +94,19 @@ function SurveyWizard({ onDone, initial, mode = 'main', resumeId = 0, taken = []
         <div className="space-y-6">
           <h3 className="text-lg font-bold">{mode === 'new' ? 'Специализация нового резюме' : q.specialization.title}</h3>
           {mode === 'new' && <p className="-mt-3 text-sm text-slate-500">По ней пройдёте отдельный тест и получите ещё одну категорию. Основная категория не изменится.</p>}
+          {mode === 'new' && (
+            <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-line bg-surface/60 p-4 sm:flex-row sm:items-center">
+              <FileUp className="h-6 w-6 shrink-0 text-fsp-pink" />
+              <p className="flex-1 text-sm text-slate-600">{prefill ? 'Данные из PDF подставлены — проверьте специализацию и заголовок.' : 'Есть резюме под эту специализацию? Загрузите PDF — подставим специализацию, заголовок, навыки и ожидания.'}</p>
+              <input ref={fileRef} type="file" accept="application/pdf" className="hidden" onChange={e => { void fromPdf(e.target.files?.[0]); e.target.value = '' }} />
+              <Button size="sm" variant="soft" loading={parsing} onClick={() => fileRef.current?.click()} icon={<Upload className="h-4 w-4" />}>{prefill ? 'Другой PDF' : 'Загрузить PDF'}</Button>
+            </div>
+          )}
           {mode === 'resume' && <p className="-mt-3 text-sm text-slate-500">Специализация резюме фиксирована — для другой добавьте новое резюме.</p>}
+          {mode !== 'resume' && <p className="-mt-3 text-sm text-slate-500">Отрасль — это ИТ-направление (разработка, данные и ИИ, инфраструктура, тестирование); внутри него выберите специализацию.</p>}
           {groups.map(g => (
             <div key={g}>
-              <p className="label">{g}</p>
+              <p className="label">Направление: {g}</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 {q.specialization.options.filter((o: any) => o.group === g).map((o: any) => {
                   const busy = mode === 'new' && taken.includes(o.value)
@@ -113,6 +153,13 @@ function SurveyWizard({ onDone, initial, mode = 'main', resumeId = 0, taken = []
           <div>
             <h3 className="text-lg font-bold">{q.claimed_grade.title}</h3>
             <p className="mt-1 text-sm text-slate-500">Выберите честно: тест покажет реальный уровень. Если не получится — можно пройти тест уровнем ниже, грейд не понижается принудительно.</p>
+            {gradeHint && (
+              <p className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-[#ECEAFB]/60 px-3 py-2 text-sm text-[#3c3480]">
+                <Sparkles className="h-4 w-4" />Подсказка {gradeHint.reason}: <b>{q.claimed_grade.options.find((o: any) => o.value === gradeHint.grade)?.label ?? gradeHint.grade}</b>.
+                Выбор за вами — тест подтвердит уровень или нет.
+                {a.claimed_grade !== gradeHint.grade && <button type="button" className="font-semibold underline underline-offset-2" onClick={() => setA(s => ({ ...s, claimed_grade: gradeHint.grade! }))}>Выбрать</button>}
+              </p>
+            )}
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {q.claimed_grade.options.map((o: any) => (
                 <ChoiceCard key={o.value} selected={a.claimed_grade === o.value} title={o.label} hint={o.hint} onClick={() => setA(s => ({ ...s, claimed_grade: o.value }))} />

@@ -81,8 +81,8 @@ export function InviteModal({ target, onClose, vacancyId, defaults }: {
           </Select>
         </Field>
         <Field label="Позиция" required className="sm:col-span-2"><Input value={f.title} onChange={e => setF({ ...f, title: e.target.value })} placeholder="Python-разработчик в команду платежей" /></Field>
-        <Field label="Зарплата от, ₽" required><Input type="number" step={5000} value={f.salary_from} onChange={e => setF({ ...f, salary_from: e.target.value })} /></Field>
-        <Field label="Зарплата до, ₽" required><Input type="number" step={5000} value={f.salary_to} onChange={e => setF({ ...f, salary_to: e.target.value })} /></Field>
+        <Field label="Зарплата от, ₽/мес до вычета НДФЛ" required><Input type="number" step={5000} value={f.salary_from} onChange={e => setF({ ...f, salary_from: e.target.value })} /></Field>
+        <Field label="Зарплата до, ₽/мес до вычета НДФЛ" required><Input type="number" step={5000} value={f.salary_to} onChange={e => setF({ ...f, salary_to: e.target.value })} /></Field>
         <Field label="Формат работы"><Select value={f.work_format} onChange={e => setF({ ...f, work_format: e.target.value })}>
           <option value="">Обсуждается</option>{Object.entries(WORK_FORMATS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
         <Field label="Способ связи" required><Input value={f.contact_method} onChange={e => setF({ ...f, contact_method: e.target.value })} placeholder="Telegram: @hr_company" /></Field>

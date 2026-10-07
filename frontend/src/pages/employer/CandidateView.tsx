@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Download, Layers, Lock, Mail, Phone, Send, Star, Unlock } from 'lucide-react'
+import { ArrowLeft, Download, Layers, Lock, Mail, Phone, Send, ShieldAlert, ShieldCheck, Star, Unlock } from 'lucide-react'
 import { api, download } from '@/lib/api'
 import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
@@ -35,6 +35,8 @@ export function CandidateView() {
               <CategoryPill spec={cat.specialization_name} grade={cat.grade_name} className="bg-white/15" />
               {cat.percentile != null && <Badge tone="pink">выше {Math.round(cat.percentile)}% кандидатов</Badge>}
               {c.name_hidden && <Badge tone="lavender" icon={<Lock className="h-3 w-3" />}>имя скрыто до согласия</Badge>}
+              {c.integrity?.status === 'clean' && <Badge tone="green" icon={<ShieldCheck className="h-3 w-3" />}>{c.integrity.text}</Badge>}
+              {c.integrity?.status === 'penalized' && <Badge tone="amber" icon={<ShieldAlert className="h-3 w-3" />}>{c.integrity.text}</Badge>}
             </div>
             <h1 className="mt-3 text-3xl font-extrabold text-white">{c.display_name}</h1>
             <p className="mt-1 text-white/75">{c.headline}{c.city && ` · ${c.city}`}{c.relocation && ' · готов к переезду'}</p>
@@ -51,7 +53,7 @@ export function CandidateView() {
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={() => shortlist.mutate({ id: c.id, on: !c.shortlisted })} icon={<Star className={c.shortlisted ? 'h-4 w-4 fill-amber-400 text-amber-400' : 'h-4 w-4'} />}>{c.shortlisted ? 'В избранном' : 'В избранное'}</Button>
+            <Button variant="secondary" onClick={() => shortlist.mutate({ id: c.id, on: !c.shortlisted, resume_id: c.resume_id })} icon={<Star className={c.shortlisted ? 'h-4 w-4 fill-amber-400 text-amber-400' : 'h-4 w-4'} />}>{c.shortlisted ? 'В избранном' : 'В избранное'}</Button>
             <Button variant="secondary" onClick={() => download(`/employer/candidates/${c.id}/pdf${c.resume_id ? `?resume_id=${c.resume_id}` : ''}`, `candidate-${c.public_id}.pdf`).catch(e => push(e.message, 'error'))} icon={<Download className="h-4 w-4" />}>PDF</Button>
             <Button disabled={!c.open_to_offers || !!active || c.contacts_unlocked} icon={<Send className="h-4 w-4" />}
               onClick={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: cat.grade_name, specialization_name: cat.specialization_name, resume_id: c.resume_id, headline: c.resume_title, categories: c.resumes })}>
@@ -107,7 +109,7 @@ export function CandidateView() {
           </Card>
           <Card title="Условия">
             <div className="divide-y divide-slate-100">
-              <KV k="Ожидания" v={c.salary_hidden ? 'скрыты кандидатом' : c.desired_salary ? `от ${rub(c.desired_salary)}` : '—'} />
+              <KV k="Ожидания (до вычета НДФЛ)" v={c.salary_hidden ? 'скрыты кандидатом' : c.desired_salary ? `от ${rub(c.desired_salary)}` : '—'} />
               <KV k="Формат" v={c.work_formats.map((f: string) => WORK_FORMATS[f]).join(', ') || '—'} />
               <KV k="Опыт" v={years(c.experience_years)} />
               <KV k="Заданий работодателей решено" v={c.tasks_done} />

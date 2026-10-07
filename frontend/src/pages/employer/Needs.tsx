@@ -70,6 +70,7 @@ export function NeedForm() {
         language: r.language ?? '', work_format: r.work_format ?? s.work_format, city: r.city ?? s.city,
         salary_from: r.salary_from ? String(r.salary_from) : s.salary_from, salary_to: r.salary_to ? String(r.salary_to) : s.salary_to,
         require_fsp: r.require_fsp }))
+      if (r.salary_note) push(r.salary_note, 'info')
     },
     onError: (e: any) => push(e.message, 'error'),
   })
@@ -138,8 +139,8 @@ export function NeedForm() {
             <Field label="Обязательные навыки"><SkillPicker value={f.must_skills} onChange={v => setF({ ...f, must_skills: v })} /></Field>
             <Field label="Желательные навыки"><SkillPicker value={f.nice_skills} onChange={v => setF({ ...f, nice_skills: v })} tone="lavender" /></Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Зарплата от, ₽" required><Input type="number" step={5000} value={f.salary_from} onChange={e => setF({ ...f, salary_from: e.target.value })} /></Field>
-              <Field label="Зарплата до, ₽" required><Input type="number" step={5000} value={f.salary_to} onChange={e => setF({ ...f, salary_to: e.target.value })} /></Field>
+              <Field label="Зарплата от, ₽/мес до вычета НДФЛ" required><Input type="number" step={5000} value={f.salary_from} onChange={e => setF({ ...f, salary_from: e.target.value })} /></Field>
+              <Field label="Зарплата до, ₽/мес до вычета НДФЛ" required><Input type="number" step={5000} value={f.salary_to} onChange={e => setF({ ...f, salary_to: e.target.value })} /></Field>
               <Field label="Формат"><Select value={f.work_format} onChange={e => setF({ ...f, work_format: e.target.value })}>
                 {Object.entries(ref.work_formats).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
               <Field label="Город"><Input value={f.city} onChange={e => setF({ ...f, city: e.target.value })} /></Field>

@@ -77,7 +77,7 @@ function ResumeEditModal({ resume, onClose }: { resume: Resume | null; onClose: 
             <SkillPicker value={f.skills} onChange={v => setF({ ...f, skills: v })} verified={resume.verified_skills} />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Ожидания по зарплате, ₽" hint="Пусто — как в основном профиле"><Input type="number" step={5000} value={f.desired_salary} onChange={e => setF({ ...f, desired_salary: e.target.value })} /></Field>
+            <Field label="Ожидания, ₽/мес до вычета НДФЛ" hint="Пусто — как в основном профиле"><Input type="number" step={5000} value={f.desired_salary} onChange={e => setF({ ...f, desired_salary: e.target.value })} /></Field>
             <div className="pt-6"><Toggle checked={f.visible} onChange={v => setF({ ...f, visible: v })} label="Показывать работодателям" hint="Скрытое резюме не участвует в подборе" /></div>
           </div>
           <Field label="О себе в этой специализации" hint="Пусто — используется текст из профиля"><Textarea rows={4} value={f.about} onChange={e => setF({ ...f, about: e.target.value })} /></Field>

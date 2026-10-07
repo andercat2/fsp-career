@@ -87,7 +87,7 @@ export function CandidateInvitations() {
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl bg-brand-gradient p-4 text-white">
-                  <p className="text-xs text-white/60">Вилка, ₽ в месяц</p>
+                  <p className="text-xs text-white/60">Вилка, ₽ в месяц до вычета НДФЛ</p>
                   <p className="mt-1 text-lg font-extrabold leading-snug">{salaryRange(current.salary_from, current.salary_to)}</p>
                 </div>
                 <div className="rounded-2xl bg-surface p-4 text-sm">

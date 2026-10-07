@@ -14,7 +14,7 @@ from app.services.fsp.scoring import fsp_score
 from app.services.matching.profile import W_FSP, W_TEST, test_position
 from app.services.matching.ranking import Need, score_candidates
 from app.services.nlp.vacancy_parser import parse_need
-from app.services.reference.taxonomy import DOMAINS
+from app.services.reference.taxonomy import DOMAINS, GRADE_NAMES, SPEC_NAMES
 from app.services.testing.bank import REGISTRY, bank_summary
 from app.services.testing.service import calibrate_pretest
 
@@ -80,3 +80,38 @@ def items(_: Admin, db: DB):
 @router.post("/admin/items/calibrate", tags=["Администрирование"], summary="Откалибровать пилотные задания")
 def calibrate(_: Admin, db: DB):
     return calibrate_pretest(db)
+
+
+@router.get("/admin/integrity", tags=["Администрирование"],
+            summary="Честность тестирования: нарушения прокторинга, перепроверка, флаги детекторов")
+def integrity(_: Admin, db: DB, limit: int = 300):
+    """Сессии, требующие внимания: страйки прокторинга (снимок экрана, печать, копирование), досрочное завершение,
+    ответы «чужого варианта» (перепроверка), person-fit и слишком быстрые ответы на трудные задания."""
+    rows = db.execute(select(TestSession, CandidateProfile.public_id)
+                      .join(CandidateProfile, CandidateProfile.id == TestSession.candidate_id)
+                      .where(TestSession.status.in_(["completed", "abandoned", "in_progress"]))
+                      .order_by(TestSession.started_at.desc()).limit(5000))
+    out = []
+    for s, public_id in rows:
+        pr = s.proctoring or {}
+        res = s.result or {}
+        flags = (res.get("integrity") or {}).get("flags") or []
+        review = bool(res.get("review_required"))
+        if not (pr.get("strikes") or pr.get("away_count") or flags or review):
+            continue
+        out.append({
+            "token": s.token, "candidate": public_id, "candidate_id": s.candidate_id, "resume_id": s.resume_id or 0,
+            "specialization": s.specialization, "specialization_name": SPEC_NAMES.get(s.specialization),
+            "target_grade": s.target_grade, "target_grade_name": GRADE_NAMES.get(s.target_grade), "status": s.status,
+            "decision": res.get("decision"), "assigned_grade": res.get("assigned_grade"),
+            "strikes": pr.get("strikes", 0), "violation": pr.get("violation"), "terminated": bool(pr.get("terminated")),
+            "away_count": pr.get("away_count", 0), "away_sec": round(pr.get("away_ms", 0) / 1000),
+            "flags": flags, "review_required": review, "penalty": res.get("penalty", 0.0),
+            "events": (pr.get("events") or [])[-30:], "started_at": s.started_at, "finished_at": s.finished_at,
+        })
+        if len(out) >= limit:
+            break
+    return {"total": len(out), "summary": {
+        "violations": sum(1 for x in out if x["violation"]), "warnings": sum(1 for x in out if x["strikes"] == 1),
+        "review": sum(1 for x in out if x["review_required"]), "flagged": sum(1 for x in out if x["flags"])},
+        "sessions": out}

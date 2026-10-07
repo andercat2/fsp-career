@@ -36,6 +36,7 @@ const Shortlist = page(() => import('./pages/employer/Shortlist'), 'Shortlist')
 const EmployerTasks = page(() => import('./pages/employer/Tasks'), 'EmployerTasks')
 const CompanyPage = page(() => import('./pages/employer/Company'), 'CompanyPage')
 const AdminItems = page(() => import('./pages/admin/Items'), 'AdminItems')
+const AdminIntegrity = page(() => import('./pages/admin/Integrity'), 'AdminIntegrity')
 
 export default function App() {
   return (
@@ -81,6 +82,7 @@ export default function App() {
 
         <Route path="/admin" element={<AppShell role="admin" />}>
           <Route index element={<AdminItems />} />
+          <Route path="integrity" element={<AdminIntegrity />} />
         </Route>
 
         <Route path="/home" element={<Navigate to="/" replace />} />

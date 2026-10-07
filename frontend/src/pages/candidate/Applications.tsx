@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { useToast } from '@/lib/toast'
 import { ago, salaryRange } from '@/lib/format'
 import { Badge, Button, ButtonLink, Card, EmptyState, PageHeader, PageLoader } from '@/components/ui'
+import { useResumes } from '@/components/Resumes'
 
 const TONE: Record<string, 'blue' | 'lavender' | 'green' | 'red' | 'gray'> = { sent: 'blue', viewed: 'lavender', accepted: 'green', rejected: 'red', withdrawn: 'gray' }
 
@@ -12,6 +13,8 @@ export function Applications() {
   const qc = useQueryClient()
   const { push } = useToast()
   const { data, isLoading } = useQuery({ queryKey: ['applications'], queryFn: () => api<any[]>('/candidate/applications') })
+  const { data: resumes } = useResumes()
+  const multi = (resumes?.length ?? 0) > 1
   const withdraw = useMutation({ mutationFn: (id: number) => api(`/candidate/applications/${id}/withdraw`, { method: 'POST' }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['applications'] }); push('Отклик отозван') } })
   if (isLoading || !data) return <PageLoader />
@@ -26,6 +29,8 @@ export function Applications() {
                 <div className="min-w-0">
                   <Link to={`/candidate/vacancies/${a.vacancy.id}`} className="text-lg font-bold text-fsp-deep hover:text-fsp-pink">{a.vacancy.title}</Link>
                   <p className="text-sm text-slate-500">{a.company.name} · {salaryRange(a.vacancy.salary_from, a.vacancy.salary_to)} · отправлен {ago(a.created_at)}</p>
+                  {multi && a.resume && <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-lg bg-[#ECEAFB]/70 px-2.5 py-1 text-xs font-semibold text-[#3c3480]">
+                    Резюме «{a.resume.title}»{a.resume.grade ? ` · ${a.resume.specialization_name} · ${a.resume.grade_name}` : ' · без категории'}</p>}
                   {a.employer_comment && <p className="mt-2 rounded-xl bg-surface px-3 py-2 text-sm text-slate-700"><b>Комментарий работодателя:</b> {a.employer_comment}</p>}
                 </div>
                 <div className="flex items-center gap-2">
