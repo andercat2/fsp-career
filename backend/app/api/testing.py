@@ -137,7 +137,7 @@ def eligibility(cand: Candidate, db: DB, resume_id: int = 0):
 @router.post("/sessions", summary="Начать тест на выбранный грейд (или продолжить незавершённый)",
              responses={409: {"model": Message}})
 def start(data: StartTestIn, cand: Candidate, db: DB):
-    sess = service.start_session(db, cand, data.grade, data.resume_id or None)
+    sess = service.start_session(db, cand, data.grade, data.resume_id or None, data.mode)
     return service.question_view(sess, service.current_response(sess))
 
 

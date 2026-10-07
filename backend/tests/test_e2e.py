@@ -500,6 +500,74 @@ def test_sync_unconfirmed_restores_status_from_history(client):
         assert sync_unconfirmed(db) == 0
 
 
+def test_guest_candidate_express_test(client, monkeypatch):
+    """«Попробовать как кандидат»: аккаунт в один клик и экспресс-тест на 8 коротких заданий — пробная оценка уровня
+    без категории; ограничения полного теста на него не действуют, статистика банка не меняется."""
+    from sqlalchemy import func
+
+    from app.core.db import SessionLocal
+    from app.models import ItemStat
+    from app.services.testing import service
+
+    body = {"specialization": "backend", "language": "python", "claimed_grade": "middle", "consent_pd": True}
+    assert client.post(f"{API}/auth/guest", json={**body, "consent_pd": False}).status_code == 422
+    assert client.post(f"{API}/auth/guest", json={**body, "language": "swift"}).status_code == 422
+    r = client.post(f"{API}/auth/guest", json=body)
+    assert r.status_code == 201, r.text
+    assert r.json()["user"]["role"] == "candidate"
+    h = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    prof = client.get(f"{API}/candidate/profile", headers=h).json()
+    assert prof["specialization"] == "backend" and prof["claimed_grade"] == "middle" and not prof["consent_publish"]
+
+    with SessionLocal() as db:
+        exposures = db.scalar(select(func.sum(ItemStat.exposures)))
+    view = client.post(f"{API}/testing/sessions", headers=h, json={"grade": "middle", "mode": "express"}).json()
+    assert view["mode"] == "express" and view["max_items"] == 8
+    token, n = view["token"], 0
+    while view["status"] == "in_progress":
+        q = view["question"]
+        assert q["time_limit"] <= 165  # задания с коротким ответом: базовый лимит до 2 минут
+        view = client.post(f"{API}/testing/sessions/{token}/answer", headers=h,
+                           json={"response_id": q["id"], "answer": _answer_correctly(token, q["id"])}).json()
+        n += 1
+    res = view["result"]
+    assert n == 8 and res["express"] and res["assigned_grade"] is None and "decision" not in res
+    assert abs(sum(res["grade_probs"].values()) - 1) < 0.02 and res["estimated_grade"] in ("middle", "senior")
+    assert res["review"] and all(x["correct"] for x in res["review"])
+    with SessionLocal() as db:
+        assert db.scalar(select(func.sum(ItemStat.exposures))) == exposures  # экспресс не входит в статистику банка
+
+    cat = client.get(f"{API}/candidate/profile", headers=h).json()["category"]
+    assert cat["grade"] is None and cat["status"] is None  # категория не присвоена и не «не подтверждена»
+    el = client.get(f"{API}/testing/eligibility", headers=h).json()
+    assert next(g for g in el["grades"] if g["grade"] == "middle")["allowed"]  # попытка полного теста не потрачена
+    assert client.get(f"{API}/testing/history", headers=h).json()["sessions"][0]["mode"] == "express"
+    assert client.post(f"{API}/testing/sessions/{token}/accept-suggested", headers=h).status_code == 409
+
+    monkeypatch.setattr(service, "EXPRESS_PER_DAY", 1)
+    r = client.post(f"{API}/testing/sessions", headers=h, json={"grade": "junior", "mode": "express"})
+    assert r.status_code == 429
+
+
+def test_guest_accounts_expire(client):
+    """Гостевые аккаунты удаляются через 2 дня вместе с данными."""
+    from datetime import timedelta
+
+    from app.core.db import SessionLocal, utcnow
+    from app.models import CandidateProfile, User
+
+    body = {"specialization": "qa", "language": "python", "claimed_grade": "junior", "consent_pd": True}
+    first = client.post(f"{API}/auth/guest", json=body).json()["user"]["email"]
+    with SessionLocal() as db:
+        u = db.scalar(select(User).where(User.email == first))
+        u.created_at = utcnow() - timedelta(days=3)
+        db.commit()
+    assert client.post(f"{API}/auth/guest", json=body).status_code == 201
+    with SessionLocal() as db:  # id в SQLite могут переиспользоваться — проверяем по адресу гостя
+        assert db.scalar(select(User).where(User.email == first)) is None
+        assert db.scalar(select(CandidateProfile).where(CandidateProfile.contact_email == first)) is None
+
+
 def test_lower_grade_can_be_accepted_from_same_test(client):
     """Не подтвердил Middle, но тест уверенно показал уровень не ниже Junior — Junior можно принять сразу."""
     from app.services.testing.cat import AnsweredItem, CatConfig, CatState, decide

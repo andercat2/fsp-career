@@ -41,6 +41,9 @@ class CatConfig:
     # результате истинный уровень выше следующей границы лишь у ~65% (validation/cat_validation.py), поэтому
     # следующий уровень подтверждается отдельным тестом.
     lower_accept_prob: float = 0.80
+    # Экспресс-режим: только задания с коротким ответом (базовый лимит времени не больше указанного), чтобы тест
+    # укладывался в несколько минут. None — без ограничения (полный тест).
+    max_time_limit: int | None = None
 
 
 @dataclass
@@ -106,6 +109,8 @@ def select_next(state: CatState, params: dict[str, ItemState], rng: random.Rando
         for fam in BY_DOMAIN.get(dom, []):
             st = params.get(fam.id)
             if fam.id in used or (st and st.status not in ("active",)):
+                continue
+            if cfg.max_time_limit and fam.time_limit > cfg.max_time_limit:
                 continue
             out.append(fam)
         return out
@@ -191,6 +196,17 @@ def integrity_flags(state: CatState, theta: float) -> dict:
         flags.append("foreign_variant_answers")
     return {"lz": None if lz is None else round(lz, 3), "fast_hard_correct": fast, "foreign_answers": foreign,
             "flags": flags}
+
+
+def grade_probabilities(scored: list, penalty: float = 0.0) -> dict[str, float]:
+    """Апостериорная вероятность каждого грейда: P(θ − penalty в полосе грейда) по ответам."""
+    out = {}
+    for g in GRADE_CODES:
+        lo, hi = grade_band(g)
+        p_lo = 1.0 if math.isinf(lo) else irt.posterior_prob_above(scored, lo + penalty)
+        p_hi = 0.0 if math.isinf(hi) else irt.posterior_prob_above(scored, hi + penalty)
+        out[g] = round(max(0.0, p_lo - p_hi), 3)
+    return out
 
 
 def decide(state: CatState, cfg: CatConfig, penalty: float = 0.0) -> dict:

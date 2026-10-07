@@ -142,6 +142,23 @@ class SurveyIn(BaseModel):
 class StartTestIn(BaseModel):
     grade: GradeCode
     resume_id: int | None = Field(None, ge=0, description="Резюме (категория), по которому идёт тест; 0 — основное")
+    mode: Literal["full", "express"] = Field("full", description="full — тест, определяющий категорию (12–24 задания); "
+                                                                 "express — пробная оценка уровня за ≈5 минут (8 заданий), "
+                                                                 "категорию не присваивает")
+
+
+class GuestIn(BaseModel):
+    specialization: str = Field(description="Специализация (код из справочника)")
+    language: str = Field(description="Основной язык / стек (код из справочника)")
+    claimed_grade: GradeCode = "junior"
+    consent_pd: bool = Field(description="Согласие на обработку данных демо-аккаунта")
+
+    @field_validator("consent_pd")
+    @classmethod
+    def _consent(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("Нужно согласие на обработку данных")
+        return v
 
 
 class ResumeCreateIn(SurveyIn):

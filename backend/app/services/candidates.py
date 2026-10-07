@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 import secrets
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.models import Application, CandidateProfile, Company, Invitation, TestSession, Vacancy
@@ -91,7 +91,8 @@ def category_session(db: Session, prof) -> TestSession | None:
     if not prof.grade and not unconfirmed:
         return None
     q = (select(TestSession).where(TestSession.candidate_id == prof.id, TestSession.status == "completed",
-                                   TestSession.specialization == category_spec(prof))
+                                   TestSession.specialization == category_spec(prof),
+                                   or_(TestSession.mode.is_(None), TestSession.mode != "express"))
          .order_by(TestSession.finished_at.desc()))
     for s in db.scalars(q):
         if (s.resume_id or None) != (prof.resume_id or None):

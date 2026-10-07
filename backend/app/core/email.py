@@ -10,6 +10,8 @@ log = logging.getLogger("email")
 
 
 def send_email(to: str, subject: str, body: str) -> bool:
+    if to.lower().endswith(".example"):  # служебные адреса демо-гостей и синтетических кандидатов (RFC 2606)
+        return False
     if not settings.smtp_host:
         log.warning("EMAIL (dev) to=%s subject=%s\n%s", to, subject, body)
         return False

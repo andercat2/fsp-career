@@ -19,6 +19,7 @@ class TestSession(Base):
     target_grade: Mapped[str] = mapped_column(String(20))
     blueprint: Mapped[dict] = mapped_column(JSON)
     status: Mapped[str] = mapped_column(String(20), default="in_progress")  # in_progress|completed|abandoned
+    mode: Mapped[str | None] = mapped_column(String(20), default="full")  # full — категория; express — пробная оценка
     theta: Mapped[float] = mapped_column(Float, default=0.0)
     se: Mapped[float] = mapped_column(Float, default=1.5)
     n_items: Mapped[int] = mapped_column(Integer, default=0)

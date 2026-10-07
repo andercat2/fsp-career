@@ -87,6 +87,7 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       EMAIL_DEV_MODE: ${EMAIL_DEV_MODE:-true}
+      GUEST_MODE: ${GUEST_MODE:-true}
       FRONTEND_URL: ${PUBLIC_URL:-http://localhost:8080}
       BACKEND_PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8080}
       CORS_ORIGINS: ${PUBLIC_URL:-http://localhost:8080},http://localhost:5173

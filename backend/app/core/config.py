@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     smtp_port: int = 1025
     smtp_from: str = "noreply@fsp-career.local"
     email_dev_mode: bool = True
+    # «Попробовать как кандидат»: одноразовый аккаунт кандидата без регистрации (демо и жюри); в продуктиве — false
+    guest_mode: bool = True
 
     frontend_url: str = "http://localhost:5173"
     backend_public_url: str = "http://localhost:8000"

@@ -5,10 +5,11 @@ from __future__ import annotations
 import math
 import random
 import secrets
+from dataclasses import replace
 from datetime import datetime, timedelta
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -28,9 +29,30 @@ from app.services.reference.taxonomy import (
 from app.services.resumes import target_for
 from app.services.testing import integrity, irt
 from app.services.testing.bank import REGISTRY, check_answer
-from app.services.testing.cat import AnsweredItem, CatConfig, CatState, ItemState, decide, select_next, should_stop
+from app.services.testing.cat import (
+    INTERN_FLOOR,
+    AnsweredItem,
+    CatConfig,
+    CatState,
+    ItemState,
+    decide,
+    grade_probabilities,
+    select_next,
+    should_stop,
+)
 
 CFG = CatConfig()
+# Экспресс-тест (≈ 5 минут): 8 заданий с коротким ответом (лимит до 2 минут). На симуляции r(θ̂, θ) ≈ 0.83 против
+# 0.92 у полного теста, грейд в пределах ±1 — у 98% (validation/cat_validation.py), поэтому категорию он не
+# присваивает: это пробная оценка уровня — познакомиться с тестом и быстро проверить его разделяющую силу (жюри).
+# Ограничения частоты полного теста на него не действуют, в статистику и калибровку банка он не входит.
+EXPRESS_CFG = replace(CFG, min_items=8, max_items=8, max_time_limit=120)
+EXPRESS_PER_DAY = 5
+FULL_ONLY = or_(TestSession.mode.is_(None), TestSession.mode != "express")  # сессии, которые определяют категорию
+
+
+def cfg_for(sess: TestSession) -> CatConfig:
+    return EXPRESS_CFG if sess.mode == "express" else CFG
 SESSION_TTL_HOURS = 3
 TIME_GRACE_SEC = 15
 DRIFT_Z_FLAG = 3.0
@@ -68,7 +90,8 @@ def sync_item_stats(db: Session) -> None:
 
 
 def load_params(db: Session) -> dict[str, ItemState]:
-    total = db.scalar(select(func.count()).select_from(TestSession).where(TestSession.status == "completed")) or 0
+    total = db.scalar(select(func.count()).select_from(TestSession).where(TestSession.status == "completed",
+                                                                         FULL_ONLY)) or 0
     out = {}
     for st in db.scalars(select(ItemStat)):
         out[st.family_id] = ItemState(st.a, st.b, st.c, st.status, st.exposures / max(total, 20))
@@ -145,7 +168,7 @@ def eligibility(db: Session, cand: CandidateProfile, resume_id: int | None = Non
         active = None
     sessions = list(db.scalars(select(TestSession).where(
         TestSession.candidate_id == cand.id, TestSession.specialization == prof.specialization,
-        TestSession.status.in_(["completed", "abandoned"])).order_by(TestSession.started_at.desc())))
+        TestSession.status.in_(["completed", "abandoned"]), FULL_ONLY).order_by(TestSession.started_at.desc())))
     current = _current_grade(prof)
     # «Уверенный» результат открывает следующий уровень без ожидания, но тест не начинается сам: кандидат запускает
     # его, когда будет готов (срока нет). Это одна попытка — после неё действуют обычные ограничения частоты.
@@ -219,16 +242,16 @@ def _present_next(db: Session, sess: TestSession, state: CatState, rng: random.R
     n_scored = len(state.scored)
     fam = None
     scored = True
-    if n_scored >= 4 and rng.random() < PRETEST_RATE:
+    if sess.mode != "express" and n_scored >= 4 and rng.random() < PRETEST_RATE:
         pre = [f for f in REGISTRY.values() if params.get(f.id) and params[f.id].status == "pretest"
                and f.domain in sess.blueprint and f.id not in exclude]
         if pre:
             fam, scored = rng.choice(pre), False
     if fam is None:
-        fam = select_next(state, params, rng, CFG, exclude=exclude)
+        fam = select_next(state, params, rng, cfg_for(sess), exclude=exclude)
     if fam is None:
         # банк по блюпринту исчерпан — допускаем ранее виденные кандидатом семейства (варианты всё равно новые)
-        fam = select_next(state, params, rng, CFG, exclude={r.family_id for r in sess.responses})
+        fam = select_next(state, params, rng, cfg_for(sess), exclude={r.family_id for r in sess.responses})
     if fam is None:
         return None
     seq = len(sess.responses) + 1
@@ -252,7 +275,9 @@ def _present_next(db: Session, sess: TestSession, state: CatState, rng: random.R
     return resp
 
 
-def start_session(db: Session, cand: CandidateProfile, grade: str, resume_id: int | None = None) -> TestSession:
+def start_session(db: Session, cand: CandidateProfile, grade: str, resume_id: int | None = None,
+                  mode: str = "full") -> TestSession:
+    """mode: full — тест, определяющий категорию; express — пробная оценка уровня (EXPRESS_CFG)."""
     if grade not in GRADE_CODES:
         raise HTTPException(422, "Неизвестный грейд")
     el = eligibility(db, cand, resume_id)
@@ -261,14 +286,22 @@ def start_session(db: Session, cand: CandidateProfile, grade: str, resume_id: in
     if el["in_progress"]:
         sess = db.scalar(select(TestSession).where(TestSession.token == el["in_progress"]))
         return sess
-    g = next(x for x in el["grades"] if x["grade"] == grade)
-    if not g["allowed"]:
-        raise HTTPException(409, g["reason"])
+    if mode == "express":
+        recent = db.scalar(select(func.count()).select_from(TestSession).where(
+            TestSession.candidate_id == cand.id, TestSession.mode == "express",
+            TestSession.started_at >= utcnow() - timedelta(days=1))) or 0
+        if recent >= EXPRESS_PER_DAY:
+            raise HTTPException(429, f"Экспресс-тест — не больше {EXPRESS_PER_DAY} раз в сутки. Полный тест "
+                                     "определяет категорию и доступен по обычным правилам")
+    else:
+        g = next(x for x in el["grades"] if x["grade"] == grade)
+        if not g["allowed"]:
+            raise HTTPException(409, g["reason"])
     prof = target_for(cand, resume_id)
     sess = TestSession(
         token=secrets.token_urlsafe(16), candidate_id=cand.id, resume_id=resume_id or None,
         specialization=prof.specialization, language=prof.primary_language, target_grade=grade,
-        blueprint=resolve_blueprint(prof.specialization, prof.primary_language),
+        blueprint=resolve_blueprint(prof.specialization, prof.primary_language), mode=mode,
     )
     db.add(sess)
     db.flush()
@@ -288,8 +321,8 @@ def question_view(sess: TestSession, resp: TestResponse | None) -> dict:
     base = {
         "token": sess.token, "status": sess.status, "target_grade": sess.target_grade,
         "resume_id": sess.resume_id or 0, "specialization": sess.specialization, "specialization_name": SPEC_NAMES.get(sess.specialization),
-        "answered": len([r for r in sess.responses if r.answered_at is not None]),
-        "max_items": CFG.max_items, "min_items": CFG.min_items, "blueprint": {
+        "answered": len([r for r in sess.responses if r.answered_at is not None]), "mode": sess.mode or "full",
+        "max_items": cfg_for(sess).max_items, "min_items": cfg_for(sess).min_items, "blueprint": {
             k: {"weight": v, "name": DOMAINS.get(k, k)} for k, v in sess.blueprint.items()},
     }
     if resp is not None:
@@ -357,7 +390,7 @@ def submit_answer(db: Session, sess: TestSession, response_id: int, answer) -> d
     sess.n_items = len(state.scored)
     sess.n_correct = sum(1 for *_, u in state.scored if u)
     rng = random.Random(derive_seed(sess.token, "rng", resp.seq))
-    if should_stop(state, CFG) or _present_next(db, sess, state, rng) is None:
+    if should_stop(state, cfg_for(sess)) or _present_next(db, sess, state, rng) is None:
         _finalize(db, sess, state)
     db.commit()
     return question_view(sess, current_response(sess))
@@ -477,7 +510,8 @@ def sync_unconfirmed(db: Session) -> int:
     резюме без подтверждённого грейда получает результат последнего завершённого теста своей специализации, если
     тест грейд не подтвердил и не ушёл на перепроверку."""
     latest: dict[tuple, TestSession] = {}
-    for s in db.scalars(select(TestSession).where(TestSession.status == "completed").order_by(TestSession.finished_at)):
+    for s in db.scalars(select(TestSession).where(TestSession.status == "completed", FULL_ONLY)
+                        .order_by(TestSession.finished_at)):
         latest[(s.candidate_id, s.resume_id or 0, s.specialization)] = s
     changed = 0
     for (cand_id, resume_id, spec), s in latest.items():
@@ -504,8 +538,26 @@ def abandon(db: Session, sess: TestSession) -> None:
         db.commit()
 
 
+def _finalize_express(sess: TestSession, state: CatState, penalty: float = 0.0) -> None:
+    """Экспресс-оценка: уровень и вероятности грейдов. Категория, статус грейда, статистика заданий и калибровка
+    банка не меняются."""
+    result = decide(state, EXPRESS_CFG, penalty)
+    sess.status, sess.finished_at = "completed", utcnow()
+    sess.theta, sess.se = result.get("raw_theta", result["theta"]), result["se"]
+    probs = grade_probabilities(state.scored, penalty)
+    for k in ("decision", "suggested_grade", "suggested_p", "suggested_assignable", "next_grade", "p_above_upper"):
+        result.pop(k, None)
+    sess.result = result | {"express": True, "estimated_grade": max(probs, key=probs.get), "grade_probs": probs,
+                            "below_intern_floor": result["theta"] < INTERN_FLOOR, "assigned_grade": None,
+                            "kept_grade": None, "review_required": False}
+
+
 def _finalize(db: Session, sess: TestSession, state: CatState, penalty: float = 0.0) -> None:
     from app.services.matching.profile import recompute_candidate  # локальный импорт: избегаем цикла модулей
+
+    if sess.mode == "express":
+        _finalize_express(sess, state, penalty)
+        return
 
     result = decide(state, CFG, penalty)
     sess.status = "completed"
@@ -575,6 +627,7 @@ def history(db: Session, cand: CandidateProfile) -> list[dict]:
             "token": s.token, "resume_id": s.resume_id or 0, "specialization": s.specialization,
             "specialization_name": SPEC_NAMES.get(s.specialization),
             "target_grade": s.target_grade, "target_grade_name": GRADE_NAMES[s.target_grade], "status": s.status,
+            "mode": s.mode or "full", "estimated_grade": (s.result or {}).get("estimated_grade"),
             "started_at": s.started_at, "finished_at": s.finished_at, "n_items": s.n_items, "n_correct": s.n_correct,
             "decision": (s.result or {}).get("decision"),
             "theta": (s.result or {}).get("theta", s.theta) if s.status == "completed" else None,

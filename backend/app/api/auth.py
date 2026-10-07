@@ -1,4 +1,5 @@
-"""Регистрация по e-mail с подтверждением адреса, вход, выдача JWT."""
+"""Регистрация по e-mail с подтверждением адреса, вход, выдача JWT, гостевой демо-доступ кандидата."""
+import secrets
 import time
 from collections import defaultdict, deque
 from datetime import timedelta
@@ -13,14 +14,18 @@ from app.core.config import settings
 from app.core.db import utcnow
 from app.core.email import send_email
 from app.core.security import create_access_token, generate_code, hash_code, hash_password, verify_password
-from app.models import CandidateProfile, Company, Consent, EmailCode, User
-from app.schemas import LoginIn, Message, RegisterIn, RegisterOut, ResendIn, TokenOut, UserOut, VerifyIn
+from app.models import CandidateProfile, Company, Consent, EmailCode, Notification, SurveyResponse, User
+from app.schemas import GuestIn, LoginIn, Message, RegisterIn, RegisterOut, ResendIn, TokenOut, UserOut, VerifyIn
 from app.services.candidates import new_public_id
+from app.services.reference.taxonomy import SPEC_BY_CODE, SPEC_NAMES
 
 router = APIRouter(prefix="/auth", tags=["Аутентификация"])
 
 CODE_TTL_MIN = 30
 MAX_CODE_ATTEMPTS = 5
+GUEST_DOMAIN = "guest.example"  # зарезервированный домен: на такие адреса письма не уходят
+GUEST_TTL_DAYS = 2
+GUEST_PER_IP_HOUR = 20
 _login_attempts: dict[str, deque] = defaultdict(deque)
 
 
@@ -44,6 +49,60 @@ def _issue_code(db, user: User) -> str:
 
 def _token(user: User) -> TokenOut:
     return TokenOut(access_token=create_access_token(user.id, user.role), user=UserOut.model_validate(user))
+
+
+def is_guest(user: User) -> bool:
+    return user.email.endswith("@" + GUEST_DOMAIN)
+
+
+def _purge_guests(db) -> int:
+    """Гостевые аккаунты живут GUEST_TTL_DAYS дня: затем удаляются вместе с данными (как при удалении аккаунта)."""
+    old = list(db.scalars(select(User).where(User.email.like(f"guest-%@{GUEST_DOMAIN}"),
+                                             User.created_at < utcnow() - timedelta(days=GUEST_TTL_DAYS))))
+    for u in old:
+        db.query(Notification).filter(Notification.user_id == u.id).delete()
+        if u.candidate is not None:
+            db.delete(u.candidate)
+        db.delete(u)
+    return len(old)
+
+
+@router.post("/guest", response_model=TokenOut, status_code=201,
+             responses={403: {"model": Message}, 422: {"model": Message}, 429: {"model": Message}},
+             summary="Попробовать как кандидат: демо-аккаунт без регистрации")
+def guest(data: GuestIn, db: DB, request: Request):
+    """Одноразовый аккаунт кандидата в один клик — чтобы сразу пройти тест (в том числе членам жюри): опрос
+    заполняется из запроса, профиль не публикуется работодателям, через 2 дня аккаунт удаляется. На один адрес —
+    не больше 20 аккаунтов в час; в продуктиве режим отключается переменной GUEST_MODE=false."""
+    if not settings.guest_mode:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Демо-доступ без регистрации отключён")
+    spec = SPEC_BY_CODE.get(data.specialization)
+    if spec is None:
+        raise HTTPException(422, "Неизвестная специализация")
+    if data.language not in spec["languages"]:
+        raise HTTPException(422, "Этот язык не относится к выбранной специализации")
+    _throttle(f"guest:{request.client.host if request.client else '-'}", limit=GUEST_PER_IP_HOUR, window=3600)
+    _purge_guests(db)
+    email = f"guest-{secrets.token_hex(5)}@{GUEST_DOMAIN}"
+    user = User(email=email, password_hash=hash_password(secrets.token_urlsafe(24)), role="candidate",
+                email_verified=True, is_demo=True)
+    db.add(user)
+    db.flush()
+    now = utcnow()
+    cand = CandidateProfile(user_id=user.id, public_id=new_public_id(db), contact_email=email, consent_pd=True,
+                            consent_publish=False, headline=f"{SPEC_NAMES[data.specialization]} (демо)",
+                            specialization=data.specialization, primary_language=data.language,
+                            claimed_grade=data.claimed_grade, industries=[], survey_completed_at=now)
+    db.add(cand)
+    db.flush()
+    db.add(Consent(user_id=user.id, kind="pd_processing", granted=True,
+                   ip=request.client.host if request.client else None,
+                   user_agent=request.headers.get("user-agent", "")[:255]))
+    db.add(SurveyResponse(candidate_id=cand.id, specialization=data.specialization, claimed_grade=data.claimed_grade,
+                          warnings=[], answers={"specialization": data.specialization, "language": data.language,
+                                                "claimed_grade": data.claimed_grade, "guest": True}))
+    db.commit()
+    return _token(user)
 
 
 @router.post("/register", response_model=RegisterOut, status_code=201,
