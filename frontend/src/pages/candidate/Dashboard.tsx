@@ -95,6 +95,12 @@ export function CandidateDashboard() {
           </motion.div>
         ) : (
           <Card title="Путь к категории" subtitle={`${doneCount} из ${required.length} обязательных шагов`}>
+            {data.visible_as_unconfirmed && (
+              <p className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                Тест пока не подтвердил заявленный грейд. Работодатели видят вас со статусом «не подтверждён» — ниже кандидатов
+                с подтверждённым грейдом. <Link to="/candidate/grade" className="link">Подробнее</Link>
+              </p>
+            )}
             <Progress value={doneCount / required.length} className="mb-5" />
             <Stagger as="ol" className="space-y-1.5" gap={0.06}>
               {steps.map((s, i) => (

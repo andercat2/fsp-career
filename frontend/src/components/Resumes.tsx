@@ -17,7 +17,10 @@ export type Resume = {
   primary_language: string | null; language_name: string | null; claimed_grade: string | null; claimed_grade_name: string | null
   survey_completed_at: string | null; industries: string[]
   category: { specialization: string | null; specialization_name: string | null; grade: string | null; grade_name: string | null; percentile: number | null
-    theta: number | null; se: number | null; assigned_at: string | null; changed_at: string | null }
+    theta: number | null; se: number | null; assigned_at: string | null; changed_at: string | null
+    status?: 'confirmed' | 'unconfirmed' | null; claimed_grade?: string | null; claimed_grade_name?: string | null
+    measured_grade?: string | null; measured_grade_name?: string | null; tested_at?: string | null
+  }
   domains: Record<string, { score: number; n: number; correct: number; theta?: number }>
   strength: number; skills: string[]; verified_skills: string[]; desired_salary: number | null; about: string | null
   visible: boolean; resume_filename: string | null
@@ -122,7 +125,8 @@ export function ResumesCard({ publicId, onEditMain }: { publicId: string; onEdit
               </div>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              {r.category.grade ? <CategoryPill spec={r.category.specialization_name} grade={r.category.grade_name} />
+              {r.category.grade || r.category.status === 'unconfirmed'
+                ? <CategoryPill spec={r.category.specialization_name} grade={r.category.grade_name} status={r.category.status} claimed={r.category.claimed_grade_name} />
                 : <Badge tone="amber">{r.survey_completed_at ? `заявлен ${r.claimed_grade_name ?? '—'}, нужен тест` : 'нужен опрос'}</Badge>}
               {r.category.percentile != null && <span className="text-xs font-semibold text-emerald-600">выше {Math.round(r.category.percentile)}%</span>}
             </div>
@@ -169,7 +173,7 @@ export function ResumeTabs({ resumes, active, onSelect, onNew, canAdd }: {
             <span className={clsx('text-[11px] font-semibold uppercase tracking-wide', on ? 'text-white/60' : 'text-slate-400')}>{r.main ? 'Основное резюме' : 'Дополнительное'}</span>
             <span className="mt-0.5 w-full truncate text-sm font-bold">{resumeLabel(r)}</span>
             <span className={clsx('mt-1 text-xs', on ? 'text-white/75' : 'text-slate-500')}>
-              {r.category.grade ? `✓ ${r.category.specialization_name} · ${r.category.grade_name}` : r.survey_completed_at ? `${r.specialization_name} · тест не пройден` : 'нужен опрос'}</span>
+              {r.category.grade ? `✓ ${r.category.specialization_name} · ${r.category.grade_name}` : r.category.status === 'unconfirmed' ? `${r.specialization_name} · ${r.category.claimed_grade_name} не подтверждён` : r.survey_completed_at ? `${r.specialization_name} · тест не пройден` : 'нужен опрос'}</span>
           </button>
         )
       })}

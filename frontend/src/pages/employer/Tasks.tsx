@@ -57,7 +57,7 @@ function Review({ ta }: { ta: any }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-bold text-fsp-deep">{ta.task.title}</p>
-          <p className="text-sm text-slate-500"><Link to={`/employer/candidates/${ta.candidate.id}`} className="link">{ta.candidate.public_id}</Link> · {ta.candidate.specialization_name} · {ta.candidate.grade_name} · {ago(ta.submitted_at)}</p>
+          <p className="text-sm text-slate-500"><Link to={`/employer/candidates/${ta.candidate.id}`} className="link">{ta.candidate.public_id}</Link> · {ta.candidate.specialization_name} · {ta.candidate.grade_status === 'unconfirmed' ? `${ta.candidate.claimed_grade_name} (грейд не подтверждён)` : ta.candidate.grade_name} · {ago(ta.submitted_at)}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {code && ta.results && <Badge tone={ta.results.passed === ta.results.total ? 'green' : 'amber'}>тесты: {ta.results.passed} из {ta.results.total}</Badge>}

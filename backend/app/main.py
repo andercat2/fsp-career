@@ -35,14 +35,19 @@ async def lifespan(_: FastAPI):
     added = ensure_columns()
     if added:
         log.info("Добавлены столбцы: %s", ", ".join(added))
-    from app.services.testing.service import sync_item_stats
+    from app.services.testing.service import sync_item_stats, sync_unconfirmed
 
     with SessionLocal() as db:
         sync_item_stats(db)
         if settings.seed_demo:
-            from app.seed.seed import seed_if_empty, upgrade_demo_data
+            from app.seed.seed import seed_if_empty
 
             seed_if_empty(db)
+        if n := sync_unconfirmed(db):
+            log.info("Статус «грейд не подтверждён» восстановлен из истории тестов: %d резюме", n)
+        if settings.seed_demo:
+            from app.seed.seed import upgrade_demo_data
+
             upgrade_demo_data(db)
     threading.Thread(target=_warmup, daemon=True).start()
     yield

@@ -446,6 +446,7 @@ def accept_suggested(db: Session, sess: TestSession) -> dict:
         target.grade_changed_at = utcnow()
     target.grade, target.grade_specialization = grade, sess.specialization
     target.grade_assigned_at = target.grade_assigned_at or utcnow()
+    clear_unconfirmed(target)
     # доменные оценки в профиле — относительно принятого грейда (в сессии они посчитаны для заявленного)
     center = grade_center(grade)
     domains = {d: {**v, "score": round(1 / (1 + math.exp(-1.3 * (v["theta"] - center))), 3)}
@@ -457,6 +458,43 @@ def accept_suggested(db: Session, sess: TestSession) -> dict:
            "Категория видна работодателям. Следующий уровень можно подтвердить отдельным тестом.", "/candidate/grade")
     db.commit()
     return question_view(sess, None)
+
+
+def set_unconfirmed(target, grade: str, result: dict, at=None) -> None:
+    """Тест не подтвердил заявленный грейд, а подтверждённого нет: резюме остаётся в выдаче со статусом
+    «не подтверждён» и ниже подтверждённых. θ, погрешность и доменные оценки — измеренные этим тестом."""
+    target.unconfirmed_grade, target.unconfirmed_theta, target.unconfirmed_se = grade, result["theta"], result["se"]
+    target.unconfirmed_at = at or utcnow()
+    target.domain_scores = result.get("domains") or {}
+
+
+def clear_unconfirmed(target) -> None:
+    target.unconfirmed_grade = target.unconfirmed_theta = target.unconfirmed_se = target.unconfirmed_at = None
+
+
+def sync_unconfirmed(db: Session) -> int:
+    """Статус неподтверждённого грейда из истории тестов — для данных, созданных до появления статуса (идемпотентно):
+    резюме без подтверждённого грейда получает результат последнего завершённого теста своей специализации, если
+    тест грейд не подтвердил и не ушёл на перепроверку."""
+    latest: dict[tuple, TestSession] = {}
+    for s in db.scalars(select(TestSession).where(TestSession.status == "completed").order_by(TestSession.finished_at)):
+        latest[(s.candidate_id, s.resume_id or 0, s.specialization)] = s
+    changed = 0
+    for (cand_id, resume_id, spec), s in latest.items():
+        r = s.result or {}
+        if r.get("decision") != "not_confirmed" or r.get("review_required") or r.get("accepted_suggested"):
+            continue
+        cand = db.get(CandidateProfile, cand_id)
+        target = (next((x for x in cand.resumes if x.id == resume_id), None) if resume_id else cand) if cand else None
+        if target is None or target.specialization != spec or _current_grade(target) or target.grade:
+            continue
+        if target.unconfirmed_grade == s.target_grade and target.unconfirmed_at:
+            continue
+        set_unconfirmed(target, s.target_grade, r, s.finished_at)
+        changed += 1
+    if changed:
+        db.commit()
+    return changed
 
 
 def abandon(db: Session, sess: TestSession) -> None:
@@ -497,10 +535,13 @@ def _finalize(db: Session, sess: TestSession, state: CatState, penalty: float = 
             target.grade = assigned
             target.grade_specialization = sess.specialization
             target.grade_assigned_at = target.grade_assigned_at or utcnow()
+            clear_unconfirmed(target)
         if current is None or GRADE_INDEX[sess.target_grade] >= GRADE_INDEX[current]:
             # обновляем «свежесть» подтверждённого уровня и доменные оценки
             target.grade_theta, target.grade_se = result["theta"], result["se"]
             target.domain_scores = result["domains"]
+    elif decision == "not_confirmed" and not review and target is not None and current is None:
+        set_unconfirmed(target, sess.target_grade, result)
     result["assigned_grade"] = assigned
     result["kept_grade"] = current if assigned is None else None
     sess.result = result

@@ -305,7 +305,7 @@ function Result({ view }: { view: any }) {
                 canAccept ? `Ваш уровень с вероятностью ${Math.round(r.suggested_p * 100)}% не ниже ${r.suggested_grade_name}. Эту категорию можно принять сразу по этому тесту — или пройти отдельный тест на ${r.suggested_grade_name}.` :
                 r.assigned_grade ? `Категория «${view.specialization_name} · ${r.target_grade_name}» присвоена и видна работодателям.` :
                   r.kept_grade ? 'Ваш текущий грейд сохранён — грейд не понижается по результатам теста.' :
-                    r.decision === 'not_confirmed' ? 'Категория пока не присвоена. Это не приговор: пройдите тест уровнем ниже — сразу, без ожидания.' : 'Результат учтён в профиле.'}
+                    r.decision === 'not_confirmed' ? 'Категория пока не присвоена. Это не приговор: пройдите тест уровнем ниже — сразу, без ожидания. Пока грейд не подтверждён, работодатели видят вас со статусом «не подтверждён» ниже подтверждённых кандидатов — показ можно отключить в настройках.' : 'Результат учтён в профиле.'}
             </motion.p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {canAccept && <Button onClick={() => accept.mutate()} loading={accept.isPending} icon={<Check className="h-4 w-4" />}>Принять {r.suggested_grade_name} по этому тесту</Button>}

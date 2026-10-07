@@ -379,6 +379,127 @@ def _answer_by_difficulty(session_token: str, response_id: int, b_max: float):
         return r.answer_key["key"] if r.payload["irt"]["b"] < b_max else None
 
 
+def _take_test(client, h, grade: str, b_max: float, resume_id: int = 0) -> dict:
+    view = client.post(f"{API}/testing/sessions", headers=h, json={"grade": grade, "resume_id": resume_id}).json()
+    token = view["token"]
+    for _ in range(50):
+        if view["status"] != "in_progress":
+            break
+        q = view["question"]
+        view = client.post(f"{API}/testing/sessions/{token}/answer", headers=h,
+                           json={"response_id": q["id"], "answer": _answer_by_difficulty(token, q["id"], b_max)}).json()
+    assert view["status"] == "completed"
+    return view
+
+
+def test_unconfirmed_ranks_below_identical_confirmed():
+    """Неподтверждённый грейд опускает кандидата: при той же θ совпадение грейда не засчитывается."""
+    from app.core.db import utcnow
+    from app.models import CandidateProfile
+    from app.services.matching.ranking import Need, score_candidates
+
+    base = dict(skills=["python", "sql"], domain_scores={}, work_formats=["remote"], city="Казань", open_to_offers=True,
+                privacy={}, specialization="backend", primary_language="python", fsp_score=0.0, tasks_done=0,
+                last_active_at=utcnow(), headline="Python-разработчик", about="", experience=[])
+    conf = CandidateProfile(id=1, public_id="C-1", grade="middle", grade_specialization="backend", grade_theta=0.5,
+                            grade_se=0.3, strength=0.345, **base)  # сила = 0.6 · положение θ в полосе Middle
+    unc = CandidateProfile(id=2, public_id="C-2", unconfirmed_grade="middle", unconfirmed_theta=0.5, unconfirmed_se=0.3,
+                           strength=0.0, **base)
+    need = Need(specialization="backend", grades=["middle"], must_skills=["python"], nice_skills=[])
+    a, b = sorted(score_candidates(need, [unc, conf]), key=lambda r: r["candidate_id"])
+    assert a["grade_status"] == "confirmed" and b["grade_status"] == "unconfirmed"
+    assert b["components"]["strength"] == a["components"]["strength"]  # та же θ — та же сила профиля
+    assert b["components"]["category"] < a["components"]["category"] and b["score"] < a["score"]
+    assert b["specialization"] == "backend" and b["claimed_grade"] == "middle" and b["measured_grade"] == "middle"
+    assert "не подтверждён" in b["reasons"][0]["text"]
+
+
+def test_unconfirmed_grade_shown_with_status_and_lower(client):
+    """Тест не подтвердил грейд, а подтверждённого нет: кандидат не скрыт — работодатель видит его со статусом
+    «не подтверждён» и после подтверждённых; кандидат может отключить показ; подтверждение грейда снимает статус."""
+    h = _new_candidate(client, "unconfirmed@example.com", grade="middle")
+    client.post(f"{API}/candidate/consents", headers=h, json={"kind": "profile_publication", "granted": True})
+    res = _take_test(client, h, "middle", -0.3)["result"]  # уровень около Junior: Middle не подтверждается
+    assert res["decision"] == "not_confirmed" and res["assigned_grade"] is None
+    prof = client.get(f"{API}/candidate/profile", headers=h).json()
+    cat = prof["category"]
+    assert cat["status"] == "unconfirmed" and cat["grade"] is None and cat["claimed_grade"] == "middle"
+    assert cat["specialization"] == "backend" and cat["measured_grade"] in ("intern", "junior", "middle")
+    dash = client.get(f"{API}/candidate/dashboard", headers=h).json()
+    assert dash["visible_to_employers"] and dash["visible_as_unconfirmed"]
+
+    eh = login(client, "employer@demo.ru")
+
+    def search(**kw):
+        rows, page = [], 1
+        while True:
+            r = client.get(f"{API}/employer/candidates", headers=eh,
+                           params={"specialization": "backend", "size": 100, "page": page, **kw}).json()
+            rows += r["results"]
+            if page * 100 >= r["total"]:
+                return rows
+            page += 1
+
+    rows = search()
+    mine = next(r for r in rows if r["id"] == prof["id"])
+    assert mine["grade_status"] == "unconfirmed" and mine["claimed_grade"] == "middle" and mine["grade"] is None
+    statuses = [r["grade_status"] for r in rows]
+    assert statuses == sorted(statuses, key=lambda s: s == "unconfirmed")  # неподтверждённые — после подтверждённых
+    assert all(r["id"] != prof["id"] for r in search(confirmed_only=True))
+    assert any(r["id"] == prof["id"] for r in search(grades="middle"))  # фильтр грейда — по заявленному
+
+    sel = client.post(f"{API}/employer/selections", headers=eh, json={
+        "text": "Ищем Middle Python-разработчика: Python, SQL, Docker, REST API. Удалённо, 150 000 – 300 000 ₽."}).json()
+    cat_mid = next(c for c in sel["categories"] if c["specialization"] == "backend" and c["grade"] == "middle")
+    assert cat_mid["unconfirmed"] >= 1
+    full = client.get(f"{API}/employer/selections/{sel['id']}", headers=eh, params={"size": 100, "grades": "middle"}).json()
+    unconfirmed_rows = [r for r in full["results"] if r["grade_status"] == "unconfirmed"]
+    assert unconfirmed_rows and all("не подтверждён" in r["reasons"][0]["text"] for r in unconfirmed_rows)
+    assert all(r["claimed_grade"] == "middle" or r["measured_grade"] == "middle" for r in unconfirmed_rows)
+    row = next((r for r in full["results"] if r["id"] == prof["id"]), None)
+    if row is not None:  # пул ограничен лучшими 150 — кандидат может не войти, если подтверждённых много
+        assert row["grade_status"] == "unconfirmed"
+    only = client.get(f"{API}/employer/selections/{sel['id']}", headers=eh,
+                      params={"size": 100, "confirmed_only": True}).json()
+    assert all(r["grade_status"] == "confirmed" for r in only["results"])
+
+    card = client.get(f"{API}/employer/candidates/{prof['id']}", headers=eh).json()
+    assert card["category"]["status"] == "unconfirmed" and card["category"]["claimed_grade_name"] == "Middle"
+    r = client.post(f"{API}/employer/invitations", headers=eh, json={
+        "candidate_id": prof["id"], "title": "Junior Python-разработчик", "message": "Предлагаем начать с Junior.",
+        "salary_from": 120000, "salary_to": 160000, "contact_method": "Telegram @technopulse_hr"})
+    assert r.status_code == 201, r.text
+
+    pv = client.get(f"{API}/candidate/profile", headers=h).json()["privacy"]
+    client.put(f"{API}/candidate/privacy", headers=h, json={**pv, "show_unconfirmed": False})
+    assert all(r["id"] != prof["id"] for r in search())  # кандидат отключил показ
+    assert not client.get(f"{API}/candidate/dashboard", headers=h).json()["visible_to_employers"]
+
+    res2 = _pass_test(client, h, "junior")["result"]  # подтвердил уровень ниже — статус снят
+    assert res2["assigned_grade"] == "junior"
+    cat = client.get(f"{API}/candidate/profile", headers=h).json()["category"]
+    assert cat["status"] == "confirmed" and cat["grade"] == "junior" and cat["claimed_grade"] is None
+
+
+def test_sync_unconfirmed_restores_status_from_history(client):
+    """Данные до появления статуса: при старте статус восстанавливается из истории тестов (идемпотентно)."""
+    from app.core.db import SessionLocal
+    from app.models import User
+    from app.services.testing.service import clear_unconfirmed, sync_unconfirmed
+
+    h = _new_candidate(client, "legacy@example.com", grade="senior")
+    _take_test(client, h, "senior", -0.3)
+    with SessionLocal() as db:
+        cand = db.scalar(select(User).where(User.email == "legacy@example.com")).candidate
+        assert cand.unconfirmed_grade == "senior"
+        clear_unconfirmed(cand)  # как в базе, созданной до появления статуса
+        db.commit()
+        assert sync_unconfirmed(db) >= 1
+        db.refresh(cand)
+        assert cand.unconfirmed_grade == "senior" and cand.unconfirmed_theta is not None
+        assert sync_unconfirmed(db) == 0
+
+
 def test_lower_grade_can_be_accepted_from_same_test(client):
     """Не подтвердил Middle, но тест уверенно показал уровень не ниже Junior — Junior можно принять сразу."""
     from app.services.testing.cat import AnsweredItem, CatConfig, CatState, decide

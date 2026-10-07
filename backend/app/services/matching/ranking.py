@@ -1,7 +1,10 @@
 """Механика подбора: потребность работодателя → рекомендованные категории → ранжированные кандидаты с объяснением.
 
-Пул кандидатов формируется только из категорий, присвоенных тестированием (специализация × грейд), а не из
-самоописания. Внутри пула релевантность:
+Пул кандидатов формируется из категорий, присвоенных тестированием (специализация × грейд), а не из
+самоописания. Кандидат, чей заявленный грейд тест не подтвердил (а подтверждённого грейда нет), не скрывается, а
+показывается со статусом «не подтверждён» и ниже подтверждённых: ранжируется по измеренной тестом θ, без совпадения
+грейда (UNCONFIRMED_FACTOR — проверенный на валидации дополнительный множитель) — так рекомендовали постановщики,
+иначе кандидат выпадает из оборота. Внутри пула релевантность:
 
   score = (0.30·skills + 0.25·strength + 0.20·category + 0.15·conditions + 0.10·text) · availability
 
@@ -38,7 +41,7 @@ from app.models import CandidateProfile, CandidateResume, User
 from app.services.fsp.scoring import fsp_summary
 from app.services.matching.profile import strength_for, verifier_domain
 from app.services.reference.skills import SKILL_BY_ID
-from app.services.resumes import ResumeView
+from app.services.resumes import ResumeView, category_spec, category_theta, is_unconfirmed, measured_grade
 from app.services.reference.taxonomy import (
     DOMAINS,
     GRADE_CODES,
@@ -52,6 +55,12 @@ from app.services.reference.taxonomy import (
 )
 
 WEIGHTS = {"skills": 0.30, "strength": 0.25, "category": 0.20, "conditions": 0.15, "text": 0.10}
+# Грейд не подтверждён тестом: кандидат в выдаче, но ниже. Понижение заложено в оценку — совпадение грейда не
+# засчитывается (половина компоненты категории), уровень берётся из измеренной тестом θ. Дополнительный множитель
+# проверен на валидации (часть кандидатов после неподтверждения не пересдаёт уровень ниже сразу): любое значение
+# меньше 1 только снижало точность и прятало релевантных кандидатов, поэтому он равен 1
+# (validation/matching_validation.py, unconfirmed_experiment).
+UNCONFIRMED_FACTOR = 1.0
 RELATED_SPECS = {
     "backend": {"fullstack": 0.6},
     "frontend": {"fullstack": 0.6},
@@ -237,7 +246,8 @@ def conditions_component(need: Need, cand: CandidateProfile) -> tuple[float, dic
 
 def band_probability(need_grades: list[str], cand: CandidateProfile) -> float | None:
     """P(θ кандидата лежит в полосах запрошенных грейдов) по нормальной аппроксимации апостериорного θ."""
-    if cand.grade_theta is None or not cand.grade_se:
+    theta, se = category_theta(cand)
+    if theta is None or not se:
         return None
 
     def phi(x: float) -> float:
@@ -246,8 +256,8 @@ def band_probability(need_grades: list[str], cand: CandidateProfile) -> float | 
     total = 0.0
     for g in need_grades:
         lo, hi = grade_band(g)
-        p_hi = 1.0 if math.isinf(hi) else phi((hi - cand.grade_theta) / cand.grade_se)
-        p_lo = 0.0 if math.isinf(lo) else phi((lo - cand.grade_theta) / cand.grade_se)
+        p_hi = 1.0 if math.isinf(hi) else phi((hi - theta) / se)
+        p_lo = 0.0 if math.isinf(lo) else phi((lo - theta) / se)
         total += max(0.0, p_hi - p_lo)
     return min(1.0, total)
 
@@ -294,9 +304,18 @@ def response_likelihood(need: Need, cand: CandidateProfile, cond: dict | None = 
 def _reasons(need: Need, cand: CandidateProfile, comp: dict, skill_details: list[dict], cond: dict, fsp: dict) -> list[dict]:
     r: list[dict] = []
     grade_name = GRADE_NAMES.get(cand.grade or "", "—")
-    spec_name = SPEC_NAMES.get(cand.grade_specialization or "", "—")
-    pct = round(100 * 0.5 * (1 + math.erf((cand.grade_theta or 0) / math.sqrt(2))))
-    if spec_factor(need.specialization, cand.grade_specialization) >= 1 and cand.grade in need.grades:
+    spec = category_spec(cand)
+    spec_name = SPEC_NAMES.get(spec or "", "—")
+    pct = round(100 * 0.5 * (1 + math.erf((category_theta(cand)[0] or 0) / math.sqrt(2))))
+    if is_unconfirmed(cand):
+        measured = measured_grade(cand)
+        level = f"; по тесту уровень {GRADE_NAMES[measured]}" if measured and measured != cand.unconfirmed_grade else ""
+        r.append({"kind": "minus", "text": f"Грейд {GRADE_NAMES[cand.unconfirmed_grade]} заявлен, но тестом пока не "
+                                           f"подтверждён — кандидат показан ниже подтверждённых{level} (результат выше, "
+                                           f"чем у {pct}% кандидатов)"})
+        if spec_factor(need.specialization, spec) < 1:
+            r.append({"kind": "info", "text": f"Частичное совпадение категории: смежная специализация «{spec_name}»"})
+    elif spec_factor(need.specialization, cand.grade_specialization) >= 1 and cand.grade in need.grades:
         near = " (уровень у границы грейда)" if comp["category"] < 0.9 else ""
         r.append({"kind": "plus", "text": f"Категория «{spec_name} · {grade_name}» подтверждена тестом — результат выше, "
                                           f"чем у {pct}% кандидатов{near}"})
@@ -367,9 +386,14 @@ def visible(cand: CandidateProfile) -> bool:
     return bool((cand.privacy or {}).get("visible_in_search", True))
 
 
-def pool_profiles(db: Session, specs: set[str] | None = None) -> list:
+def shows_unconfirmed(cand: CandidateProfile) -> bool:
+    return bool((cand.privacy or {}).get("show_unconfirmed", True))
+
+
+def pool_profiles(db: Session, specs: set[str] | None = None, include_unconfirmed: bool = False) -> list:
     """Пул подбора: основные резюме (профили) и дополнительные резюме с категорией по тесту — только кандидаты,
-    давшие согласие на публикацию и не скрывшие профиль. specs — фильтр по специализации категории."""
+    давшие согласие на публикацию и не скрывшие профиль. specs — фильтр по специализации категории.
+    include_unconfirmed — добавить резюме, чей грейд тест не подтвердил (если кандидат не отключил их показ)."""
     q = base_pool_query()
     if specs is not None:
         q = q.where(CandidateProfile.grade_specialization.in_(specs))
@@ -381,6 +405,22 @@ def pool_profiles(db: Session, specs: set[str] | None = None) -> list:
     if specs is not None:
         rq = rq.where(CandidateResume.grade_specialization.in_(specs))
     out += [ResumeView(c, r) for r, c in db.execute(rq) if visible(c)]
+    if include_unconfirmed:
+        uq = (select(CandidateProfile).join(User, User.id == CandidateProfile.user_id)
+              .where(User.is_active.is_(True), CandidateProfile.consent_publish.is_(True),
+                     CandidateProfile.grade.is_(None), CandidateProfile.unconfirmed_grade.is_not(None)))
+        if specs is not None:
+            uq = uq.where(CandidateProfile.specialization.in_(specs))
+        out += [c for c in db.scalars(uq) if visible(c) and shows_unconfirmed(c)]
+        urq = (select(CandidateResume, CandidateProfile)
+               .join(CandidateProfile, CandidateProfile.id == CandidateResume.candidate_id)
+               .join(User, User.id == CandidateProfile.user_id)
+               .where(User.is_active.is_(True), CandidateProfile.consent_publish.is_(True),
+                      CandidateResume.visible.is_(True), CandidateResume.grade.is_(None),
+                      CandidateResume.unconfirmed_grade.is_not(None)))
+        if specs is not None:
+            urq = urq.where(CandidateResume.specialization.in_(specs))
+        out += [ResumeView(c, r) for r, c in db.execute(urq) if visible(c) and shows_unconfirmed(c)]
     return out
 
 
@@ -401,8 +441,10 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
     for cand, sim in zip(cands, sims, strict=True):
         sk, skill_details = skills_component(need, cand)
         cond_v, cond = conditions_component(need, cand)
-        sf = spec_factor(need.specialization, cand.grade_specialization)
-        gf = grade_fit(need.grades, cand.grade)
+        unconfirmed = is_unconfirmed(cand)
+        spec = category_spec(cand)
+        sf = spec_factor(need.specialization, spec)
+        gf = grade_fit(need.grades, cand.grade)  # у неподтверждённого грейда совпадения грейда нет — только θ
         pb = band_probability(need.grades, cand)
         comp = {
             "skills": round(sk, 4),
@@ -414,7 +456,9 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
         score = sum(WEIGHTS[k] * v for k, v in comp.items()) * cond["availability"]
         if need.require_fsp and not cand.fsp_id:
             score *= 0.85  # работодатель отметил важность ФСП — мягкое понижение, а не исключение
-        fsp = fsp_summary(cand.fsp_profile, cand.grade_specialization)
+        if unconfirmed:
+            score *= UNCONFIRMED_FACTOR  # грейд не подтверждён тестом: в выдаче, но ниже подтверждённых
+        fsp = fsp_summary(cand.fsp_profile, spec)
         out.append({
             "candidate_id": cand.id,
             "public_id": cand.public_id,
@@ -427,8 +471,11 @@ def score_candidates(need: Need, cands: list[CandidateProfile]) -> list[dict]:
             "reasons": _reasons(need, cand, comp, skill_details, cond, fsp),
             "likelihood": response_likelihood(need, cand, cond),
             # срез атрибутов для фильтрации сохранённой подборки без пересчёта
-            "specialization": cand.grade_specialization,
+            "specialization": spec,
             "grade": cand.grade,
+            "grade_status": "unconfirmed" if unconfirmed else "confirmed",
+            "claimed_grade": cand.unconfirmed_grade if unconfirmed else None,
+            "measured_grade": measured_grade(cand) if unconfirmed else None,
             "declared_skills": cand.skills or [],
             "verified_skills": cand.verified_skills or [],
             "has_fsp": bool(fsp["achievements"]),
@@ -456,10 +503,11 @@ def recommend_categories(db: Session, need: Need) -> list[dict]:
     for rel, f in RELATED_SPECS.get(need.specialization, {}).items():
         for g in need.grades:
             pairs.setdefault((rel, g), f)
-    cands = pool_profiles(db, {p[0] for p in pairs})
+    cands = pool_profiles(db, {p[0] for p in pairs}, include_unconfirmed=True)
     out = []
     for (spec, g), rel in sorted(pairs.items(), key=lambda kv: -kv[1]):
         group = [c for c in cands if c.grade_specialization == spec and c.grade == g]
+        unconfirmed = sum(1 for c in cands if is_unconfirmed(c) and category_spec(c) == spec and c.unconfirmed_grade == g)
         salaries = sorted(c.desired_salary for c in group if c.desired_salary)
         med = salaries[len(salaries) // 2] if salaries else None
         in_budget = (sum(1 for s in salaries if need.salary_to and s <= need.salary_to) / len(salaries)) if salaries else None
@@ -470,14 +518,24 @@ def recommend_categories(db: Session, need: Need) -> list[dict]:
             "avg_strength": round(sum(c.strength for c in group) / len(group), 3) if group else None,
             "median_salary": med, "share_in_budget": None if in_budget is None else round(in_budget, 2),
             "open_to_offers": sum(1 for c in group if c.open_to_offers),
+            "unconfirmed": unconfirmed,  # заявили этот грейд, но тест его не подтвердил: в выдаче ниже, со статусом
         })
     return out
+
+
+def in_categories(cand, allowed: set[tuple[str, str]]) -> bool:
+    """Резюме относится к рекомендованным категориям: подтверждённое — по своей категории, с неподтверждённым
+    грейдом — по заявленному грейду или по уровню, который показал тест."""
+    if cand.grade:
+        return (cand.grade_specialization, cand.grade) in allowed
+    spec = category_spec(cand)
+    return is_unconfirmed(cand) and bool({(spec, cand.unconfirmed_grade), (spec, measured_grade(cand))} & allowed)
 
 
 def match(db: Session, need: Need, limit: int = 150) -> dict:
     cats = recommend_categories(db, need)
     allowed = {(c["specialization"], c["grade"]) for c in cats}
-    pool = [c for c in pool_profiles(db, {p[0] for p in allowed}) if (c.grade_specialization, c.grade) in allowed]
+    pool = [c for c in pool_profiles(db, {p[0] for p in allowed}, include_unconfirmed=True) if in_categories(c, allowed)]
     results = best_per_candidate(score_candidates(need, pool))[:limit]
     return {"categories": cats, "results": results, "pool_size": len({c.id for c in pool})}
 
@@ -489,8 +547,12 @@ def apply_filters(results: list[dict], f: dict) -> list[dict]:
     for r in results:
         if f.get("specialization") and r["specialization"] != f["specialization"]:
             continue
-        if f.get("grades") and r["grade"] not in f["grades"]:
+        if f.get("confirmed_only") and r.get("grade_status") == "unconfirmed":
             continue
+        if f.get("grades"):
+            grades = {r["grade"]} if r.get("grade") else {r.get("claimed_grade"), r.get("measured_grade")}
+            if not grades & set(f["grades"]):
+                continue
         if skills:
             pool = set(r["verified_skills"]) if f.get("verified_only") else set(r["verified_skills"]) | set(r["declared_skills"])
             if not skills <= pool:

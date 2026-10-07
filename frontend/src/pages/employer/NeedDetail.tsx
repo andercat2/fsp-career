@@ -27,7 +27,7 @@ function Applications({ vid }: { vid: string }) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Link to={`/employer/candidates/${a.candidate.id}`} className="text-lg font-bold text-fsp-deep hover:text-fsp-pink">{a.candidate.display_name}</Link>
-                <CategoryPill spec={a.candidate.specialization_name} grade={a.candidate.grade_name} />
+                <CategoryPill spec={a.candidate.specialization_name} grade={a.candidate.grade_name} status={a.candidate.grade_status} claimed={a.candidate.claimed_grade_name} />
                 <Badge tone={a.status === 'accepted' ? 'green' : a.status === 'rejected' ? 'red' : a.status === 'viewed' ? 'lavender' : 'blue'}>{a.status_name}</Badge>
               </div>
               <p className="text-sm text-slate-500">{a.candidate.headline} · {a.candidate.city} · {ago(a.created_at)}</p>

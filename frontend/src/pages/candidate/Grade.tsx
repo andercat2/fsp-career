@@ -32,7 +32,14 @@ export function GradePage() {
       {resumes.length > 1 && <ResumeTabs resumes={resumes} active={r.id} onSelect={id => setParams(id ? { resume: String(id) } : {})} />}
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <Card title="Текущий статус" subtitle={resumes.length > 1 ? `Резюме: ${r.title || r.specialization_name}` : undefined}>
-          <CategoryPill spec={cat.specialization_name} grade={cat.grade_name} className="text-sm" />
+          <CategoryPill spec={cat.specialization_name} grade={cat.grade_name} status={cat.status} claimed={cat.claimed_grade_name} className="text-sm" />
+          {cat.status === 'unconfirmed' && (
+            <p className="mt-3 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Тест не подтвердил грейд {cat.claimed_grade_name}{cat.measured_grade_name && cat.measured_grade_name !== cat.claimed_grade_name ? ` — он показал уровень ${cat.measured_grade_name}` : ''}.
+              Работодатели видят вас со статусом «не подтверждён» ниже кандидатов с подтверждённым грейдом, поэтому вы не выпадаете из поиска.
+              Подтвердите уровень тестом — уровнем ниже можно сразу — или отключите показ в <Link to="/candidate/settings" className="link">настройках приватности</Link>.
+            </p>
+          )}
           <div className="mt-4 divide-y divide-slate-100">
             <KV k="Специализация из опроса" v={r.specialization_name ? `${r.specialization_name}${r.language_name ? ` · ${r.language_name}` : ''}` : '—'} />
             <KV k="Заявленный грейд" v={r.claimed_grade_name ? <Badge tone="lavender">{r.claimed_grade_name}</Badge> : '—'} />
@@ -40,7 +47,7 @@ export function GradePage() {
             <KV k="Предметные области" v={r.industries?.join(', ') || '—'} />
             <KV k="Оценка уровня θ" v={cat.theta != null ? `${cat.theta.toFixed(2)} ± ${cat.se?.toFixed(2)}` : '—'} />
             <KV k="Выше рынка" v={cat.percentile != null ? `${Math.round(cat.percentile)}%` : '—'} />
-            <KV k="Присвоена" v={date(cat.assigned_at)} />
+            <KV k={cat.status === 'unconfirmed' ? 'Тест, не подтвердивший грейд' : 'Присвоена'} v={date(cat.status === 'unconfirmed' ? cat.tested_at : cat.assigned_at)} />
             <KV k="Последняя смена грейда" v={date(cat.changed_at)} />
           </div>
           {!!locked.length && (
@@ -53,7 +60,7 @@ export function GradePage() {
             </div>
           )}
         </Card>
-        <Card title="Профиль компетенций" subtitle="По последнему тесту, подтвердившему грейд этой категории">
+        <Card title="Профиль компетенций" subtitle={cat.status === 'unconfirmed' ? 'По тесту, который грейд не подтвердил' : 'По последнему тесту, подтвердившему грейд этой категории'}>
           {Object.keys(r.domains ?? {}).length ? <DomainBars domains={r.domains} /> :
             <EmptyState icon={<Award className="h-5 w-5" />} title="Тест ещё не пройден" action={<ButtonLink to={`/candidate/testing${r.id ? `?resume=${r.id}` : ''}`} size="sm">Перейти к тестированию</ButtonLink>} />}
         </Card>

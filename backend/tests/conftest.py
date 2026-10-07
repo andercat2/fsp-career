@@ -12,6 +12,16 @@ os.environ["EMAIL_DEV_MODE"] = "true"
 os.environ["FSP_ENABLED"] = "false"
 
 
+@pytest.fixture(autouse=True)
+def _reset_login_limiter():
+    """Лимит попыток входа (8 за 5 минут на e-mail) — общий для процесса: тесты не должны зависеть от того, сколько
+    раз демо-аккаунты входили в предыдущих тестах."""
+    from app.api.auth import _login_attempts
+
+    _login_attempts.clear()
+    yield
+
+
 @pytest.fixture(scope="session")
 def client():
     from fastapi.testclient import TestClient

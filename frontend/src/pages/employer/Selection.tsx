@@ -13,7 +13,7 @@ import { ago, rub, salaryRange, WORK_FORMATS } from '@/lib/format'
 import { Badge, Button, Card, Checkbox, EmptyState, Field, Input, PageHeader, PageLoader, Select, Textarea } from '@/components/ui'
 import { CategoryPill, Components, MatchRing, Reasons, StatusBadge } from '@/components/Domain'
 import { SkillPicker } from '@/components/SkillPicker'
-import { InviteModal, type InviteTarget } from '@/components/InviteModal'
+import { InviteModal, inviteTarget, type InviteTarget } from '@/components/InviteModal'
 import { container, fadeUp } from '@/lib/motion'
 
 export function useShortlistToggle() {
@@ -42,7 +42,9 @@ export function CandidateRow({ c, onInvite, onShortlist }: { c: any; onInvite: (
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <Link to={`/employer/candidates/${c.id}${c.resume_id ? `?resume=${c.resume_id}` : ''}`} className="text-[17px] font-bold tracking-tight text-fsp-deep transition hover:text-fsp-pink">{c.display_name}</Link>
-            <CategoryPill spec={c.specialization_name} grade={c.grade_name} />
+            <CategoryPill spec={c.specialization_name} grade={c.grade_name} status={c.grade_status} claimed={c.claimed_grade_name} />
+            {c.grade_status === 'unconfirmed' && c.measured_grade_name && c.measured_grade_name !== c.claimed_grade_name &&
+              <span className="text-xs font-semibold text-amber-700">по тесту — {c.measured_grade_name}</span>}
             {c.percentile != null && <span className="text-xs font-semibold text-emerald-600">выше {Math.round(c.percentile)}%</span>}
           </div>
           <p className="mt-1 text-sm text-slate-600">{c.headline}</p>
@@ -50,7 +52,7 @@ export function CandidateRow({ c, onInvite, onShortlist }: { c: any; onInvite: (
             <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
               <Layers className="h-3.5 w-3.5" />Другие категории кандидата:
               {c.categories.filter((x: any) => x.resume_id !== c.resume_id).map((x: any) => (
-                <Link key={x.resume_id} to={`/employer/candidates/${c.id}${x.resume_id ? `?resume=${x.resume_id}` : ''}`} className="font-semibold text-fsp-lavender hover:text-fsp-deep">{x.specialization_name} · {x.grade_name}</Link>
+                <Link key={x.resume_id} to={`/employer/candidates/${c.id}${x.resume_id ? `?resume=${x.resume_id}` : ''}`} className="font-semibold text-fsp-lavender hover:text-fsp-deep">{x.specialization_name} · {x.status === 'unconfirmed' ? `${x.claimed_grade_name} (не подтверждён)` : x.grade_name}</Link>
               ))}
             </p>
           )}
@@ -104,7 +106,7 @@ export function SelectionPage() {
   const qc = useQueryClient()
   const { push } = useToast()
   const { gradeName } = useReference()
-  const [f, setF] = useState<any>({ grades: [], skills: [], verified_only: false, has_fsp: false, work_format: '', city: '', salary_max: '', min_match: '', specialization: '' })
+  const [f, setF] = useState<any>({ grades: [], skills: [], verified_only: false, has_fsp: false, work_format: '', city: '', salary_max: '', min_match: '', specialization: '', confirmed_only: false })
   const [size, setSize] = useState(20)
   const [invite, setInvite] = useState<InviteTarget | null>(null)
   const [showFilters, setShowFilters] = useState(true)
@@ -116,7 +118,7 @@ export function SelectionPage() {
   const need = s.need
   const activeCat = (c: any) => f.specialization === c.specialization && f.grades.length === 1 && f.grades[0] === c.grade
   const toggleCat = (c: any) => setF((x: any) => activeCat(c) ? { ...x, specialization: '', grades: [] } : { ...x, specialization: c.specialization, grades: [c.grade] })
-  const reset = () => setF({ grades: [], skills: [], verified_only: false, has_fsp: false, work_format: '', city: '', salary_max: '', min_match: '', specialization: '' })
+  const reset = () => setF({ grades: [], skills: [], verified_only: false, has_fsp: false, work_format: '', city: '', salary_max: '', min_match: '', specialization: '', confirmed_only: false })
   const filtersOn = Object.entries(f).some(([, v]) => Array.isArray(v) ? v.length : !!v)
 
   return (
@@ -148,6 +150,8 @@ export function SelectionPage() {
                 <p>Медиана ожиданий (до НДФЛ): <b>{c.median_salary ? rub(c.median_salary) : '—'}</b></p>
                 <p>В вашей вилке: <b>{c.share_in_budget != null ? `${Math.round(c.share_in_budget * 100)}%` : '—'}</b></p>
                 <p>С достижениями ФСП: <b>{c.with_fsp}</b> · открыты: <b>{c.open_to_offers}</b></p>
+                {c.unconfirmed > 0 && <p title="Заявили этот грейд, но тест его не подтвердил: в выдаче со статусом и ниже подтверждённых">
+                  Ещё с неподтверждённым грейдом: <b>{c.unconfirmed}</b></p>}
               </div>
             </motion.button>
           ))}
@@ -168,6 +172,7 @@ export function SelectionPage() {
               <Field label="Навыки"><SkillPicker value={f.skills} onChange={v => setF({ ...f, skills: v })} placeholder="Python, Kafka…" /></Field>
               <Checkbox checked={f.verified_only} onChange={v => setF({ ...f, verified_only: v })} label="Только подтверждённые тестом" />
               <Checkbox checked={f.has_fsp} onChange={v => setF({ ...f, has_fsp: v })} label="Есть достижения ФСП" />
+              <Checkbox checked={f.confirmed_only} onChange={v => setF({ ...f, confirmed_only: v })} label="Только грейды, подтверждённые тестом" />
               <Field label="Формат"><Select value={f.work_format} onChange={e => setF({ ...f, work_format: e.target.value })}>
                 <option value="">Любой</option>{Object.entries(WORK_FORMATS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
               <Field label="Город"><Input value={f.city} onChange={e => setF({ ...f, city: e.target.value })} placeholder="Казань" /></Field>
@@ -187,7 +192,7 @@ export function SelectionPage() {
             <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={JSON.stringify(f)}>
               {s.results.map((c: any) => (
                 <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on, resume_id: c.resume_id })}
-                  onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories })} />
+                  onInvite={() => setInvite(inviteTarget(c))} />
               ))}
               {s.total > s.results.length && <div className="pt-2 text-center"><Button variant="secondary" onClick={() => setSize(x => x + 20)}>Показать ещё</Button></div>}
             </motion.div>

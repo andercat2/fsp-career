@@ -78,7 +78,8 @@ def render_profile_pdf(view: dict) -> bytes:
     story = []
     cat = view.get("category") or {}
     grade_txt = (f"{cat.get('specialization_name')} · {cat.get('grade_name')}" if cat.get("grade")
-                 else "Категория не присвоена — тестирование не пройдено")
+                 else f"{cat.get('specialization_name')} · {cat.get('claimed_grade_name')} — грейд не подтверждён тестом"
+                 if cat.get("status") == "unconfirmed" else "Категория не присвоена — тестирование не пройдено")
     header = Table([
         [_p(view.get("display_name"), st["name"]), _p(grade_txt, st["badge"])],
         [_p(view.get("headline") or "", st["head"]),

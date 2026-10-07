@@ -68,10 +68,14 @@ def strength_for(cand: CandidateProfile, grades: list[str]) -> float:
     Хранимая сила меряет θ внутри собственного грейда кандидата, поэтому Junior у верхней границы своей полосы
     выглядел бы «сильнее» Middle у нижней. Для подборки на Middle важен уровень на общей шкале θ относительно
     требований; внутри одной категории порядок кандидатов при этом не меняется (монотонное преобразование θ)."""
-    if not cand.grade or cand.grade_theta is None or not grades:
+    unconfirmed = not cand.grade and cand.unconfirmed_grade and cand.unconfirmed_theta is not None
+    if (not cand.grade or cand.grade_theta is None or not grades) and not (unconfirmed and grades):
         return cand.strength or 0.0
     lo = min(grade_band(g)[0] for g in grades)
     hi = max(grade_band(g)[1] for g in grades)
+    if unconfirmed:  # грейд не подтверждён: та же формула силы, тестовая часть — по измеренной тестом θ
+        return max(0.0, min(1.0, W_TEST * _band_position(cand.unconfirmed_theta, lo, hi)
+                            + W_FSP * (cand.fsp_score or 0.0) + W_ACTIVITY * activity_score(cand)))
     shift = W_TEST * (_band_position(cand.grade_theta, lo, hi) - test_position(cand))
     return max(0.0, min(1.0, (cand.strength or 0.0) + shift))
 

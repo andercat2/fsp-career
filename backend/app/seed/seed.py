@@ -48,6 +48,7 @@ from app.seed.synthetic import (
     default_params,
     generate_population,
     simulate_assessment,
+    simulate_cat,
 )
 from app.services import interactions as ix
 from app.services.candidates import new_public_id
@@ -247,6 +248,53 @@ def _demo_devops_resume(db: Session, demo_cand: CandidateProfile, demo: SynthCan
     recompute_candidate(db, demo_cand)
 
 
+STOPPED_CANDIDATES = 30  # демо: кандидаты, которые после неподтверждения не пересдавали уровень ниже
+
+
+def _seed_unconfirmed(db: Session, params: dict | None = None) -> int:
+    """Кандидаты с неподтверждённым грейдом (идемпотентно): тест не подтвердил заявленный уровень, и кандидат пока не
+    пересдавал уровень ниже — в синтетической популяции все пересдают сразу, а в жизни так делают не все. Такие
+    кандидаты видны работодателю со статусом «не подтверждён» и ниже подтверждённых."""
+    from app.services.testing.service import set_unconfirmed
+
+    if db.scalar(select(User.id).where(User.email.like("stopped%@synthetic.example")).limit(1)) is not None:
+        return 0
+    params = params or default_params()
+    rng = random.Random(20261008)
+    pwd = hash_password(DEMO_PASSWORD)
+    added = 0
+    for sc in generate_population(400, seed=2026):
+        if added >= STOPPED_CANDIDATES:
+            break
+        state, res = simulate_cat(sc.domain_theta, sc.spec, sc.lang, sc.claimed_grade, rng, params)
+        if res["decision"] != "not_confirmed":
+            continue
+        sc = dataclasses.replace(sc, grade=None, theta_hat=None, se=None, domain_scores={},
+                                 attempts=[{"target": sc.claimed_grade, **{k: res[k] for k in ("decision", "theta", "se", "n_items")}}],
+                                 sessions=[(sc.claimed_grade, state, res)])
+        cand = _candidate_from_synth(db, sc, f"stopped{added:03d}@synthetic.example", pwd, rng, [], set())
+        sess = db.scalar(select(TestSession).where(TestSession.candidate_id == cand.id))
+        set_unconfirmed(cand, sc.claimed_grade, res, sess.finished_at if sess else None)
+        recompute_candidate(db, cand)
+        added += 1
+    db.flush()
+    return added
+
+
+def refresh_demo_selections(db: Session) -> int:
+    """Сохранённые подборки демо-работодателей, рассчитанные до появления статуса «грейд не подтверждён», один раз
+    пересчитываются (у новых результатов есть grade_status). Подборки обычных работодателей не трогаем."""
+    n = 0
+    for sel in db.scalars(select(Selection).join(Company, Company.id == Selection.company_id)
+                          .join(User, User.id == Company.owner_user_id).where(User.is_demo.is_(True))):
+        if sel.results and all("grade_status" in r for r in sel.results):
+            continue
+        m = match(db, Need.from_dict(sel.need))
+        sel.categories, sel.results = m["categories"], m["results"]
+        n += 1
+    return n
+
+
 def _seed_code_tasks(db: Session) -> int:
     """Задачи с запуском кода (идемпотентно): по одной у четырёх компаний. Задачу ТехноПульс уже решили трое
     синтетических кандидатов — верно, частично и «переименованной копией» первого решения (её отмечает антиплагиат),
@@ -323,6 +371,12 @@ def upgrade_demo_data(db: Session) -> None:
     if n := _seed_code_tasks(db):
         db.commit()
         log.info("Демо-данные дополнены: задачи с запуском кода (%d)", n)
+    if n := _seed_unconfirmed(db):
+        db.commit()
+        log.info("Демо-данные дополнены: кандидаты с неподтверждённым грейдом (%d)", n)
+    if n := refresh_demo_selections(db):
+        db.commit()
+        log.info("Демо-подборки пересчитаны с кандидатами, чей грейд не подтверждён: %d", n)
 
 
 def seed_if_empty(db: Session) -> None:
@@ -526,6 +580,12 @@ def seed_if_empty(db: Session) -> None:
     db.flush()
     ix.apply_task_review(db, done)
     _seed_code_tasks(db)
+
+    # --- кандидаты, чей грейд тест не подтвердил: в выдаче со статусом и ниже подтверждённых
+    from app.services.testing.service import sync_unconfirmed
+
+    _seed_unconfirmed(db, params)
+    sync_unconfirmed(db)
 
     # --- сохранённая подборка для демо-работодателя
     v0 = vacancies[0]

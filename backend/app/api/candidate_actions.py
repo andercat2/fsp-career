@@ -11,7 +11,14 @@ from app.services.sandbox import tasks as code_tasks
 from app.services.candidates import own_view
 from app.services.notify import audit, notify
 from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES, SPEC_NAMES
-from app.services.resumes import category_brief, get_resume, graded_profiles
+from app.services.resumes import (
+    category_brief,
+    category_spec,
+    get_resume,
+    graded_profiles,
+    is_unconfirmed,
+    rankable_profiles,
+)
 
 router = APIRouter(tags=["Кандидат: приглашения, вакансии, задания"])
 
@@ -143,11 +150,11 @@ def vacancy(vac_id: int, user: CurrentUser, db: DB):
     out = ix.vacancy_brief(v) | {"company": ix.company_brief(v.company), "description": v.description,
                                  "team_description": v.team_description, "must_skills": v.must_skills,
                                  "nice_skills": v.nice_skills, "employment": v.employment, "created_at": v.created_at}
-    if user.role == "candidate" and user.candidate and graded_profiles(user.candidate):
+    if user.role == "candidate" and user.candidate and rankable_profiles(user.candidate):
         sc = ix.pair_score(v, user.candidate)
         out["match"] = sc and {"match": sc["match"], "reasons": sc["reasons"], "components": sc["components"],
                                "resume_id": sc["resume_id"], "resume_title": sc["resume_title"]}
-        out["resumes"] = [category_brief(p) for p in graded_profiles(user.candidate)]
+        out["resumes"] = [category_brief(p) for p in rankable_profiles(user.candidate)]
         out["applied"] = bool(db.scalar(select(Application.id).where(Application.candidate_id == user.candidate.id,
                                                                      Application.vacancy_id == v.id,
                                                                      Application.status != "withdrawn")))
@@ -175,7 +182,9 @@ def apply(vac_id: int, data: ApplyIn, cand: Candidate, db: DB):
     db.add(a)
     notify(db, v.company.owner_user_id, "application_new", f"Новый отклик на «{v.title}»",
            f"Кандидат {cand.public_id}" + (f", категория {SPEC_NAMES.get(prof.grade_specialization, '')} · "
-                                          f"{GRADE_NAMES[prof.grade]}" if prof.grade else ", без категории"),
+                                          f"{GRADE_NAMES[prof.grade]}" if prof.grade else
+                                          f", {SPEC_NAMES.get(category_spec(prof), '')} · {GRADE_NAMES[prof.unconfirmed_grade]} "
+                                          "(грейд не подтверждён тестом)" if is_unconfirmed(prof) else ", без категории"),
            f"/employer/vacancies/{v.id}")
     db.commit()
     # Отклик — инициатива кандидата: контакты открываются компании, поэтому их можно передать в ATS

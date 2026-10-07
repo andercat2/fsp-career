@@ -32,7 +32,8 @@ export function CandidateView() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <CategoryPill spec={cat.specialization_name} grade={cat.grade_name} className="bg-white/15" />
+              <CategoryPill spec={cat.specialization_name} grade={cat.grade_name} status={cat.status} claimed={cat.claimed_grade_name}
+                className={cat.status === 'unconfirmed' ? undefined : 'bg-white/15'} />
               {cat.percentile != null && <Badge tone="pink">выше {Math.round(cat.percentile)}% кандидатов</Badge>}
               {c.name_hidden && <Badge tone="lavender" icon={<Lock className="h-3 w-3" />}>имя скрыто до согласия</Badge>}
               {c.integrity?.status === 'clean' && <Badge tone="green" icon={<ShieldCheck className="h-3 w-3" />}>{c.integrity.text}</Badge>}
@@ -47,7 +48,7 @@ export function CandidateView() {
                 {c.resumes.map((x: any) => (
                   <button key={x.resume_id} onClick={() => setParams(x.resume_id ? { resume: String(x.resume_id) } : {})}
                     className={x.resume_id === c.resume_id ? 'rounded-full bg-white px-3 py-1 text-xs font-bold text-fsp-deep' : 'rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 transition hover:bg-white/20'}>
-                    {x.specialization_name} · {x.grade_name}</button>
+                    {x.specialization_name} · {x.status === 'unconfirmed' ? `${x.claimed_grade_name} (не подтверждён)` : x.grade_name}</button>
                 ))}
               </div>
             )}
@@ -56,20 +57,26 @@ export function CandidateView() {
             <Button variant="secondary" onClick={() => shortlist.mutate({ id: c.id, on: !c.shortlisted, resume_id: c.resume_id })} icon={<Star className={c.shortlisted ? 'h-4 w-4 fill-amber-400 text-amber-400' : 'h-4 w-4'} />}>{c.shortlisted ? 'В избранном' : 'В избранное'}</Button>
             <Button variant="secondary" onClick={() => download(`/employer/candidates/${c.id}/pdf${c.resume_id ? `?resume_id=${c.resume_id}` : ''}`, `candidate-${c.public_id}.pdf`).catch(e => push(e.message, 'error'))} icon={<Download className="h-4 w-4" />}>PDF</Button>
             <Button disabled={!c.open_to_offers || !!active || c.contacts_unlocked} icon={<Send className="h-4 w-4" />}
-              onClick={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: cat.grade_name, specialization_name: cat.specialization_name, resume_id: c.resume_id, headline: c.resume_title, categories: c.resumes })}>
+              onClick={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: cat.grade_name, specialization_name: cat.specialization_name, resume_id: c.resume_id, headline: c.resume_title, categories: c.resumes, grade_status: cat.status, claimed_grade_name: cat.claimed_grade_name })}>
               {c.contacts_unlocked ? 'Контакт открыт' : active ? 'Приглашение отправлено' : 'Пригласить'}</Button>
           </div>
         </div>
       </div>
 
+      {cat.status === 'unconfirmed' && (
+        <div className="mb-6"><Alert tone="warn" title={`Грейд ${cat.claimed_grade_name} заявлен, но тестом пока не подтверждён`}>
+          {cat.measured_grade_name && cat.measured_grade_name !== cat.claimed_grade_name ? `Тест показал уровень ${cat.measured_grade_name}. ` : ''}
+          Кандидат показан в выдаче ниже кандидатов с подтверждённым грейдом — так он не выпадает из поиска. Подтвердить грейд можно только тестом.
+        </Alert></div>
+      )}
       <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
         <div className="min-w-0 space-y-6">
-          <Card title="Результаты тестирования" subtitle="Оценки по доменам из адаптивного теста — источник категории">
+          <Card title="Результаты тестирования" subtitle={cat.status === 'unconfirmed' ? 'Оценки по доменам из теста, который грейд не подтвердил' : 'Оценки по доменам из адаптивного теста — источник категории'}>
             <DomainBars domains={Object.fromEntries(Object.entries(c.test.domains).map(([k, v]: any) => [k, { ...v, name: ref?.domains[k] }]))} />
             <div className="mt-4 grid gap-2 rounded-2xl bg-surface p-4 text-sm sm:grid-cols-3">
               <p>Сила профиля: <b className="text-fsp-deep">{Math.round(c.strength.total * 100)}%</b></p>
               <p>θ = <b className="text-fsp-deep">{cat.theta?.toFixed(2)}</b> ± {cat.se?.toFixed(2)}</p>
-              <p>Категория с {date(cat.assigned_at)}</p>
+              <p>{cat.status === 'unconfirmed' ? `Тест ${date(cat.tested_at)}: грейд не подтверждён` : `Категория с ${date(cat.assigned_at)}`}</p>
             </div>
           </Card>
           <Card title="Навыки">

@@ -7,13 +7,13 @@ import { useReference } from '@/lib/reference'
 import { WORK_FORMATS } from '@/lib/format'
 import { Button, Card, Checkbox, EmptyState, Input, PageHeader, PageLoader, Select } from '@/components/ui'
 import { SkillPicker } from '@/components/SkillPicker'
-import { InviteModal, type InviteTarget } from '@/components/InviteModal'
+import { InviteModal, inviteTarget, type InviteTarget } from '@/components/InviteModal'
 import { CandidateRow, useShortlistToggle } from './Selection'
 import { container } from '@/lib/motion'
 
 export function CandidateSearch() {
   const { ref } = useReference()
-  const [f, setF] = useState<any>({ q: '', specialization: '', grades: [], skills: [], verified_only: false, has_fsp: false, work_format: '', city: '', salary_max: '', vacancy_id: '', sort: 'strength' })
+  const [f, setF] = useState<any>({ q: '', specialization: '', grades: [], skills: [], verified_only: false, has_fsp: false, work_format: '', city: '', salary_max: '', vacancy_id: '', sort: 'strength', confirmed_only: false })
   const [page, setPage] = useState(1)
   const [invite, setInvite] = useState<InviteTarget | null>(null)
   const params = useMemo(() => ({ ...f, page, size: 20 }), [f, page])
@@ -25,7 +25,7 @@ export function CandidateSearch() {
 
   return (
     <div>
-      <PageHeader title="Банк кандидатов" subtitle="Вся база кандидатов с присвоенной категорией. По умолчанию — сортировка по силе подтверждённого профиля; выберите потребность, чтобы ранжировать по совпадению с ней." />
+      <PageHeader title="Банк кандидатов" subtitle="Вся база кандидатов с категорией по тесту. Кандидаты, чей заявленный грейд тест не подтвердил, — со статусом «не подтверждён» и после подтверждённых при любой сортировке. Выберите потребность, чтобы ранжировать по совпадению с ней." />
       <Card className="mb-5">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <div className="relative xl:col-span-2"><SearchIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
@@ -46,6 +46,7 @@ export function CandidateSearch() {
           <div className="flex flex-wrap items-center gap-4">
             <Checkbox checked={f.verified_only} onChange={v => set({ verified_only: v })} label="Навыки подтверждены тестом" />
             <Checkbox checked={f.has_fsp} onChange={v => set({ has_fsp: v })} label="Есть достижения ФСП" />
+            <Checkbox checked={f.confirmed_only} onChange={v => set({ confirmed_only: v })} label="Только подтверждённые грейды" />
           </div>
         </div>
       </Card>
@@ -54,7 +55,7 @@ export function CandidateSearch() {
         <motion.div className="space-y-3" variants={container(0.05)} initial="hidden" animate="show" key={`${page}-${JSON.stringify(f)}`}>
           {data.results.map((c: any) => (
             <CandidateRow key={c.id} c={c} onShortlist={on => shortlist.mutate({ id: c.id, on, resume_id: c.resume_id })}
-              onInvite={() => setInvite({ id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name, reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories })} />
+              onInvite={() => setInvite(inviteTarget(c))} />
           ))}
           <div className="flex items-center justify-center gap-3 pt-2">
             <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Назад</Button>

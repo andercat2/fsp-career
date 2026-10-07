@@ -17,7 +17,17 @@ from app.services.fsp.scoring import fsp_summary
 from app.services.matching.profile import strength_breakdown
 from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import GRADE_NAMES, SPEC_NAMES
-from app.services.resumes import base_candidate, category_brief, graded_profiles, resumes_overview
+from app.services.resumes import (
+    base_candidate,
+    category_brief,
+    category_spec,
+    category_theta,
+    grade_status,
+    is_unconfirmed,
+    measured_grade,
+    resumes_overview,
+    shown_profiles,
+)
 
 
 def new_public_id(db: Session) -> str:
@@ -38,10 +48,20 @@ def percentile(theta: float | None) -> float | None:
 
 
 def category(cand: CandidateProfile) -> dict:
+    """Категория резюме. status: confirmed — грейд подтверждён тестом; unconfirmed — тест не подтвердил заявленный
+    грейд, а подтверждённого нет: работодатель видит кандидата с этим статусом и ниже подтверждённых."""
+    unconfirmed = is_unconfirmed(cand)
+    theta, se = category_theta(cand)
+    spec = category_spec(cand)
+    measured = measured_grade(cand) if unconfirmed else None
     return {
-        "specialization": cand.grade_specialization, "specialization_name": SPEC_NAMES.get(cand.grade_specialization or ""),
-        "grade": cand.grade, "grade_name": GRADE_NAMES.get(cand.grade or ""),
-        "theta": cand.grade_theta, "se": cand.grade_se, "percentile": percentile(cand.grade_theta),
+        "specialization": spec, "specialization_name": SPEC_NAMES.get(spec or ""),
+        "grade": cand.grade, "grade_name": GRADE_NAMES.get(cand.grade or ""), "status": grade_status(cand),
+        "claimed_grade": cand.unconfirmed_grade if unconfirmed else None,
+        "claimed_grade_name": GRADE_NAMES.get(cand.unconfirmed_grade or "") if unconfirmed else None,
+        "measured_grade": measured, "measured_grade_name": GRADE_NAMES.get(measured or "") if measured else None,
+        "tested_at": cand.unconfirmed_at if unconfirmed else None,
+        "theta": theta, "se": se, "percentile": percentile(theta),
         "assigned_at": cand.grade_assigned_at, "changed_at": cand.grade_changed_at,
     }
 
@@ -65,14 +85,19 @@ def skill_list(ids: list[str]) -> list[dict]:
 
 
 def category_session(db: Session, prof) -> TestSession | None:
-    """Сессия теста, по которой присвоена текущая категория резюме (основного или дополнительного)."""
-    if not prof.grade:
+    """Сессия теста, по которой присвоена текущая категория резюме (основного или дополнительного), а при
+    неподтверждённом грейде — тест, который грейд не подтвердил."""
+    unconfirmed = is_unconfirmed(prof)
+    if not prof.grade and not unconfirmed:
         return None
     q = (select(TestSession).where(TestSession.candidate_id == prof.id, TestSession.status == "completed",
-                                   TestSession.specialization == prof.grade_specialization)
+                                   TestSession.specialization == category_spec(prof))
          .order_by(TestSession.finished_at.desc()))
     for s in db.scalars(q):
-        if (s.resume_id or None) == (prof.resume_id or None) and (s.result or {}).get("assigned_grade") == prof.grade:
+        if (s.resume_id or None) != (prof.resume_id or None):
+            continue
+        r = s.result or {}
+        if (unconfirmed and r.get("decision") == "not_confirmed" and s.target_grade == prof.unconfirmed_grade) or                 (not unconfirmed and r.get("assigned_grade") == prof.grade):
             return s
     return None
 
@@ -149,6 +174,6 @@ def employer_view(db: Session, cand: CandidateProfile, company: Company | None) 
         # резюме (категории) кандидата: работодатель может переключиться и пригласить по нужной
         "resume_id": cand.resume_id or 0, "resume_title": cand.headline,
         "integrity": category_integrity(db, cand),
-        "resumes": [category_brief(p) for p in graded_profiles(base_candidate(cand))],
+        "resumes": [category_brief(p) for p in shown_profiles(base_candidate(cand))],
     }
     return view

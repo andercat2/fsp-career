@@ -118,6 +118,8 @@ class PrivacyIn(BaseModel):
     show_fsp: bool = True
     visible_in_search: bool = True
     hide_invites_below_salary: bool = False
+    show_unconfirmed: bool = Field(True, description="Пока грейд не подтверждён тестом — показываться работодателям "
+                                                     "со статусом «не подтверждён» и ниже подтверждённых кандидатов")
 
 
 class ConsentIn(BaseModel):

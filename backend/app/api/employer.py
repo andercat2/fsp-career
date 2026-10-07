@@ -51,7 +51,7 @@ from app.services.notify import audit, notify
 from app.services.pdf.profile_pdf import render_profile_pdf
 from app.services.reference.skills import SKILL_BY_ID
 from app.services.reference.taxonomy import GRADE_CODES, GRADE_NAMES, SPEC_BY_CODE, SPEC_NAMES
-from app.services.resumes import ResumeView
+from app.services.resumes import ResumeView, category_spec, category_theta, grade_status, is_unconfirmed, measured_grade
 from app.services.testing.preview import vacancy_test_preview
 
 router = APIRouter(prefix="/employer", tags=["Работодатель"])
@@ -201,7 +201,7 @@ def vacancy_applications(vid: int, comp: EmployerCompany, db: DB):
     apps = list(db.scalars(select(Application).where(Application.vacancy_id == v.id)))
     need = ix.need_from_vacancy(v)
     profs = {a.id: ix.application_profile(a) for a in apps}
-    graded = [p for p in profs.values() if p.grade]
+    graded = [p for p in profs.values() if p.grade or is_unconfirmed(p)]
     scores = {(r["candidate_id"], r["resume_id"]): r for r in score_candidates(need, graded)}
     out = []
     for a in apps:
@@ -239,13 +239,21 @@ def _card(db, comp, cand: CandidateProfile, extra: dict | None = None) -> dict:
     """cand — профиль (основное резюме) или ResumeView дополнительного резюме."""
     v = employer_view(db, cand, comp)
     pv = privacy(cand)
+    spec = category_spec(cand)
+    unconfirmed = is_unconfirmed(cand)
+    measured = measured_grade(cand) if unconfirmed else None
     return {
         "id": cand.id, "public_id": cand.public_id, "display_name": v["display_name"], "name_hidden": v["name_hidden"],
         "resume_id": cand.resume_id or 0, "categories": v["resumes"],
         "headline": cand.headline, "city": cand.city, "relocation": cand.relocation, "work_formats": cand.work_formats,
-        "experience_years": cand.experience_years, "specialization": cand.grade_specialization,
-        "specialization_name": SPEC_NAMES.get(cand.grade_specialization or ""), "grade": cand.grade,
-        "grade_name": GRADE_NAMES.get(cand.grade or ""), "percentile": percentile(cand.grade_theta),
+        "experience_years": cand.experience_years, "specialization": spec,
+        "specialization_name": SPEC_NAMES.get(spec or ""), "grade": cand.grade,
+        "grade_name": GRADE_NAMES.get(cand.grade or ""), "grade_status": grade_status(cand),
+        # грейд не подтверждён тестом: заявленный грейд и уровень, который показал тест
+        "claimed_grade": cand.unconfirmed_grade if unconfirmed else None,
+        "claimed_grade_name": GRADE_NAMES.get(cand.unconfirmed_grade or "") if unconfirmed else None,
+        "measured_grade": measured, "measured_grade_name": GRADE_NAMES.get(measured or "") if measured else None,
+        "percentile": percentile(category_theta(cand)[0]),
         "strength": round(cand.strength or 0, 3),
         "verified_skills": [SKILL_BY_ID[s].name for s in cand.verified_skills or [] if s in SKILL_BY_ID],
         "declared_skills": [SKILL_BY_ID[s].name for s in cand.skills or []
@@ -326,12 +334,12 @@ def _selection_view(db, comp, sel: Selection, filters: dict, page: int, size: in
 
 
 def _filters(specialization, grades, skills, verified_only, has_fsp, work_format, city, allow_relocation, salary_max,
-             min_match) -> dict:
+             min_match, confirmed_only=False) -> dict:
     return {k: v for k, v in {
         "specialization": specialization, "grades": [g for g in (grades or "").split(",") if g in GRADE_CODES],
         "skills": [s for s in (skills or "").split(",") if s], "verified_only": verified_only, "has_fsp": has_fsp,
         "work_format": work_format, "city": city, "allow_relocation": allow_relocation, "salary_max": salary_max,
-        "min_match": min_match}.items() if v}
+        "min_match": min_match, "confirmed_only": confirmed_only}.items() if v}
 
 
 @router.post("/selections", status_code=201, summary="Сформировать подборку по потребности",
@@ -359,13 +367,14 @@ def list_selections(comp: EmployerCompany, db: DB):
 def get_selection(sid: int, comp: EmployerCompany, db: DB, specialization: str | None = None, grades: str | None = None,
                   skills: str | None = None, verified_only: bool = False, has_fsp: bool = False,
                   work_format: str | None = None, city: str | None = None, allow_relocation: bool = False,
-                  salary_max: int | None = None, min_match: int | None = None, page: int = Query(1, ge=1),
-                  size: int = Query(20, le=100)):
+                  salary_max: int | None = None, min_match: int | None = None,
+                  confirmed_only: bool = Query(False, description="Только грейды, подтверждённые тестом"),
+                  page: int = Query(1, ge=1), size: int = Query(20, le=100)):
     sel = db.get(Selection, sid)
     if not sel or sel.company_id != comp.id:
         raise HTTPException(404, "Подборка не найдена")
     f = _filters(specialization, grades, skills, verified_only, has_fsp, work_format, city, allow_relocation,
-                 salary_max, min_match)
+                 salary_max, min_match, confirmed_only)
     return _selection_view(db, comp, sel, f, page, size)
 
 
@@ -389,12 +398,15 @@ def search_candidates(comp: EmployerCompany, db: DB, specialization: str | None 
                       work_format: str | None = None, city: str | None = None, salary_max: int | None = None,
                       q: str | None = None, vacancy_id: int | None = None,
                       sort: str = Query("strength", pattern="^(strength|fresh|salary|match)$"),
+                      confirmed_only: bool = Query(False, description="Только грейды, подтверждённые тестом"),
                       page: int = Query(1, ge=1), size: int = Query(20, le=100)):
-    # единица поиска — резюме с категорией (основное или дополнительное); кандидат в выдаче — один раз
-    cands = pool_profiles(db, {specialization} if specialization else None)
+    # единица поиска — резюме с категорией (основное или дополнительное); кандидат в выдаче — один раз. Резюме с
+    # неподтверждённым грейдом тоже в банке — со статусом и после подтверждённых при любой сортировке
+    cands = pool_profiles(db, {specialization} if specialization else None, include_unconfirmed=not confirmed_only)
     gl = [g for g in (grades or "").split(",") if g in GRADE_CODES]
     if gl:
-        cands = [c for c in cands if c.grade in gl]
+        cands = [c for c in cands if c.grade in gl
+                 or (is_unconfirmed(c) and ({c.unconfirmed_grade, measured_grade(c)} & set(gl)))]
     if city:
         cands = [c for c in cands if (c.city or "").lower() == city.lower()]
     if salary_max:
@@ -423,7 +435,7 @@ def search_candidates(comp: EmployerCompany, db: DB, specialization: str | None 
     key = {"strength": lambda c: -(c.strength or 0), "fresh": lambda c: -(c.last_active_at.timestamp()),
            "salary": lambda c: c.desired_salary or 10**9,
            "match": lambda c: -((sc(c) or {}).get("score", c.strength or 0))}[sort]
-    cands.sort(key=key)
+    cands.sort(key=lambda c: (is_unconfirmed(c), key(c)))
     seen: set[int] = set()
     cands = [c for c in cands if not (c.id in seen or seen.add(c.id))]  # лучшее резюме кандидата по сортировке
     total = len(cands)
@@ -464,7 +476,7 @@ def candidate_card(cid: int, comp: EmployerCompany, db: DB, vacancy_id: int | No
     db.commit()
     if vacancy_id:
         v = _own_vacancy(db, comp, vacancy_id)
-        sc = score_candidates(ix.need_from_vacancy(v), [prof])[0] if prof.grade else None
+        sc = score_candidates(ix.need_from_vacancy(v), [prof])[0] if prof.grade or is_unconfirmed(prof) else None
         view["match"] = sc
     invs = db.scalars(select(Invitation).where(Invitation.company_id == comp.id, Invitation.candidate_id == c.id)
                       .order_by(Invitation.created_at.desc()))
@@ -540,8 +552,10 @@ def _invitation_out(db, comp, i: Invitation) -> dict:
 def invite(data: InvitationIn, comp: EmployerCompany, db: DB):
     base = _candidate(db, data.candidate_id)
     cand = _visible_profile(base, data.resume_id)  # приглашение — по конкретному резюме (категории)
-    if not cand.grade or not visible(base):
+    if not (cand.grade or is_unconfirmed(cand)) or not visible(base):
         raise HTTPException(409, "Кандидат не участвует в подборе")
+    if is_unconfirmed(cand) and not privacy(base).get("show_unconfirmed", True):
+        raise HTTPException(409, "Кандидат скрыл профиль, пока грейд не подтверждён тестом")
     if not cand.open_to_offers:
         raise HTTPException(409, "Кандидат сейчас не рассматривает предложения")
     pending = db.scalar(select(Invitation).where(Invitation.company_id == comp.id, Invitation.candidate_id == cand.id,
@@ -557,7 +571,7 @@ def invite(data: InvitationIn, comp: EmployerCompany, db: DB):
         raise HTTPException(409, "Вилка ниже ожиданий кандидата — он не принимает такие предложения")
     v = _own_vacancy(db, comp, data.vacancy_id) if data.vacancy_id else None
     need = ix.need_from_vacancy(v) if v else Need(
-        specialization=cand.grade_specialization, grades=[cand.grade], must_skills=[], nice_skills=[],
+        specialization=category_spec(cand), grades=[cand.grade or cand.unconfirmed_grade], must_skills=[], nice_skills=[],
         salary_from=data.salary_from, salary_to=data.salary_to, work_format=data.work_format, text=data.message,
         title=data.title)
     need.salary_from, need.salary_to = data.salary_from, data.salary_to
@@ -601,7 +615,8 @@ def withdraw(inv_id: int, comp: EmployerCompany, db: DB):
 def likelihood(cid: int, comp: EmployerCompany, db: DB, salary_to: int, work_format: str | None = None,
                city: str | None = None, resume_id: int = 0):
     c = _visible_profile(_candidate(db, cid), resume_id)
-    need = Need(specialization=c.grade_specialization or "backend", grades=[c.grade or "middle"], must_skills=[],
+    need = Need(specialization=category_spec(c) or "backend", grades=[c.grade or c.unconfirmed_grade or "middle"],
+                must_skills=[],
                 nice_skills=[], salary_to=salary_to, work_format=work_format, city=city)
     out = response_likelihood(need, c)
     out["salary_fits"] = None if not c.desired_salary else c.desired_salary <= salary_to

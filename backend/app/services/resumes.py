@@ -14,7 +14,7 @@ from __future__ import annotations
 from fastapi import HTTPException
 
 from app.models import CandidateProfile, CandidateResume
-from app.services.reference.taxonomy import GRADE_NAMES, LANGUAGES, SPEC_NAMES
+from app.services.reference.taxonomy import GRADE_NAMES, LANGUAGES, SPEC_NAMES, theta_to_grade
 
 MAX_EXTRA_RESUMES = 2  # всего до трёх специализаций: основная + две дополнительные
 
@@ -23,6 +23,7 @@ CATEGORY_FIELDS = frozenset({
     "grade", "grade_specialization", "grade_theta", "grade_se", "grade_assigned_at", "grade_changed_at",
     "domain_scores", "verified_skills", "strength", "fsp_score", "specialization", "primary_language",
     "claimed_grade", "industries", "survey_completed_at",
+    "unconfirmed_grade", "unconfirmed_theta", "unconfirmed_se", "unconfirmed_at",
 })
 
 
@@ -65,14 +66,53 @@ def base_candidate(prof) -> CandidateProfile:
     return object.__getattribute__(prof, "_cand") if isinstance(prof, ResumeView) else prof
 
 
+def is_unconfirmed(prof) -> bool:
+    """Тест не подтвердил заявленный грейд, а подтверждённой категории нет: резюме остаётся в выдаче со статусом
+    «не подтверждён» и ниже подтверждённых — как рекомендовали постановщики (иначе кандидат выпадает из оборота)."""
+    return not prof.grade and bool(prof.unconfirmed_grade)
+
+
+def category_spec(prof) -> str | None:
+    """Специализация категории: подтверждённой — по тесту, при неподтверждённом грейде — из опроса."""
+    if prof.grade:
+        return prof.grade_specialization
+    return prof.specialization if is_unconfirmed(prof) else None
+
+
+def category_theta(prof) -> tuple[float | None, float | None]:
+    """θ и погрешность, на которых держится категория: подтверждённая — по тесту, подтвердившему грейд, иначе —
+    измеренные тестом, который грейд не подтвердил."""
+    if prof.grade:
+        return prof.grade_theta, prof.grade_se
+    if is_unconfirmed(prof):
+        return prof.unconfirmed_theta, prof.unconfirmed_se
+    return None, None
+
+
+def measured_grade(prof) -> str | None:
+    """Уровень, который показал тест (полоса θ), — для неподтверждённого грейда работодатель видит и его."""
+    th = category_theta(prof)[0]
+    return theta_to_grade(th) if th is not None else None
+
+
+def grade_status(prof) -> str | None:
+    return "confirmed" if prof.grade else "unconfirmed" if is_unconfirmed(prof) else None
+
+
 def category_brief(prof) -> dict:
     """Категория резюме для карточек работодателя: без навыков и ожиданий."""
     import math
 
-    th = prof.grade_theta
-    return {"resume_id": prof.resume_id or 0, "title": prof.headline, "specialization": prof.grade_specialization,
-            "specialization_name": SPEC_NAMES.get(prof.grade_specialization or ""), "grade": prof.grade,
-            "grade_name": GRADE_NAMES.get(prof.grade or ""),
+    th = category_theta(prof)[0]
+    spec = category_spec(prof)
+    unconf = is_unconfirmed(prof)
+    measured = measured_grade(prof) if unconf else None
+    return {"resume_id": prof.resume_id or 0, "title": prof.headline, "specialization": spec,
+            "specialization_name": SPEC_NAMES.get(spec or ""), "grade": prof.grade,
+            "grade_name": GRADE_NAMES.get(prof.grade or ""), "status": grade_status(prof),
+            "claimed_grade": prof.unconfirmed_grade if unconf else None,
+            "claimed_grade_name": GRADE_NAMES.get(prof.unconfirmed_grade or "") if unconf else None,
+            "measured_grade": measured, "measured_grade_name": GRADE_NAMES.get(measured or "") if measured else None,
             "percentile": None if th is None else round(100 * 0.5 * (1 + math.erf(th / math.sqrt(2))), 1)}
 
 
@@ -84,6 +124,19 @@ def profiles(cand: CandidateProfile) -> list:
 def graded_profiles(cand: CandidateProfile) -> list:
     """Резюме с присвоенной категорией, которые кандидат показывает работодателям."""
     return [p for p in profiles(cand) if p.grade and (p.resume_id is None or p.resume.visible)]
+
+
+def rankable_profiles(cand: CandidateProfile) -> list:
+    """Резюме, по которым считается соответствие вакансии: с категорией по тесту или с неподтверждённым грейдом."""
+    return [p for p in profiles(cand) if (p.resume_id is None or p.resume.visible) and (p.grade or is_unconfirmed(p))]
+
+
+def shown_profiles(cand: CandidateProfile) -> list:
+    """Резюме, которые видит работодатель: с категорией по тесту и — если кандидат не отключил — с неподтверждённым
+    грейдом (статус «не подтверждён»)."""
+    show_unconfirmed = (cand.privacy or {}).get("show_unconfirmed", True)
+    return [p for p in profiles(cand) if (p.resume_id is None or p.resume.visible)
+            and (p.grade or (show_unconfirmed and is_unconfirmed(p)))]
 
 
 def get_resume(cand: CandidateProfile, resume_id: int) -> CandidateResume:

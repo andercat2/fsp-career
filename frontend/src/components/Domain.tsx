@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { CircleAlert, CircleCheck, CircleDot, ExternalLink, Info, Medal, ShieldCheck, Trophy } from 'lucide-react'
+import { CircleAlert, CircleCheck, CircleDot, ExternalLink, Info, Medal, ShieldCheck, ShieldQuestionMark, Trophy } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Badge } from './ui'
 import { date } from '@/lib/format'
@@ -125,7 +125,17 @@ export function StatusBadge({ status, label, side }: { status: string; label?: s
   )
 }
 
-export function CategoryPill({ spec, grade, className }: { spec?: string | null; grade?: string | null; className?: string }) {
+/** Категория резюме. status = unconfirmed — тест не подтвердил заявленный грейд (claimed): кандидат в выдаче со
+ *  статусом и ниже подтверждённых. */
+export function CategoryPill({ spec, grade, status, claimed, className }: {
+  spec?: string | null; grade?: string | null; status?: string | null; claimed?: string | null; className?: string
+}) {
+  if (status === 'unconfirmed' && claimed) return (
+    <span title="Тест не подтвердил заявленный грейд: кандидат в выдаче, но ниже подтверждённых"
+      className={clsx('inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900 ring-1 ring-amber-300', className)}>
+      <ShieldQuestionMark className="h-3.5 w-3.5 text-amber-600" />{spec} · {claimed} — не подтверждён
+    </span>
+  )
   if (!grade) return <Badge tone="gray" className={className}>Категория не присвоена</Badge>
   return (
     <span className={clsx('inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-fsp-deep px-3 py-1 text-xs font-semibold text-white', className)}>

@@ -11,7 +11,20 @@ export type InviteTarget = {
   id: number; display_name: string; grade_name?: string; specialization_name?: string; reasons?: { kind: string; text: string }[]
   /** резюме (категория), по которому приглашаем: 0 — основное */
   resume_id?: number; headline?: string | null; categories?: { resume_id: number }[]
+  /** unconfirmed — грейд не подтверждён тестом: в тексте приглашения указывается заявленный грейд */
+  grade_status?: string | null; claimed_grade_name?: string | null
 }
+
+/** Цель приглашения из карточки кандидата в выдаче (подборка, банк, избранное). */
+export const inviteTarget = (c: any): InviteTarget => ({
+  id: c.id, display_name: c.display_name, grade_name: c.grade_name, specialization_name: c.specialization_name,
+  reasons: c.reasons, resume_id: c.resume_id, headline: c.headline, categories: c.categories,
+  grade_status: c.grade_status, claimed_grade_name: c.claimed_grade_name,
+})
+
+const categoryLabel = (t: InviteTarget | null) => t?.grade_status === 'unconfirmed'
+  ? `${t.specialization_name ?? ''} · ${t.claimed_grade_name ?? ''} (грейд не подтверждён тестом)`
+  : `${t?.specialization_name ?? ''} · ${t?.grade_name ?? ''}`
 
 export function InviteModal({ target, onClose, vacancyId, defaults }: {
   target: InviteTarget | null; onClose: () => void; vacancyId?: number | null
@@ -30,7 +43,9 @@ export function InviteModal({ target, onClose, vacancyId, defaults }: {
     setF({
       vacancy_id: vacancyId ? String(vacancyId) : '',
       title: defaults?.title ?? v?.title ?? '',
-      message: `Здравствуйте! Мы нашли ваш профиль в категории «${target.specialization_name ?? ''} · ${target.grade_name ?? ''}».` +
+      message: (target.grade_status === 'unconfirmed'
+        ? `Здравствуйте! Мы нашли ваш профиль: ${target.specialization_name ?? ''}, заявленный грейд ${target.claimed_grade_name ?? ''}.`
+        : `Здравствуйте! Мы нашли ваш профиль в категории «${target.specialization_name ?? ''} · ${target.grade_name ?? ''}».`) +
         (plus.length ? ` Нас впечатлило: ${plus.join('; ')}.` : '') + ' Будем рады обсудить задачи команды и ответить на вопросы.',
       salary_from: String(defaults?.salary_from ?? v?.salary_from ?? ''),
       salary_to: String(defaults?.salary_to ?? v?.salary_to ?? ''),
@@ -70,7 +85,7 @@ export function InviteModal({ target, onClose, vacancyId, defaults }: {
         <Button disabled={!valid} loading={send.isPending} onClick={() => send.mutate()} icon={<Send className="h-4 w-4" />}>Отправить приглашение</Button></>}>
       {(target?.categories?.length ?? 0) > 1 && (
         <p className="mb-4 rounded-2xl bg-[#ECEAFB]/60 px-4 py-2.5 text-sm text-[#3c3480]">
-          У кандидата несколько резюме. Приглашение уйдёт по резюме <b>«{target?.headline}»</b> — категория {target?.specialization_name} · {target?.grade_name}.
+          У кандидата несколько резюме. Приглашение уйдёт по резюме <b>«{target?.headline}»</b> — категория {categoryLabel(target)}.
         </p>
       )}
       <div className="grid gap-4 sm:grid-cols-2">

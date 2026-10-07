@@ -12,6 +12,7 @@ DEFAULT_PRIVACY = {
     "show_fsp": True,  # показывать достижения ФСП
     "visible_in_search": True,  # участвовать в банке кандидатов
     "hide_invites_below_salary": False,  # не принимать приглашения с вилкой ниже ожиданий
+    "show_unconfirmed": True,  # пока грейд не подтверждён — показываться работодателям со статусом и ниже в выдаче
 }
 
 
@@ -60,6 +61,12 @@ class CandidateProfile(Base):
     grade_changed_at: Mapped[datetime | None] = mapped_column(DateTime)
     domain_scores: Mapped[dict] = mapped_column(JSON, default=dict)  # домен -> {score, n, correct}
     verified_skills: Mapped[list] = mapped_column(JSON, default=list)  # навыки, подтверждённые тестом
+    # Грейд, заявленный в последнем тесте и не подтверждённый им, пока подтверждённого грейда нет: кандидат остаётся
+    # в выдаче со статусом «не подтверждён» и ниже подтверждённых (рекомендация постановщиков); θ — измеренная тестом
+    unconfirmed_grade: Mapped[str | None] = mapped_column(String(20))
+    unconfirmed_theta: Mapped[float | None] = mapped_column(Float)
+    unconfirmed_se: Mapped[float | None] = mapped_column(Float)
+    unconfirmed_at: Mapped[datetime | None] = mapped_column(DateTime)
 
     # ФСП
     fsp_id: Mapped[str | None] = mapped_column(String(64), unique=True)
@@ -128,6 +135,10 @@ class CandidateResume(Base):
     grade_changed_at: Mapped[datetime | None] = mapped_column(DateTime)
     domain_scores: Mapped[dict] = mapped_column(JSON, default=dict)
     verified_skills: Mapped[list] = mapped_column(JSON, default=list)
+    unconfirmed_grade: Mapped[str | None] = mapped_column(String(20))  # как в CandidateProfile
+    unconfirmed_theta: Mapped[float | None] = mapped_column(Float)
+    unconfirmed_se: Mapped[float | None] = mapped_column(Float)
+    unconfirmed_at: Mapped[datetime | None] = mapped_column(DateTime)
     strength: Mapped[float] = mapped_column(Float, default=0.0)
     fsp_score: Mapped[float] = mapped_column(Float, default=0.0)
 

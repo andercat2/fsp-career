@@ -23,6 +23,30 @@ def pct(x) -> str:
     return "—" if x is None else f"{x * 100:.1f}%"
 
 
+UNCONFIRMED_NAMES = {"hidden": "Скрывать (как было)", "shown_1.0": "**Показывать со статусом — продукт**",
+                     "shown_0.85": "Показывать, множитель 0.85", "shown_0.7": "Показывать, множитель 0.7",
+                     "shown_0.55": "Показывать, множитель 0.55", "shown_0.4": "Показывать, множитель 0.4",
+                     "tier": "Строго после всех подтверждённых"}
+
+
+def unconfirmed_lines(match: dict) -> list[str]:
+    u = match.get("unconfirmed")
+    if not u:
+        return []
+    bt = u["unconfirmed_by_true_level"]
+    out = ["### Неподтверждённые грейды: скрывать или показывать ниже", "",
+           f"Сценарий: {pct(u['stop_share'])} кандидатов после неподтверждения заявленного грейда не пересдают уровень "
+           f"ниже сразу. Без категории — {u['unconfirmed_candidates']} из {u['population']}: истинный уровень как заявлен у "
+           f"{bt.get('true_level_as_claimed', 0)} (тест ошибся), ниже заявленного — у {bt.get('true_level_lower', 0)}.", "",
+           "| Вариант | P@10 | nDCG@10 | Нерелевантных в топ-10 | «Завысивших» в топ-10 | Неподтверждённых в топ-10 | "
+           "Релевантные неподтверждённые в топ-20 |", "|---|---|---|---|---|---|---|"]
+    for k, title in UNCONFIRMED_NAMES.items():
+        v = u["summary"][k]
+        out.append(f"| {title} | {v['p10']} ± {v['p10_ci95']} | {v['ndcg10']} | {pct(v['irrelevant_in_top10'])} | "
+                   f"{pct(v['inflated_in_top10'])} | {pct(v['unconfirmed_in_top10'])} | {pct(v['relevant_unconfirmed_in_top20'])} |")
+    return out + [""]
+
+
 def summary_md(cat: dict, match: dict, nlp: dict, plag: dict) -> str:
     rec, gr, la, dd, ms = cat["recovery"], cat["grades"], cat["leak_attack"], cat["drift_detection"], cat["misspecification"]
     s = match["summary"]
@@ -81,6 +105,7 @@ def summary_md(cat: dict, match: dict, nlp: dict, plag: dict) -> str:
     lines += ["", "С учётом уровня владения навыками (P@10 / nDCG@10): " + "; ".join(
         f"{names[k].strip('*')}: {sp[k]['p10']} / {sp[k]['ndcg10']}" for k in ("keyword", "filters", "ours")) + ".",
               "", f"Время ранжирования пула до {match['setup']['candidates']} кандидатов: {match['latency_ms']['mean']} мс в среднем.", "",
+              *unconfirmed_lines(match),
               "## 3. NLP", "",
               f"Вакансии ({nlp['vacancies']['n']} размеченных текстов): специализация {pct(nlp['vacancies']['specialization_accuracy']['hybrid'])} "
               f"(только модель — {pct(nlp['vacancies']['specialization_accuracy']['model_only'])}), грейды {pct(nlp['vacancies']['grades_exact'])}, "

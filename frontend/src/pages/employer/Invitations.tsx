@@ -37,7 +37,7 @@ export function EmployerInvitations() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <Link to={`/employer/candidates/${i.candidate.id}`} className="font-bold text-fsp-deep hover:text-fsp-pink">{i.candidate.display_name}</Link>
-                  <CategoryPill spec={i.candidate.specialization_name} grade={i.candidate.grade_name} />
+                  <CategoryPill spec={i.candidate.specialization_name} grade={i.candidate.grade_name} status={i.candidate.grade_status} claimed={i.candidate.claimed_grade_name} />
                   {i.match != null && <span className="text-xs text-slate-500">совпадение {i.match}%</span>}
                 </div>
                 <p className="mt-1 text-sm text-slate-600"><b>{i.title}</b> · {salaryRange(i.salary_from, i.salary_to)}{i.vacancy ? ` · по вакансии «${i.vacancy.title}»` : ' · без привязки к вакансии'}</p>

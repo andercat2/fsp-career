@@ -15,6 +15,10 @@
 Метрики: Precision@10 (доля релевантных, метка ≥ 2), nDCG@10 (по меткам 0–3), MRR, доля нерелевантных (метка 0)
 в топ-10 и доля «завысивших себя» неподходящих кандидатов в топ-10.
 
+Отдельный эксперимент — неподтверждённые грейды (unconfirmed_experiment): часть кандидатов после неподтверждения
+заявленного грейда не пересдаёт уровень ниже сразу. Сравниваем прежнее поведение (такие кандидаты скрыты) с показом
+их со статусом и понижающим множителем λ (перебор) и со строгим показом после всех подтверждённых.
+
 Запуск: python -m validation.matching_validation
 """
 from __future__ import annotations
@@ -40,7 +44,8 @@ from app.seed.synthetic import (
 )
 from app.services.fsp.scoring import fsp_score
 from app.services.matching.profile import W_FSP, W_TEST, test_position, verified_skills
-from app.services.matching.ranking import RELATED_SPECS, Need, score_candidates
+from app.services.matching import ranking
+from app.services.matching.ranking import RELATED_SPECS, Need, in_categories, score_candidates
 from app.services.nlp.vacancy_parser import parse_need
 from app.services.reference.skills import SKILL_BY_ID, skills_for_spec
 from app.services.reference.taxonomy import GRADE_CODES, GRADE_INDEX, SPEC_BY_CODE, grade_center
@@ -59,8 +64,11 @@ def _fsp_profile(c: SynthCandidate, rng: random.Random) -> dict | None:
 
 
 def to_profile(c: SynthCandidate, rng: random.Random, *, use_test: bool = True, use_fsp: bool = True,
-               use_verification: bool = True) -> CandidateProfile:
-    if use_test:
+               use_verification: bool = True, unconfirmed: tuple | None = None) -> CandidateProfile:
+    """unconfirmed — (заявленный грейд, θ, SE, домены) теста, который грейд не подтвердил: категории нет."""
+    if unconfirmed:
+        grade, theta, se, domains = None, None, None, unconfirmed[3]
+    elif use_test:
         grade, theta, se, domains = c.grade, c.theta_hat, c.se, c.domain_scores
     else:  # категория из самоописания
         grade, theta, se, domains = c.claimed_grade, grade_center(c.claimed_grade), None, {}
@@ -72,6 +80,8 @@ def to_profile(c: SynthCandidate, rng: random.Random, *, use_test: bool = True, 
         claimed_grade=c.claimed_grade, last_active_at=utcnow(),
         fsp_profile=getattr(c, "_fsp", None) if use_fsp else None,
     )
+    if unconfirmed:
+        p.unconfirmed_grade, p.unconfirmed_theta, p.unconfirmed_se = unconfirmed[0], unconfirmed[1], unconfirmed[2]
     p.verified_skills = verified_skills(p) if use_verification else []
     p.fsp_score = fsp_score(p.fsp_profile, p.grade_specialization)
     p.strength = round(W_TEST * test_position(p) + W_FSP * p.fsp_score, 4) if grade else 0.0
@@ -185,7 +195,8 @@ def rank_filters(nd, cands: list[SynthCandidate]) -> list[int]:
     return [c.idx for c in strict + relaxed]
 
 
-def rank_ours(need: Need, profiles: list[CandidateProfile]) -> list[int]:
+def rank_ours(need: Need, profiles: list[CandidateProfile], *, tier: bool = False) -> list[int]:
+    """tier — неподтверждённые строго после всех подтверждённых (иначе — понижение множителем)."""
     pairs = {(need.specialization, g) for g in need.grades}
     lo = min(GRADE_INDEX[g] for g in need.grades)
     hi = max(GRADE_INDEX[g] for g in need.grades)
@@ -196,8 +207,11 @@ def rank_ours(need: Need, profiles: list[CandidateProfile]) -> list[int]:
     for rel in RELATED_SPECS.get(need.specialization, {}):
         for g in need.grades:
             pairs.add((rel, g))
-    pool = [p for p in profiles if p.grade and (p.grade_specialization, p.grade) in pairs]
-    return [r["candidate_id"] - 1 for r in score_candidates(need, pool)]
+    pool = [p for p in profiles if in_categories(p, pairs)]
+    res = score_candidates(need, pool)
+    if tier:
+        res = sorted(res, key=lambda r: (r["grade_status"] == "unconfirmed", -r["score"]))
+    return [r["candidate_id"] - 1 for r in res]
 
 
 def need_obj(nd: dict) -> Need:
@@ -220,6 +234,75 @@ def evaluate(ranked: list[int], labels: dict[int, int], inflated_bad: set[int]) 
     }
 
 
+STOP_SHARE = 0.5  # допущение: половина кандидатов после неподтверждения не пересдаёт уровень ниже сразу
+LAMBDAS = (1.0, 0.85, 0.7, 0.55, 0.4)
+
+
+def unconfirmed_states(pop: list[SynthCandidate], rng: random.Random) -> dict[int, tuple]:
+    """idx → (заявленный грейд, θ, SE, домены) теста, не подтвердившего грейд. Кто остановился после первого
+    неподтверждения (доля STOP_SHARE), остаётся без категории; без категории и те, кому не подтвердил ни один тест."""
+    out = {}
+    for c in pop:
+        if not c.sessions:
+            continue
+        target, _, res = c.sessions[0]
+        if res["decision"] == "not_confirmed" and rng.random() < STOP_SHARE:
+            out[c.idx] = (target, res["theta"], res["se"], res["domains"])
+        elif c.grade is None:
+            target, _, res = c.sessions[-1]
+            out[c.idx] = (target, res["theta"], res["se"], res["domains"])
+    return out
+
+
+def unconfirmed_experiment(pop: list[SynthCandidate], needs: list[dict], rng: random.Random) -> dict:
+    """Неподтверждённые грейды: скрывать (как было) или показывать со статусом ниже подтверждённых."""
+    states = unconfirmed_states(pop, rng)
+    profiles = [to_profile(c, rng, unconfirmed=states.get(c.idx)) for c in pop]
+    confirmed_only = [p for p in profiles if p.grade]
+    systems = {"hidden": None, **{f"shown_{lam}": lam for lam in LAMBDAS}, "tier": "tier"}  # shown_1.0 — продукт
+    rows: dict[str, list[dict]] = {k: [] for k in systems}
+    lam0 = ranking.UNCONFIRMED_FACTOR
+    try:
+        for nd in needs:
+            labels = {c.idx: relevance(c, nd) for c in pop}
+            lo_need = min(GRADE_INDEX[g] for g in nd["grades"])
+            inflated_bad = {c.idx for c in pop if c.inflated and GRADE_INDEX[c.grade_true] < lo_need}
+            relevant_unconfirmed = [i for i in states if labels[i] >= 2]
+            need = need_obj(nd)
+            for name, mode in systems.items():
+                if mode is None:
+                    ranked = rank_ours(need, confirmed_only)
+                elif mode == "tier":
+                    ranked = rank_ours(need, profiles, tier=True)
+                else:
+                    ranking.UNCONFIRMED_FACTOR = mode
+                    ranked = rank_ours(need, profiles)
+                m = evaluate(ranked, labels, inflated_bad)
+                m["unconfirmed_in_top10"] = sum(i in states for i in ranked[:K]) / K
+                top20 = set(ranked[:20])
+                m["relevant_unconfirmed_in_top20"] = (sum(i in top20 for i in relevant_unconfirmed)
+                                                      / len(relevant_unconfirmed)) if relevant_unconfirmed else None
+                rows[name].append(m)
+    finally:
+        ranking.UNCONFIRMED_FACTOR = lam0
+    summary = {}
+    for name, ms in rows.items():
+        summary[name] = {k: r3(np.mean([m[k] for m in ms])) for k in ("p10", "ndcg10", "mrr", "irrelevant_in_top10",
+                                                                      "inflated_in_top10", "unconfirmed_in_top10")}
+        reach = [m["relevant_unconfirmed_in_top20"] for m in ms if m["relevant_unconfirmed_in_top20"] is not None]
+        summary[name]["relevant_unconfirmed_in_top20"] = r3(np.mean(reach)) if reach else None
+        summary[name]["p10_ci95"] = r3(1.96 * np.std([m["p10"] for m in ms]) / math.sqrt(len(ms)))
+    by_true = {}
+    for i, st in states.items():
+        c = pop[i]
+        key = "true_level_as_claimed" if c.grade_true == st[0] else "true_level_lower" \
+            if GRADE_INDEX[c.grade_true] < GRADE_INDEX[st[0]] else "true_level_higher"
+        by_true[key] = by_true.get(key, 0) + 1
+    return {"stop_share": STOP_SHARE, "unconfirmed_candidates": len(states), "population": len(pop),
+            "unconfirmed_by_true_level": by_true, "chosen_factor": lam0, "summary": summary,
+            "needs_with_relevant_unconfirmed": sum(1 for m in rows["hidden"] if m["relevant_unconfirmed_in_top20"] is not None)}
+
+
 def main(n_candidates: int = 900, n_needs: int = 60, seed: int = 101) -> dict:
     t0 = time.time()
     rng = random.Random(seed)
@@ -235,7 +318,11 @@ def main(n_candidates: int = 900, n_needs: int = 60, seed: int = 101) -> dict:
         "ours_no_verification": dict(use_verification=False),
         "ours_self_declared_category": dict(use_test=False),
     }
-    profiles = {name: [to_profile(c, rng, **kw) for c in pop] for name, kw in variants.items()}
+    # как в продукте: кандидат без категории, чей грейд тест не подтвердил, остаётся в выдаче со статусом и ниже
+    last_failed = {c.idx: (c.sessions[-1][0], c.sessions[-1][2]["theta"], c.sessions[-1][2]["se"], c.sessions[-1][2]["domains"])
+                   for c in pop if c.grade is None and c.sessions}
+    profiles = {name: [to_profile(c, rng, **kw, **({"unconfirmed": last_failed.get(c.idx)} if kw.get("use_test", True) else {}))
+                       for c in pop] for name, kw in variants.items()}
     needs = make_needs(n_needs, rng)
     metrics: dict[str, list[dict]] = {m: [] for m in ["keyword", "filters", *variants, "ours_nlp"]}
     latency = []
@@ -274,6 +361,7 @@ def main(n_candidates: int = 900, n_needs: int = 60, seed: int = 101) -> dict:
         summary[name]["p10_ci95"] = r3(1.96 * np.std([m["p10"] for m in ms]) / math.sqrt(len(ms)))
     summary_prof = {name: {k: r3(np.mean([m[k] for m in ms])) for k in ("p10", "ndcg10", "mrr", "irrelevant_in_top10")}
                     for name, ms in metrics_prof.items()}
+    unconfirmed = unconfirmed_experiment(pop, needs, random.Random(seed + 1))
     report = {
         "generated_at": time.strftime("%Y-%m-%d %H:%M"),
         "setup": {"candidates": n_candidates, "needs": n_needs, "k": K, "inflated_resume_share": 0.35,
@@ -282,6 +370,7 @@ def main(n_candidates: int = 900, n_needs: int = 60, seed: int = 101) -> dict:
                   "avg_relevant_per_need": r3(np.mean([sum(relevance(c, nd) >= 2 for c in pop) for nd in needs]))},
         "summary": summary,
         "summary_with_proficiency": summary_prof,
+        "unconfirmed": unconfirmed,
         "nlp_end_to_end": {"specialization_accuracy": r3(nlp_spec_ok / n_needs), "grades_exact": r3(nlp_grade_ok / n_needs)},
         "latency_ms": {"mean": r3(1000 * np.mean(latency)), "p95": r3(1000 * np.percentile(latency, 95)),
                        "pool": "до 900 кандидатов, без кэширования"},

@@ -15,7 +15,14 @@ from app.models import Application, CandidateProfile, Company, Invitation, Task,
 from app.services.matching.profile import recompute_candidate
 from app.services.matching.ranking import Need, score_candidates
 from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES, SPEC_NAMES, WORK_FORMATS
-from app.services.resumes import ResumeView, category_brief, graded_profiles
+from app.services.resumes import (
+    ResumeView,
+    category_brief,
+    category_spec,
+    graded_profiles,
+    is_unconfirmed,
+    rankable_profiles,
+)
 from app.services.sandbox.tasks import public_results, task_payload
 
 log = logging.getLogger("interactions")
@@ -34,8 +41,9 @@ def need_from_vacancy(v: Vacancy) -> Need:
 
 
 def pair_score(v: Vacancy, cand: CandidateProfile, resume_id: int | None = None) -> dict | None:
-    """Соответствие кандидата вакансии по лучшему из его резюме с категорией (или по указанному резюме)."""
-    graded = [p for p in graded_profiles(cand) if resume_id is None or (p.resume_id or 0) == resume_id]
+    """Соответствие кандидата вакансии по лучшему из его резюме с категорией — подтверждённой или нет (или по
+    указанному резюме)."""
+    graded = [p for p in rankable_profiles(cand) if resume_id is None or (p.resume_id or 0) == resume_id]
     if not graded:
         return None
     return max(score_candidates(need_from_vacancy(v), graded), key=lambda r: r["score"])
@@ -187,7 +195,10 @@ def task_view(ta: TaskAssignment, for_employer: bool = False) -> dict:
             out["plagiarism"], out["signals"] = ta.plagiarism, ta.signals
     if for_employer:
         cand = ta.candidate
+        unconfirmed = is_unconfirmed(cand)
         out["candidate"] = {"id": cand.id, "public_id": cand.public_id, "grade": cand.grade,
                             "grade_name": GRADE_NAMES.get(cand.grade or ""),
-                            "specialization_name": SPEC_NAMES.get(cand.grade_specialization or "")}
+                            "grade_status": "unconfirmed" if unconfirmed else "confirmed" if cand.grade else None,
+                            "claimed_grade_name": GRADE_NAMES.get(cand.unconfirmed_grade or "") if unconfirmed else None,
+                            "specialization_name": SPEC_NAMES.get(category_spec(cand) or "")}
     return out

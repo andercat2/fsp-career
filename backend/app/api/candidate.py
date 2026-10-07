@@ -222,9 +222,15 @@ def dashboard(cand: Candidate, db: DB):
          "link": "/candidate/settings", "required": False},
     ]
     graded = bool(cand.grade or any(r.grade and r.visible for r in cand.resumes))
-    visible = bool(graded and cand.consent_publish and (cand.privacy or {}).get("visible_in_search", True))
+    pv = cand.privacy or {}
+    # грейд не подтверждён тестом: кандидат виден работодателям со статусом и ниже подтверждённых (если не отключил)
+    unconfirmed = not graded and pv.get("show_unconfirmed", True) and bool(
+        (not cand.grade and cand.unconfirmed_grade) or any(not r.grade and r.unconfirmed_grade and r.visible
+                                                           for r in cand.resumes))
+    visible = bool((graded or unconfirmed) and cand.consent_publish and pv.get("visible_in_search", True))
     return {
         "profile": own_view(cand), "steps": steps, "visible_to_employers": visible,
+        "visible_as_unconfirmed": bool(visible and not graded),
         "stats": {"profile_views_30d": views, "invitations_new": inv_new, "invitations_total": inv_total,
                   "applications": apps, "tasks_open": tasks_open, "tests_completed": tests},
     }
