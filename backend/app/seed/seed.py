@@ -247,23 +247,82 @@ def _demo_devops_resume(db: Session, demo_cand: CandidateProfile, demo: SynthCan
     recompute_candidate(db, demo_cand)
 
 
+def _seed_code_tasks(db: Session) -> int:
+    """Задачи с запуском кода (идемпотентно): по одной у четырёх компаний. Задачу ТехноПульс уже решили трое
+    синтетических кандидатов — верно, частично и «переименованной копией» первого решения (её отмечает антиплагиат),
+    а демо-кандидату она предложена. Решения прогоняются в настоящей песочнице; если она недоступна — не создаются."""
+    from fastapi import HTTPException
+
+    from app.seed.code_tasks_data import CODE_TASKS, PHONES_COPY, PHONES_GOOD, PHONES_PARTIAL
+    from app.services.sandbox import tasks as code_tasks
+
+    if db.scalar(select(Task.id).where(Task.kind == "code").limit(1)) is not None:
+        return 0
+    comp_by_email = {u.email: comp for comp, u in db.execute(
+        select(Company, User).join(User, User.id == Company.owner_user_id))}
+    owner = {c["key"]: c["email"] for c in vd.COMPANIES}
+    created = []
+    for spec in CODE_TASKS:
+        comp = comp_by_email.get(owner[spec["company"]])
+        if comp is not None:
+            created.append(Task(company_id=comp.id, time_limit_ms=2000, compare="exact", created_at=_ago(7),
+                                **{k: v for k, v in spec.items() if k != "company"}))
+    db.add_all(created)
+    db.flush()
+    phones = next((t for t in created if t.entrypoint == "normalize_phones"), None)
+    if phones is None:
+        return len(created)
+
+    pool = list(db.scalars(select(CandidateProfile).join(User, User.id == CandidateProfile.user_id).where(
+        User.email.like("%@synthetic.example"), CandidateProfile.grade_specialization == "backend",
+        CandidateProfile.grade.is_not(None)).order_by(CandidateProfile.id)))
+    plan = [  # решение, сигналы редактора, сколько дней назад отправлено, сколько было запусков
+        (PHONES_GOOD, {"pastes": [], "away_count": 0, "elapsed_ms": 19 * 60_000}, 5, 6),
+        (PHONES_PARTIAL, {"pastes": [{"chars": 24}], "away_count": 1, "elapsed_ms": 27 * 60_000}, 4, 3),
+        (PHONES_COPY, {"pastes": [{"chars": len(PHONES_COPY)}], "away_count": 3, "elapsed_ms": 4 * 60_000}, 2, 1),
+    ]
+    for cand, (code, signals, days, runs) in zip(random.Random(20261007).sample(pool, min(3, len(pool))), plan):
+        ta = TaskAssignment(task_id=phones.id, candidate_id=cand.id, offered_at=_ago(days + 2), runs_count=runs - 1)
+        db.add(ta)
+        db.flush()
+        try:
+            code_tasks.submit(db, ta, code, signals)
+        except HTTPException as exc:
+            log.warning("Песочница недоступна — демо-решения задачи с кодом не созданы: %s", exc.detail)
+            db.delete(ta)
+            break
+        ta.submitted_at = ta.last_run_at = _ago(days)
+
+    demo = db.scalar(select(CandidateProfile).join(User, User.id == CandidateProfile.user_id)
+                     .where(User.email == "candidate@demo.ru"))
+    if demo is not None:
+        db.add(TaskAssignment(task_id=phones.id, candidate_id=demo.id, offered_at=_ago(0.3),
+                              due_at=utcnow() + timedelta(days=5)))
+        db.add(Notification(user_id=demo.user_id, kind="task_new", title="Задача с кодом от ТехноПульс",
+                            body=f"«{phones.title}» — решение проверяется тестами в песочнице", link="/candidate/tasks"))
+    return len(created)
+
+
 def upgrade_demo_data(db: Session) -> None:
     """Дозаполняет уже развёрнутый стенд демо-данными новых возможностей (идемпотентно): вторые резюме
-    синтетических кандидатов и DevOps-резюме демо-кандидата — те же, что создаёт seed_if_empty на пустой БД."""
+    синтетических кандидатов, DevOps-резюме демо-кандидата и задачи с запуском кода — то же, что создаёт
+    seed_if_empty на пустой БД."""
     from app.core.config import settings
 
-    if db.scalar(select(CandidateResume.id).limit(1)) is not None:
-        return
     demo_user = db.scalar(select(User).where(User.email == "candidate@demo.ru"))
     if demo_user is None or demo_user.candidate is None:
         return
-    params = default_params()
-    pop = generate_population(settings.seed_candidates, seed=7)
-    by_email = {u.email: u.candidate for u in db.scalars(select(User).where(User.email.like("%@synthetic.example")))}
-    added = _add_extra_resumes(db, pop, [by_email.get(f"cand{sc.idx:03d}@synthetic.example") for sc in pop], params)
-    _demo_devops_resume(db, demo_user.candidate, _demo_synth(), params)
-    db.commit()
-    log.info("Демо-данные дополнены: вторые резюме у %d кандидатов и у демо-кандидата", added)
+    if db.scalar(select(CandidateResume.id).limit(1)) is None:
+        params = default_params()
+        pop = generate_population(settings.seed_candidates, seed=7)
+        by_email = {u.email: u.candidate for u in db.scalars(select(User).where(User.email.like("%@synthetic.example")))}
+        added = _add_extra_resumes(db, pop, [by_email.get(f"cand{sc.idx:03d}@synthetic.example") for sc in pop], params)
+        _demo_devops_resume(db, demo_user.candidate, _demo_synth(), params)
+        db.commit()
+        log.info("Демо-данные дополнены: вторые резюме у %d кандидатов и у демо-кандидата", added)
+    if n := _seed_code_tasks(db):
+        db.commit()
+        log.info("Демо-данные дополнены: задачи с запуском кода (%d)", n)
 
 
 def seed_if_empty(db: Session) -> None:
@@ -466,6 +525,7 @@ def seed_if_empty(db: Session) -> None:
     db.add(done)
     db.flush()
     ix.apply_task_review(db, done)
+    _seed_code_tasks(db)
 
     # --- сохранённая подборка для демо-работодателя
     v0 = vacancies[0]

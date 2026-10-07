@@ -506,3 +506,108 @@ def test_category_from_penalized_session_is_marked_for_employer(client, monkeypa
     cid = client.get(f"{API}/candidate/profile", headers=h).json()["id"]
     card = client.get(f"{API}/employer/candidates/{cid}", headers=login(client, "employer@demo.ru")).json()
     assert card["integrity"]["status"] == "penalized"
+
+
+def test_code_task_sandbox_flow(client):
+    """Задача с кодом: эталон проверяет тесты, кандидат запускает примеры в песочнице, отправка — на всех тестах
+    (скрытые не раскрываются), антиплагиат отмечает переименованную копию."""
+    eh = login(client, "employer@demo.ru")
+    reference = ("def normalize_phones(phones):\n    seen, out = set(), []\n    for p in phones:\n"
+                 "        d = ''.join(ch for ch in p if ch.isdigit())\n        if len(d) == 10:\n            d = '7' + d\n"
+                 "        if len(d) != 11 or d[0] not in '78':\n            continue\n        n = '+7' + d[1:]\n"
+                 "        if n not in seen:\n            seen.add(n)\n            out.append(n)\n    return out\n")
+    tests = [{"args": [["8 (900) 123-45-67"]], "expected": ["+79001234567"]},
+             {"args": [["+7 900 123 45 67", "89001234567"]], "expected": ["+79001234567"], "name": "дубли"},
+             {"args": [["9001234567", "123"]], "expected": ["+79001234567"], "hidden": True},
+             {"args": [[]], "expected": [], "hidden": True}]
+    body = {"title": "Нормализация телефонов", "description": "Приведите номера к формату +7XXXXXXXXXX, уберите дубли.",
+            "specialization": "backend", "kind": "code", "code_language": "python", "entrypoint": "normalize_phones",
+            "starter_code": "def normalize_phones(phones):\n    pass\n", "tests": tests, "reference_solution": reference}
+    # ошибка в ожидаемом ответе ловится эталоном
+    bad = {**body, "tests": tests[:2] + [{"args": [["9001234567"]], "expected": ["+70000000000"], "hidden": True}]}
+    r = client.post(f"{API}/employer/tasks", headers=eh, json=bad)
+    assert r.status_code == 422 and "тест №3" in r.text
+    assert client.post(f"{API}/employer/tasks", headers=eh, json={**body, "tests": tests[:2]}).status_code == 422
+    r = client.post(f"{API}/employer/tasks", headers=eh, json=body)
+    assert r.status_code == 201, r.text
+    task = r.json()
+    assert task["hidden_count"] == 2 and len(task["examples"]) == 2 and task["reference_solution"]
+
+    from app.core.db import SessionLocal
+    from app.models import TaskAssignment
+
+    users = [_new_candidate(client, f"coder{i}@example.com") for i in range(2)]
+    ids = []
+    with SessionLocal() as db:
+        for h in users:
+            cid = client.get(f"{API}/candidate/profile", headers=h).json()["id"]
+            ta = TaskAssignment(task_id=task["id"], candidate_id=cid)
+            db.add(ta)
+            db.flush()
+            ids.append(ta.id)
+        db.commit()
+
+    h1, h2 = users
+    view = next(t for t in client.get(f"{API}/candidate/tasks", headers=h1).json() if t["id"] == ids[0])
+    assert view["task"]["code_language"] == "python" and "reference_solution" not in view["task"]
+    assert all("expected" in x for x in view["task"]["examples"]) and view["task"]["hidden_count"] == 2
+    assert client.post(f"{API}/candidate/tasks/{ids[0]}/submit", headers=h1, json={"answer": "текстовый ответ"}).status_code == 409
+
+    wrong = "def normalize_phones(phones):\n    return phones\n"
+    r = client.post(f"{API}/candidate/tasks/{ids[0]}/run", headers=h1, json={"code": wrong}).json()
+    assert r["status"] == "ok" and r["total"] == 2 and r["passed"] == 0 and r["tests"][0]["actual"] == ["8 (900) 123-45-67"]
+    assert client.post(f"{API}/candidate/tasks/{ids[0]}/run", headers=h1, json={"code": wrong}).status_code == 429
+    import time as _t
+
+    _t.sleep(2.1)
+    r = client.post(f"{API}/candidate/tasks/{ids[0]}/run", headers=h1, json={"code": "def normalize_phones(p) return"}).json()
+    assert r["status"] == "compile_error" and "SyntaxError" in r["error"]
+
+    _t.sleep(2.1)
+    done = client.post(f"{API}/candidate/tasks/{ids[0]}/submit-code", headers=h1,
+                       json={"code": reference, "signals": {"pastes": [{"chars": 40}], "away_count": 1}}).json()
+    assert done["status"] == "submitted" and done["results"]["passed"] == 4 and done["results"]["hidden_total"] == 2
+    hidden = [x for x in done["results"]["tests"] if x["hidden"]]
+    assert hidden and all("args" not in x and "expected" not in x for x in hidden)  # скрытые не раскрываются
+
+    copy = reference.replace("seen", "used").replace("out", "res").replace("n =", "num =").replace("(n)", "(num)") \
+        .replace("n not in", "num not in")
+    done2 = client.post(f"{API}/candidate/tasks/{ids[1]}/submit-code", headers=h2, json={"code": copy}).json()
+    assert done2["results"]["passed"] == 4
+
+    subs = client.get(f"{API}/employer/tasks/submissions?status=submitted", headers=eh).json()
+    mine = {s["id"]: s for s in subs if s["id"] in ids}
+    assert mine[ids[1]]["plagiarism"]["similarity"] >= 0.85
+    assert mine[ids[0]]["plagiarism"]["candidate_public_id"] == mine[ids[1]]["candidate"]["public_id"]
+    assert mine[ids[0]]["signals"]["pasted_chars"] == 40 and mine[ids[0]]["auto_score"] == 1.0
+    assert all("expected" in x for x in mine[ids[0]]["results"]["tests"])  # работодатель видит скрытые тесты
+
+
+def test_seeded_code_task_demo(client):
+    """Демо-стенд: у ТехноПульс есть задача с кодом и три решения (копию отмечает антиплагиат), демо-кандидату она
+    предложена — эталон и скрытые тесты кандидат не видит."""
+    eh = login(client, "employer@demo.ru")
+    task = next(t for t in client.get(f"{API}/employer/tasks", headers=eh).json()
+                if t["title"] == "Нормализация телефонных номеров")
+    assert task["kind"] == "code" and task["counts"]["submitted"] == 3 and task["hidden_count"] == 4
+    subs = [s for s in client.get(f"{API}/employer/tasks/submissions?status=submitted", headers=eh).json()
+            if s["task"]["id"] == task["id"]]
+    assert sorted(s["results"]["passed"] for s in subs) == [2, 6, 6]
+    flagged = [s for s in subs if s["plagiarism"]]
+    assert len(flagged) == 2 and all(s["plagiarism"]["similarity"] >= 0.85 for s in flagged)
+    assert max(s["signals"]["paste_share"] for s in flagged) == 1.0
+    ch = login(client, "candidate@demo.ru")
+    offered = next(t for t in client.get(f"{API}/candidate/tasks", headers=ch).json() if t["task"]["id"] == task["id"])
+    assert offered["status"] == "offered" and len(offered["task"]["examples"]) == 2
+    assert "reference_solution" not in offered["task"] and "tests" not in offered["task"]
+
+
+def test_sandbox_isolation_limits():
+    """Бесконечный цикл обрывается по таймауту, ошибки и синтаксис не роняют сервис."""
+    from app.services.sandbox.runner import run
+
+    assert run("python", "def f(x):\n    while True:\n        pass\n", "f", [[1]], 800)["status"] == "timeout"
+    assert run("python", "import sys\ndef f(x):\n    sys.exit(3)\n", "f", [[1]])["results"][0]["ok"] is False
+    assert run("python", "def f(x):\n    return f(x)\n", "f", [[1]])["results"][0]["error"].startswith("RecursionError")
+    assert run("python", "x = 1", "os.system", [[1]])["status"] == "error"  # имя функции проверяется
+    assert run("ruby", "puts 1", "f", [[1]])["status"] == "error"

@@ -16,6 +16,7 @@ from app.services.matching.profile import recompute_candidate
 from app.services.matching.ranking import Need, score_candidates
 from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES, SPEC_NAMES, WORK_FORMATS
 from app.services.resumes import ResumeView, category_brief, graded_profiles
+from app.services.sandbox.tasks import public_results, task_payload
 
 log = logging.getLogger("interactions")
 
@@ -177,7 +178,13 @@ def task_view(ta: TaskAssignment, for_employer: bool = False) -> dict:
            "submitted_at": ta.submitted_at, "reviewed_at": ta.reviewed_at,
            "task": {"id": t.id, "title": t.title, "description": t.description, "kind": t.kind,
                     "time_estimate_min": t.time_estimate_min, "company": t.company.name,
-                    "specialization_name": SPEC_NAMES.get(t.specialization)}}
+                    "specialization_name": SPEC_NAMES.get(t.specialization), **task_payload(t)}}
+    if t.kind == "code":
+        out["code"] = ta.code
+        out["results"] = public_results(ta.run_results, for_employer)
+        out["runs_count"] = ta.runs_count or 0
+        if for_employer:
+            out["plagiarism"], out["signals"] = ta.plagiarism, ta.signals
     if for_employer:
         cand = ta.candidate
         out["candidate"] = {"id": cand.id, "public_id": cand.public_id, "grade": cand.grade,

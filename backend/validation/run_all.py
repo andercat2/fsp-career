@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import time
 
-from validation import cat_validation, matching_validation, nlp_validation
+from validation import cat_validation, matching_validation, nlp_validation, plagiarism_validation
 from validation.common import REPORTS
 
 
@@ -23,7 +23,7 @@ def pct(x) -> str:
     return "—" if x is None else f"{x * 100:.1f}%"
 
 
-def summary_md(cat: dict, match: dict, nlp: dict) -> str:
+def summary_md(cat: dict, match: dict, nlp: dict, plag: dict) -> str:
     rec, gr, la, dd, ms = cat["recovery"], cat["grades"], cat["leak_attack"], cat["drift_detection"], cat["misspecification"]
     s = match["summary"]
     sp = match["summary_with_proficiency"]
@@ -93,10 +93,24 @@ def summary_md(cat: dict, match: dict, nlp: dict) -> str:
               *[f"| {RESUME_FIELDS.get(k, k)} | {pct(nlp['resumes']['field_accuracy_by_template']['hh'].get(k))} | "
                 f"{pct(nlp['resumes']['field_accuracy_by_template']['free'].get(k))} | {pct(v)} |"
                 for k, v in nlp['resumes']['field_accuracy'].items()], "",
+              "## 4. Антиплагиат задач с кодом", "",
+              f"Корпус: {len(plag['tasks'])} демо-задачи, {plag['copies']['n']} замаскированных копий (переименование, "
+              f"комментарии, форматирование, неиспользуемый код) и {plag['independent_pairs']['n']} пар независимых решений "
+              f"одной задачи; каждое решение проверено в песочнице на тестах задачи.", "",
+              f"Порог {plag['threshold']}: найдено копий {plag['copies']['detected']} из {plag['copies']['n']} (минимальное "
+              f"сходство {plag['copies']['min']}), ложных срабатываний {plag['independent_pairs']['false_positives']} из "
+              f"{plag['independent_pairs']['n']} (максимальное сходство независимых решений {plag['independent_pairs']['max']}).", "",
+              "| k-грамма | Окно | Найдено копий | Мин. сходство копий | Ложных срабатываний | Макс. сходство независимых |",
+              "|---|---|---|---|---|---|",
+              *[f"| {r['k']}{' (выбрано)' if r['chosen'] else ''} | {r['window']} | {r['copies_detected']} из {plag['copies']['n']} | "
+                f"{r['copies_min']} | {r['independent_false_positives']} из {plag['independent_pairs']['n']} | {r['independent_max']} |"
+                for r in plag['parameters']['sweep']], "",
               "## Ограничения", "",
               "- Эталон синтетический: проверяются свойства процедур при известной истине. Для продуктива нужен пилот с "
               "экспертной оценкой ФСП (план — в документации) и онлайн-калибровка заданий на реальных ответах.",
-              "- Тексты вакансий для проверки NLP написаны командой; перед запуском — проверка на выборке реальных вакансий.", ""]
+              "- Тексты вакансий для проверки NLP написаны командой; перед запуском — проверка на выборке реальных вакансий.",
+              "- Корпус антиплагиата мал, и параметры выбраны на нём перебором (таблица выше); на реальных решениях порог "
+              "нужно перепроверить.", ""]
     return "\n".join(lines)
 
 
@@ -105,7 +119,8 @@ def main() -> None:
     cat = cat_validation.main()
     match = matching_validation.main()
     nlp = nlp_validation.main()
-    (REPORTS / "SUMMARY.md").write_text(summary_md(cat, match, nlp), encoding="utf-8", newline="\n")
+    plag = plagiarism_validation.main()
+    (REPORTS / "SUMMARY.md").write_text(summary_md(cat, match, nlp, plag), encoding="utf-8", newline="\n")
     print(f"Готово за {time.time() - t0:.0f} с. Сводка: {REPORTS / 'SUMMARY.md'}")
 
 

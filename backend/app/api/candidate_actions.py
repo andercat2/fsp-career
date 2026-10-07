@@ -5,8 +5,9 @@ from sqlalchemy import func, or_, select
 from app.api.deps import DB, Candidate, CurrentUser
 from app.core.db import utcnow
 from app.models import Application, Company, Complaint, Invitation, Notification, TaskAssignment, Vacancy
-from app.schemas import ApplyIn, ComplaintIn, DeclineIn, Message, TaskSubmitIn
+from app.schemas import ApplyIn, CodeRunIn, ComplaintIn, DeclineIn, Message, TaskSubmitIn
 from app.services import interactions as ix
+from app.services.sandbox import tasks as code_tasks
 from app.services.candidates import own_view
 from app.services.notify import audit, notify
 from app.services.reference.taxonomy import DECLINE_REASONS, GRADE_NAMES, SPEC_NAMES
@@ -222,12 +223,35 @@ def submit_task(ta_id: int, data: TaskSubmitIn, cand: Candidate, db: DB):
     ta = _own_task(db, cand, ta_id)
     if ta.status not in ("offered",):
         raise HTTPException(409, "Задание уже отправлено")
+    if ta.task.kind == "code":
+        raise HTTPException(409, "Решение задачи с кодом отправляется из редактора — оно проверяется тестами")
     ta.answer = data.answer
     ta.status = "submitted"
     ta.submitted_at = utcnow()
     ta.auto_score = ix.auto_score(ta.task, data.answer)
     notify(db, ta.task.company.owner_user_id, "task_submitted", f"Решение задания «{ta.task.title}»",
            f"Кандидат {cand.public_id} отправил ответ", "/employer/tasks")
+    db.commit()
+    return ix.task_view(ta)
+
+
+@router.post("/candidate/tasks/{ta_id}/run", summary="Запустить код на открытых тестах (песочница)",
+             responses={409: {"model": Message}, 429: {"model": Message}, 503: {"model": Message}})
+def run_code(ta_id: int, data: CodeRunIn, cand: Candidate, db: DB):
+    """Код исполняется в изолированной песочнице на открытых тестах-примерах; черновик сохраняется."""
+    return code_tasks.run_examples(db, _own_task(db, cand, ta_id), data.code)
+
+
+@router.post("/candidate/tasks/{ta_id}/submit-code", summary="Отправить решение с кодом: прогон на всех тестах",
+             responses={409: {"model": Message}, 429: {"model": Message}, 503: {"model": Message}})
+def submit_code(ta_id: int, data: CodeRunIn, cand: Candidate, db: DB):
+    """Решение прогоняется на открытых и скрытых тестах (автооценка — доля пройденных), проверяется антиплагиатом;
+    работодатель видит результат, сходство с другими решениями и вставки из буфера."""
+    ta = _own_task(db, cand, ta_id)
+    code_tasks.submit(db, ta, data.code, data.signals)
+    res = ta.run_results
+    notify(db, ta.task.company.owner_user_id, "task_submitted", f"Решение задачи «{ta.task.title}»",
+           f"Кандидат {cand.public_id}: тестов пройдено {res['passed']} из {res['total']}", "/employer/tasks")
     db.commit()
     return ix.task_view(ta)
 

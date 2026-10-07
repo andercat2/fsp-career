@@ -1,0 +1,389 @@
+{
+  "threshold": 0.85,
+  "tasks": [
+    {
+      "entrypoint": "normalize_phones",
+      "language": "python",
+      "solutions": 5,
+      "copies": 2
+    },
+    {
+      "entrypoint": "allowed_requests",
+      "language": "python",
+      "solutions": 3,
+      "copies": 2
+    },
+    {
+      "entrypoint": "plural",
+      "language": "javascript",
+      "solutions": 3,
+      "copies": 1
+    },
+    {
+      "entrypoint": "top_words",
+      "language": "python",
+      "solutions": 3,
+      "copies": 1
+    }
+  ],
+  "copies": {
+    "n": 6,
+    "detected": 6,
+    "detection_rate": 1.0,
+    "min": 0.857,
+    "mean": 0.976,
+    "items": [
+      {
+        "task": "normalize_phones",
+        "copy": "копия эталона",
+        "of": "эталон",
+        "disguise": "переименование, комментарий",
+        "similarity": 1.0
+      },
+      {
+        "task": "normalize_phones",
+        "copy": "копия демо-решения",
+        "of": "регулярное выражение (демо)",
+        "disguise": "переименование",
+        "similarity": 1.0
+      },
+      {
+        "task": "allowed_requests",
+        "copy": "копия эталона",
+        "of": "эталон",
+        "disguise": "переименование, комментарии",
+        "similarity": 1.0
+      },
+      {
+        "task": "allowed_requests",
+        "copy": "копия с балластом",
+        "of": "эталон",
+        "disguise": "переименование, неиспользуемые функция и вызовы логирования",
+        "similarity": 0.857
+      },
+      {
+        "task": "plural",
+        "copy": "копия эталона",
+        "of": "эталон",
+        "disguise": "переименование, фигурные скобки, комментарий",
+        "similarity": 1.0
+      },
+      {
+        "task": "top_words",
+        "copy": "копия эталона",
+        "of": "эталон",
+        "disguise": "переименование, комментарий",
+        "similarity": 1.0
+      }
+    ]
+  },
+  "independent_pairs": {
+    "n": 19,
+    "false_positives": 0,
+    "false_positive_rate": 0.0,
+    "max": 0.6,
+    "mean": 0.293,
+    "items": [
+      {
+        "task": "normalize_phones",
+        "a": "эталон",
+        "b": "регулярное выражение (демо)",
+        "similarity": 0.519
+      },
+      {
+        "task": "normalize_phones",
+        "a": "эталон",
+        "b": "частичное (демо)",
+        "similarity": 0.6
+      },
+      {
+        "task": "normalize_phones",
+        "a": "эталон",
+        "b": "fullmatch-шаблон",
+        "similarity": 0.318
+      },
+      {
+        "task": "normalize_phones",
+        "a": "эталон",
+        "b": "функциональный стиль",
+        "similarity": 0.176
+      },
+      {
+        "task": "normalize_phones",
+        "a": "регулярное выражение (демо)",
+        "b": "частичное (демо)",
+        "similarity": 0.3
+      },
+      {
+        "task": "normalize_phones",
+        "a": "регулярное выражение (демо)",
+        "b": "fullmatch-шаблон",
+        "similarity": 0.5
+      },
+      {
+        "task": "normalize_phones",
+        "a": "регулярное выражение (демо)",
+        "b": "функциональный стиль",
+        "similarity": 0.185
+      },
+      {
+        "task": "normalize_phones",
+        "a": "частичное (демо)",
+        "b": "fullmatch-шаблон",
+        "similarity": 0.2
+      },
+      {
+        "task": "normalize_phones",
+        "a": "частичное (демо)",
+        "b": "функциональный стиль",
+        "similarity": 0.4
+      },
+      {
+        "task": "normalize_phones",
+        "a": "fullmatch-шаблон",
+        "b": "функциональный стиль",
+        "similarity": 0.091
+      },
+      {
+        "task": "allowed_requests",
+        "a": "эталон",
+        "b": "фильтрация списка",
+        "similarity": 0.238
+      },
+      {
+        "task": "allowed_requests",
+        "a": "эталон",
+        "b": "бинарный поиск",
+        "similarity": 0.474
+      },
+      {
+        "task": "allowed_requests",
+        "a": "фильтрация списка",
+        "b": "бинарный поиск",
+        "similarity": 0.211
+      },
+      {
+        "task": "plural",
+        "a": "эталон",
+        "b": "switch",
+        "similarity": 0.053
+      },
+      {
+        "task": "plural",
+        "a": "эталон",
+        "b": "стрелочная функция",
+        "similarity": 0.105
+      },
+      {
+        "task": "plural",
+        "a": "switch",
+        "b": "стрелочная функция",
+        "similarity": 0.05
+      },
+      {
+        "task": "top_words",
+        "a": "эталон",
+        "b": "посимвольный разбор",
+        "similarity": 0.464
+      },
+      {
+        "task": "top_words",
+        "a": "эталон",
+        "b": "re.split + Counter",
+        "similarity": 0.464
+      },
+      {
+        "task": "top_words",
+        "a": "посимвольный разбор",
+        "b": "re.split + Counter",
+        "similarity": 0.214
+      }
+    ]
+  },
+  "corpus_check": {
+    "all_correct_or_expected_partial": true,
+    "items": [
+      {
+        "task": "normalize_phones",
+        "solution": "эталон",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "normalize_phones",
+        "solution": "регулярное выражение (демо)",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "normalize_phones",
+        "solution": "частичное (демо)",
+        "passed": 2,
+        "total": 6
+      },
+      {
+        "task": "normalize_phones",
+        "solution": "fullmatch-шаблон",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "normalize_phones",
+        "solution": "функциональный стиль",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "normalize_phones",
+        "solution": "копия эталона",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "normalize_phones",
+        "solution": "копия демо-решения",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "allowed_requests",
+        "solution": "эталон",
+        "passed": 5,
+        "total": 5
+      },
+      {
+        "task": "allowed_requests",
+        "solution": "фильтрация списка",
+        "passed": 5,
+        "total": 5
+      },
+      {
+        "task": "allowed_requests",
+        "solution": "бинарный поиск",
+        "passed": 5,
+        "total": 5
+      },
+      {
+        "task": "allowed_requests",
+        "solution": "копия эталона",
+        "passed": 5,
+        "total": 5
+      },
+      {
+        "task": "allowed_requests",
+        "solution": "копия с балластом",
+        "passed": 5,
+        "total": 5
+      },
+      {
+        "task": "plural",
+        "solution": "эталон",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "plural",
+        "solution": "switch",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "plural",
+        "solution": "стрелочная функция",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "plural",
+        "solution": "копия эталона",
+        "passed": 6,
+        "total": 6
+      },
+      {
+        "task": "top_words",
+        "solution": "эталон",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "task": "top_words",
+        "solution": "посимвольный разбор",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "task": "top_words",
+        "solution": "re.split + Counter",
+        "passed": 4,
+        "total": 4
+      },
+      {
+        "task": "top_words",
+        "solution": "копия эталона",
+        "passed": 4,
+        "total": 4
+      }
+    ]
+  },
+  "parameters": {
+    "k": 5,
+    "window": 4,
+    "sweep": [
+      {
+        "k": 4,
+        "window": 3,
+        "copies_detected": 5,
+        "copies_min": 0.828,
+        "independent_false_positives": 1,
+        "independent_max": 0.857,
+        "chosen": false
+      },
+      {
+        "k": 4,
+        "window": 4,
+        "copies_detected": 5,
+        "copies_min": 0.826,
+        "independent_false_positives": 1,
+        "independent_max": 0.864,
+        "chosen": false
+      },
+      {
+        "k": 5,
+        "window": 3,
+        "copies_detected": 6,
+        "copies_min": 0.857,
+        "independent_false_positives": 0,
+        "independent_max": 0.64,
+        "chosen": false
+      },
+      {
+        "k": 5,
+        "window": 4,
+        "copies_detected": 6,
+        "copies_min": 0.857,
+        "independent_false_positives": 0,
+        "independent_max": 0.6,
+        "chosen": true
+      },
+      {
+        "k": 6,
+        "window": 3,
+        "copies_detected": 5,
+        "copies_min": 0.759,
+        "independent_false_positives": 0,
+        "independent_max": 0.731,
+        "chosen": false
+      },
+      {
+        "k": 6,
+        "window": 4,
+        "copies_detected": 5,
+        "copies_min": 0.783,
+        "independent_false_positives": 0,
+        "independent_max": 0.739,
+        "chosen": false
+      }
+    ]
+  },
+  "runtime_sec": 3.1
+}

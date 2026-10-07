@@ -22,6 +22,7 @@ from app.models import (
 )
 from app.schemas import (
     ApplicationStatusIn,
+    CodeTaskSpec,
     CompanyIn,
     InvitationIn,
     Message,
@@ -33,6 +34,7 @@ from app.schemas import (
     VacancyIn,
 )
 from app.services import interactions as ix
+from app.services.sandbox import tasks as code_tasks
 from app.services.candidates import employer_view, percentile, privacy
 from app.services.fsp.scoring import fsp_summary
 from app.services.matching.ranking import (
@@ -614,7 +616,39 @@ def _task_out(db, t: Task) -> dict:
     return {"id": t.id, "title": t.title, "description": t.description, "specialization": t.specialization,
             "specialization_name": SPEC_NAMES.get(t.specialization), "grades": t.grades, "kind": t.kind,
             "expected_answer": t.expected_answer, "skills": t.skills, "time_estimate_min": t.time_estimate_min,
-            "is_active": t.is_active, "vacancy_id": t.vacancy_id, "created_at": t.created_at, "counts": counts}
+            "is_active": t.is_active, "vacancy_id": t.vacancy_id, "created_at": t.created_at, "counts": counts,
+            **code_tasks.task_payload(t, for_owner=True)}
+
+
+def _task_fields(data: TaskIn) -> dict:
+    """Поля задачи; для задачи с кодом эталон обязан пройти все тесты — иначе ошибка в тестах."""
+    if data.specialization not in SPEC_BY_CODE:
+        raise HTTPException(422, "Неизвестная специализация")
+    fields = data.model_dump()
+    fields["tests"] = [t.model_dump() for t in data.tests]
+    if data.kind != "code":
+        return fields | {"code_language": None, "entrypoint": None, "starter_code": None, "tests": [],
+                         "time_limit_ms": None, "compare": None, "reference_solution": None}
+    fields["time_limit_ms"] = data.time_limit_ms or 2000
+    fields["compare"] = data.compare or "exact"
+    if data.reference_solution:
+        res = code_tasks.check_reference(CodeTaskSpec(**{k: fields[k] for k in CodeTaskSpec.model_fields}))
+        if res["status"] != "ok" or res["passed"] != res["total"]:
+            bad = next((x for x in res["tests"] if not x["passed"]), None)
+            detail = res.get("error") or (f"тест №{bad['index'] + 1}: ожидалось {bad['expected']!r}, получено "
+                                          f"{bad['actual']!r}" + (f" ({bad['error']})" if bad.get("error") else "")
+                                          if bad else "")
+            raise HTTPException(422, f"Эталонное решение не проходит тесты: {detail}")
+    return fields
+
+
+@router.post("/tasks/check-code", summary="Проверить тесты задачи с кодом эталонным решением (без сохранения)",
+             responses={503: {"model": Message}})
+def check_code(data: CodeTaskSpec, comp: EmployerCompany):
+    """Эталон прогоняется в песочнице на всех тестах: так работодатель находит ошибки в ожидаемых ответах."""
+    if not data.reference_solution:
+        raise HTTPException(422, "Добавьте эталонное решение")
+    return code_tasks.check_reference(data)
 
 
 @router.get("/tasks", summary="Мои регулярные задания")
@@ -625,9 +659,7 @@ def list_tasks(comp: EmployerCompany, db: DB):
 
 @router.post("/tasks", status_code=201, summary="Создать короткое задание для кандидатов категории")
 def create_task(data: TaskIn, comp: EmployerCompany, db: DB):
-    if data.specialization not in SPEC_BY_CODE:
-        raise HTTPException(422, "Неизвестная специализация")
-    t = Task(company_id=comp.id, **data.model_dump())
+    t = Task(company_id=comp.id, **_task_fields(data))
     db.add(t)
     db.commit()
     return _task_out(db, t)
@@ -638,7 +670,7 @@ def update_task(tid: int, data: TaskIn, comp: EmployerCompany, db: DB):
     t = db.get(Task, tid)
     if not t or t.company_id != comp.id:
         raise HTTPException(404, "Задание не найдено")
-    for k, v in data.model_dump().items():
+    for k, v in _task_fields(data).items():
         setattr(t, k, v)
     db.commit()
     return _task_out(db, t)

@@ -148,8 +148,16 @@ class Task(Base):
     description: Mapped[str] = mapped_column(Text)
     specialization: Mapped[str] = mapped_column(String(40), index=True)
     grades: Mapped[list] = mapped_column(JSON, default=list)
-    kind: Mapped[str] = mapped_column(String(20), default="approach")  # solve | approach
+    kind: Mapped[str] = mapped_column(String(20), default="approach")  # solve | approach | code
     expected_answer: Mapped[str | None] = mapped_column(Text)  # для автопроверки (опционально)
+    # Задача с кодом: решение исполняется в песочнице на тестах работодателя
+    code_language: Mapped[str | None] = mapped_column(String(20))  # python | javascript
+    entrypoint: Mapped[str | None] = mapped_column(String(64))  # имя функции, которую пишет кандидат
+    starter_code: Mapped[str | None] = mapped_column(Text)
+    tests: Mapped[list] = mapped_column(JSON, default=list)  # [{args, expected, hidden, name}]
+    time_limit_ms: Mapped[int | None] = mapped_column(Integer)
+    compare: Mapped[str | None] = mapped_column(String(20))  # exact | unordered
+    reference_solution: Mapped[str | None] = mapped_column(Text)  # эталон работодателя: кандидату не показывается
     skills: Mapped[list] = mapped_column(JSON, default=list)
     time_estimate_min: Mapped[int] = mapped_column(Integer, default=30)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -169,6 +177,13 @@ class TaskAssignment(Base):
     auto_score: Mapped[float | None] = mapped_column(Float)
     score: Mapped[int | None] = mapped_column(Integer)  # 1..5 от работодателя
     feedback: Mapped[str | None] = mapped_column(Text)
+    # задача с кодом: черновик/решение, результаты прогонов, антиплагиат, сигналы (вставки из буфера и т. п.)
+    code: Mapped[str | None] = mapped_column(Text)
+    run_results: Mapped[dict | None] = mapped_column(JSON)
+    runs_count: Mapped[int | None] = mapped_column(Integer)
+    last_run_at: Mapped[datetime | None] = mapped_column(DateTime)
+    plagiarism: Mapped[dict | None] = mapped_column(JSON)
+    signals: Mapped[dict | None] = mapped_column(JSON)
     offered_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     due_at: Mapped[datetime | None] = mapped_column(DateTime)
     submitted_at: Mapped[datetime | None] = mapped_column(DateTime)

@@ -51,6 +51,13 @@ class Settings(BaseSettings):
     seed_demo: bool = True
     seed_candidates: int = 700
 
+    # Песочница для задач с кодом: в Docker — отдельный контейнер без сети, адрес unix:///путь/к/сокету (или
+    # http://хост:порт); без него код исполняется локальным подпроцессом с таймаутом — только для разработки и
+    # автотестов (sandbox_local)
+    sandbox_url: str | None = None
+    sandbox_token: str = "sandbox-demo-token"
+    sandbox_local: bool = True
+
     @property
     def fsp_internal(self) -> str:
         return (self.fsp_oidc_internal_url or self.fsp_oidc_issuer).rstrip("/")

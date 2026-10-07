@@ -60,19 +60,22 @@ def architecture():
     layers = [("API (REST, OpenAPI)", "auth · candidate · testing\nemployer · fsp · public · admin"),
               ("Тестирование", "IRT 3PL · CAT · 359 семейств заданий\nдетекторы утечки и дрейфа"),
               ("Подбор", "категории · сила профиля\nранжирование · объяснения"),
-              ("NLP и документы", "разбор вакансий и резюме (PDF)\nPDF-профиль кандидата"),
-              ("Интеграции", "OIDC-клиент ФСП ID · реестр ФСП\nSMTP · ATS-webhook")]
+              ("Задачи и интеграции", "задачи с кодом · антиплагиат\nФСП ID · реестр · SMTP · ATS"),
+              ("NLP и документы", "разбор вакансий и резюме (PDF)\nPDF-профиль кандидата")]
     for i, (t, s) in enumerate(layers):
         box(ax, 0.43, 0.66 - i * 0.148, 0.33, 0.125, t, s, color=DEEP, tsize=9.5)
     box(ax, 0.865, 0.66, 0.13, 0.17, "ФСП ID", "OIDC-провайдер\n(пути Keycloak)", color=PURPLE, fill="#F8F0FB")
     box(ax, 0.865, 0.40, 0.13, 0.17, "Реестр ФСП", "профили и\nдостижения", color=PURPLE, fill="#F8F0FB")
     box(ax, 0.865, 0.10, 0.13, 0.17, "PostgreSQL", "пользователи,\nпрофили, сессии,\nприглашения", color=DEEP)
-    box(ax, 0.19, 0.08, 0.16, 0.14, "Mailpit / SMTP", "коды подтверждения,\nуведомления", color=AMBER, fill="#FFF9EE")
+    box(ax, 0.19, 0.205, 0.16, 0.165, "Песочница", "Python · Node.js\nбез сети, read-only,\nлимиты CPU и памяти",
+        color=LAV, fill="#F4F3FC")
+    box(ax, 0.19, 0.03, 0.16, 0.13, "Mailpit / SMTP", "коды подтверждения,\nуведомления", color=AMBER, fill="#FFF9EE")
     arrow(ax, (0.13, 0.5), (0.19, 0.5), "HTTPS")
     arrow(ax, (0.35, 0.5), (0.43, 0.5), "/api")
     for y, label in ((0.745, "token,\nJWKS"), (0.485, "REST,\nAPI key"), (0.185, "SQL")):
         arrow(ax, (0.79, y), (0.865, y), label)
-    arrow(ax, (0.43, 0.09), (0.35, 0.15), "SMTP")
+    arrow(ax, (0.43, 0.29), (0.35, 0.29), "код,\nтокен")
+    arrow(ax, (0.43, 0.235), (0.35, 0.12), "SMTP")
     # браузер уходит на страницу входа ФСП ID и возвращается с кодом авторизации
     ax.plot([0.07, 0.07, 0.93, 0.93], [0.58, 0.95, 0.95, 0.86], color=PURPLE, lw=1.4, ls="--")
     ax.add_patch(FancyArrowPatch((0.93, 0.87), (0.93, 0.835), arrowstyle="-|>", mutation_scale=12, color=PURPLE,

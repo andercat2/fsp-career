@@ -273,17 +273,54 @@ class ShortlistIn(BaseModel):
     note: str | None = None
 
 
+class CodeTest(BaseModel):
+    args: list[Any] = Field(description="Аргументы функции — JSON-массив, например [[1, 2, 3], 2]")
+    expected: Any = Field(None, description="Ожидаемый результат (JSON)")
+    hidden: bool = Field(False, description="Скрытый тест: кандидат видит только «пройден / не пройден»")
+    name: str | None = Field(None, max_length=120)
+
+
+class CodeTaskSpec(BaseModel):
+    code_language: Literal["python", "javascript"] = "python"
+    entrypoint: str = Field("solve", pattern=r"^[A-Za-z_$][A-Za-z0-9_$]{0,63}$", description="Имя функции")
+    tests: list[CodeTest] = Field(default_factory=list, max_length=50)
+    time_limit_ms: int = Field(2000, ge=500, le=10000, description="Лимит времени на все тесты прогона")
+    compare: Literal["exact", "unordered"] = "exact"
+    reference_solution: str | None = Field(None, max_length=20000)
+
+
 class TaskIn(BaseModel):
     title: str = Field(min_length=3, max_length=255)
     description: str = Field(min_length=10, max_length=10000)
     specialization: str
     grades: list[GradeCode] = []
-    kind: Literal["solve", "approach"] = "approach"
+    kind: Literal["solve", "approach", "code"] = "approach"
+    code_language: Literal["python", "javascript"] | None = None
+    entrypoint: str | None = Field(None, pattern=r"^[A-Za-z_$][A-Za-z0-9_$]{0,63}$")
+    starter_code: str | None = Field(None, max_length=20000)
+    tests: list[CodeTest] = Field(default_factory=list, max_length=50)
+    time_limit_ms: int | None = Field(None, ge=500, le=10000)
+    compare: Literal["exact", "unordered"] | None = None
+    reference_solution: str | None = Field(None, max_length=20000)
     expected_answer: str | None = Field(None, description="Эталон/рубрика для предварительной автооценки")
     skills: list[str] = []
     time_estimate_min: int = Field(30, ge=5, le=480)
     vacancy_id: int | None = None
     is_active: bool = True
+
+    @model_validator(mode="after")
+    def _code_task(self):
+        if self.kind == "code":
+            if not self.code_language or not self.entrypoint:
+                raise ValueError("Для задачи с кодом укажите язык и имя функции")
+            if not any(not t.hidden for t in self.tests) or not any(t.hidden for t in self.tests):
+                raise ValueError("Нужен хотя бы один открытый тест (пример для кандидата) и хотя бы один скрытый")
+        return self
+
+
+class CodeRunIn(BaseModel):
+    code: str = Field(min_length=1, max_length=20000)
+    signals: dict[str, Any] | None = Field(None, description="Вставки из буфера, уходы со вкладки, время решения")
 
 
 class TaskSubmitIn(BaseModel):

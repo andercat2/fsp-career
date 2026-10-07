@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 19:08",
+  "generated_at": "2026-10-07 17:26",
   "vacancies": {
     "n": 28,
     "specialization_accuracy": {
@@ -88,12 +88,12 @@
         "about": 1.0
       }
     },
-    "experience_mae_years": 0.013,
+    "experience_mae_years": 0.015,
     "skills_f1": 0.957,
     "skills_f1_by_template": {
       "hh": 0.943,
       "free": 0.971
     }
   },
-  "runtime_sec": 4.7
+  "runtime_sec": 3.9
 }

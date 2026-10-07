@@ -3,6 +3,7 @@
 #   API (Swagger):     http://localhost:8080/docs
 #   Почта (Mailpit):   http://localhost:8025   — письма с кодами подтверждения
 #   ФСП ID (mock):     http://localhost:8090   — OIDC-провайдер (пути как у Keycloak) и реестр достижений
+#   Песочница кода:    контейнер без сети — бэкенд обращается к ней через Unix-сокет на общем томе
 name: fsp-career
 
 x-common: &common
@@ -48,6 +49,27 @@ services:
       - "8090:8090"
     mem_limit: 192m
 
+  sandbox:
+    <<: *common
+    build:
+      context: .
+      dockerfile: sandbox/Dockerfile
+    environment:
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:-sandbox-demo-token}
+      SANDBOX_CONCURRENCY: "2"
+    network_mode: none           # без сети: ни интернета, ни других контейнеров
+    volumes:
+      - sandbox-sock:/run/sandbox  # Unix-сокет сервиса — единственный вход в песочницу
+    init: true                   # init-процесс подбирает завершённые процессы решений
+    read_only: true              # файловая система только для чтения
+    tmpfs:
+      - /tmp:size=64m,mode=1733  # каталоги запусков в памяти; содержимое /tmp не перечисляется
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+
   backend:
     <<: *common
     build: ./backend
@@ -55,6 +77,9 @@ services:
       db: { condition: service_healthy }
       fsp-mock: { condition: service_started }
       mailpit: { condition: service_started }
+      sandbox: { condition: service_healthy }
+    volumes:
+      - sandbox-sock:/run/sandbox
     environment:
       ENVIRONMENT: docker
       DATABASE_URL: postgresql+psycopg://fsp:${POSTGRES_PASSWORD:-fsp_dev_password}@db:5432/fsp_career
@@ -72,6 +97,9 @@ services:
       FSP_REGISTRY_API_KEY: ${FSP_REGISTRY_API_KEY:-registry-demo-key}
       SEED_DEMO: ${SEED_DEMO:-true}
       SEED_CANDIDATES: ${SEED_CANDIDATES:-700}
+      SANDBOX_URL: unix:///run/sandbox/sandbox.sock
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:-sandbox-demo-token}
+      SANDBOX_LOCAL: "false"
     ports:
       - "8000:8000"
     mem_limit: 1g
@@ -87,3 +115,4 @@ services:
 
 volumes:
   pgdata:
+  sandbox-sock:

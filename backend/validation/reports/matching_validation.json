@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05 19:08",
+  "generated_at": "2026-10-07 17:26",
   "setup": {
     "candidates": 900,
     "needs": 60,
@@ -30,11 +30,11 @@
       "p10_ci95": 0.048
     },
     "ours": {
-      "p10": 0.837,
-      "ndcg10": 0.823,
+      "p10": 0.835,
+      "ndcg10": 0.822,
       "mrr": 0.956,
-      "irrelevant_in_top10": 0.035,
-      "inflated_in_top10": 0.027,
+      "irrelevant_in_top10": 0.038,
+      "inflated_in_top10": 0.028,
       "returned": 149.067,
       "needs_with_5plus_relevant_in_top10": 0.983,
       "p10_ci95": 0.04
@@ -50,10 +50,10 @@
       "p10_ci95": 0.039
     },
     "ours_no_verification": {
-      "p10": 0.857,
-      "ndcg10": 0.853,
+      "p10": 0.855,
+      "ndcg10": 0.852,
       "mrr": 0.967,
-      "irrelevant_in_top10": 0.027,
+      "irrelevant_in_top10": 0.028,
       "inflated_in_top10": 0.027,
       "returned": 149.067,
       "needs_with_5plus_relevant_in_top10": 0.983,
@@ -61,20 +61,20 @@
     },
     "ours_self_declared_category": {
       "p10": 0.717,
-      "ndcg10": 0.745,
-      "mrr": 0.867,
-      "irrelevant_in_top10": 0.05,
-      "inflated_in_top10": 0.205,
+      "ndcg10": 0.748,
+      "mrr": 0.871,
+      "irrelevant_in_top10": 0.048,
+      "inflated_in_top10": 0.198,
       "returned": 154.65,
       "needs_with_5plus_relevant_in_top10": 0.933,
       "p10_ci95": 0.05
     },
     "ours_nlp": {
-      "p10": 0.837,
+      "p10": 0.835,
       "ndcg10": 0.822,
       "mrr": 0.964,
-      "irrelevant_in_top10": 0.038,
-      "inflated_in_top10": 0.025,
+      "irrelevant_in_top10": 0.04,
+      "inflated_in_top10": 0.027,
       "returned": 149.067,
       "needs_with_5plus_relevant_in_top10": 0.983,
       "p10_ci95": 0.04
@@ -94,10 +94,10 @@
       "irrelevant_in_top10": 0.103
     },
     "ours": {
-      "p10": 0.833,
-      "ndcg10": 0.803,
+      "p10": 0.832,
+      "ndcg10": 0.801,
       "mrr": 0.956,
-      "irrelevant_in_top10": 0.06
+      "irrelevant_in_top10": 0.062
     },
     "ours_no_fsp": {
       "p10": 0.837,
@@ -106,22 +106,22 @@
       "irrelevant_in_top10": 0.057
     },
     "ours_no_verification": {
-      "p10": 0.852,
-      "ndcg10": 0.834,
+      "p10": 0.85,
+      "ndcg10": 0.832,
       "mrr": 0.967,
-      "irrelevant_in_top10": 0.053
+      "irrelevant_in_top10": 0.055
     },
     "ours_self_declared_category": {
       "p10": 0.717,
-      "ndcg10": 0.714,
-      "mrr": 0.867,
-      "irrelevant_in_top10": 0.132
+      "ndcg10": 0.716,
+      "mrr": 0.871,
+      "irrelevant_in_top10": 0.128
     },
     "ours_nlp": {
-      "p10": 0.833,
-      "ndcg10": 0.803,
+      "p10": 0.832,
+      "ndcg10": 0.802,
       "mrr": 0.964,
-      "irrelevant_in_top10": 0.06
+      "irrelevant_in_top10": 0.062
     }
   },
   "nlp_end_to_end": {
@@ -129,8 +129,8 @@
     "grades_exact": 1.0
   },
   "latency_ms": {
-    "mean": 40.277,
-    "p95": 67.224,
+    "mean": 43.226,
+    "p95": 75.058,
     "pool": "до 900 кандидатов, без кэширования"
   },
   "example": {
@@ -283,5 +283,5 @@
       ]
     }
   },
-  "runtime_sec": 23.5
+  "runtime_sec": 25.2
 }
