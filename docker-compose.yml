@@ -101,6 +101,12 @@ services:
       SANDBOX_URL: unix:///run/sandbox/sandbox.sock
       SANDBOX_TOKEN: ${SANDBOX_TOKEN:-sandbox-demo-token}
       SANDBOX_LOCAL: "false"
+      # Черновики заданий от LLM (админка): по умолчанию — Ollama на хосте; недоступна — демо-режим
+      LLM_BASE_URL: ${LLM_BASE_URL-http://host.docker.internal:11434/v1}
+      LLM_MODEL: ${LLM_MODEL:-qwen3:14b}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000"
     mem_limit: 1g

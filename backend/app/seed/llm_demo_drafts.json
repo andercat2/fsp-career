@@ -1,0 +1,1593 @@
+{
+ "items": [
+  {
+   "domain": "algorithms",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Реализация очереди с использованием стеков",
+   "prompt": "Какую комбинацию структур данных можно использовать для реализации очереди с поддержкой операций добавления элемента в конец и извлечения элемента из начала за O(1) в худшем случае?",
+   "correct": "Два стека",
+   "explanation": "Два стека позволяют реализовать очередь за O(1) за счёт переноса элементов между стеками при извлечении.",
+   "code": "class Queue {\n    constructor() {\n        this.stack1 = [];\n        this.stack2 = [];\n    }\n    enqueue(element) {\n        this.stack1.push(element);\n    }\n    dequeue() {\n        if (this.stack2.length === 0) {\n            while (this.stack1.length > 0) {\n                this.stack2.push(this.stack1.pop());\n            }\n        }\n        return this.stack2.pop();\n    }\n}",
+   "code_lang": "javascript",
+   "distractors": [
+    "Один стек",
+    "Двусвязный список",
+    "Хеш-таблица"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     0
+    ],
+    "issues": [
+     "Вариант 3 (два стека) не обеспечивает O(1) в худшем случае для dequeue. При перекладывании элементов из stack1 в stack2 операция занимает O(n) времени, если stack2 пуст. Это противоречит условию задачи.",
+     "Вариант 0 (двусвязный список) корректно реализует очередь с O(1) для enqueue и dequeue в худшем случае, что делает его правильным ответом."
+    ],
+    "options": [
+     "Двусвязный список",
+     "Один стек",
+     "Хеш-таблица",
+     "Два стека"
+    ]
+   }
+  },
+  {
+   "domain": "algorithms",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Поддержка медианы потока данных",
+   "prompt": "Какая комбинация структур данных позволяет поддерживать медиану потока данных с операциями добавления элементов и получения медианы за O(1)?",
+   "correct": "Максимальная куча и минимальная куча",
+   "explanation": "Две кучи позволяют поддерживать медиану, сохраняя верхние элементы в противоположных кучах и балансируя их размеры.",
+   "code": "import heapq\nclass MedianFinder:\n    def __init__(self):\n        self.max_heap = []\n        self.min_heap = []\n    def addNum(self, num):\n        heapq.heappush(self.max_heap, -num)\n        heapq.heappush(self.min_heap, -heapq.heappop(self.max_heap))\n        if len(self.max_heap) < len(self.min_heap):\n            heapq.heappush(self.max_heap, -heapq.heappop(self.min_heap))\n    def findMedian(self):\n        if len(self.max_heap) == len(self.min_heap):\n            return (-self.max_heap[0] + self.min_heap[0]) / 2\n        else:\n            return -self.max_heap[0]",
+   "code_lang": "python",
+   "distractors": [
+    "Двоичная куча",
+    "Хеш-таблица",
+    "Сбалансированное дерево"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Двоичная куча",
+     "Хеш-таблица",
+     "Максимальная куча и минимальная куча",
+     "Сбалансированное дерево"
+    ]
+   }
+  },
+  {
+   "domain": "python",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Сортировка с пользовательским ключом",
+   "prompt": "Какое значение будет у переменной x после выполнения следующего кода?",
+   "correct": "[(3, 1), (2, 2), (1, 3)]",
+   "explanation": "Сортировка выполняется по второму элементу кортежей, поэтому порядок: (3,1) → (2,2) → (1,3).",
+   "code": "a = [(1, 3), (2, 2), (3, 1)]\nx = sorted(a, key=lambda t: t[1])",
+   "code_lang": "python",
+   "distractors": [
+    "[(1, 3), (2, 2), (3, 1)]",
+    "[(3, 1), (1, 3), (2, 2)]",
+    "[(2, 2), (3, 1), (1, 3)]"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "[(2, 2), (3, 1), (1, 3)]",
+     "[(1, 3), (2, 2), (3, 1)]",
+     "[(3, 1), (2, 2), (1, 3)]",
+     "[(3, 1), (1, 3), (2, 2)]"
+    ]
+   }
+  },
+  {
+   "domain": "python",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Типы данных и аннотации",
+   "prompt": "Какой из следующих вариантов корректно аннотирует тип возвращаемого значения функции, которая возвращает словарь, где ключи — строки, а значения — списки целых чисел?",
+   "correct": "A",
+   "explanation": "Верный ответ — A, так как Dict[str, List[int]] указывает, что значения — списки целых чисел, что соответствует возвращаемому словарю.",
+   "code": "def get_data() -> ...:\n    return {\"a\": [1, 2, 3], \"b\": [4, 5]}",
+   "code_lang": "python",
+   "distractors": [
+    "B",
+    "C",
+    "D"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "В вопросе не указаны сами варианты аннотаций (A, B, C, D), что делает невозможным проверку корректности выбора автора.",
+     "Отсутствие информации о содержании вариантов ответов (A-D) приводит к неопределенности в оценке правильности выбора автора."
+    ],
+    "options": [
+     "D",
+     "C",
+     "B",
+     "A"
+    ]
+   }
+  },
+  {
+   "domain": "java",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Проверка типов с помощью instanceof",
+   "prompt": "Что выведет код?",
+   "correct": "true",
+   "explanation": "Оператор instanceof проверяет, является ли объект экземпляром указанного класса. Поскольку переменная a ссылается на объект класса Cat, результат будет true.",
+   "code": "public class Animal {}\npublic class Cat extends Animal {}\npublic class Test {\n    public static void main(String[] args) {\n        Animal a = new Cat();\n        System.out.println(a instanceof Cat);\n    }\n}",
+   "code_lang": "java",
+   "distractors": [
+    "false",
+    "Ошибка компиляции",
+    "NullPointerException"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Ошибка компиляции",
+     "false",
+     "NullPointerException",
+     "true"
+    ]
+   }
+  },
+  {
+   "domain": "java",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Сериализация объектов",
+   "prompt": "Что произойдёт при выполнении следующего кода?",
+   "correct": "Исключение NotSerializableException",
+   "explanation": "Класс MyClass не реализует интерфейс Serializable, поэтому попытка сериализовать его объект вызывает NotSerializableException во время выполнения.",
+   "code": "class MyClass {\n    private int data;\n}\npublic class Test {\n    public static void main(String[] args) {\n        MyClass obj = new MyClass();\n        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(\"test.ser\"))) {\n            oos.writeObject(obj);\n        } catch (IOException e) {\n            e.printStackTrace();\n        }\n    }\n}",
+   "code_lang": "java",
+   "distractors": [
+    "Ошибка компиляции",
+    "Успешное выполнение",
+    "NullPointerException"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Успешное выполнение",
+     "Ошибка компиляции",
+     "Исключение NotSerializableException",
+     "NullPointerException"
+    ]
+   }
+  },
+  {
+   "domain": "go",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Функции и их типы",
+   "prompt": "Какой тип у параметра fn в следующей функции?",
+   "correct": "func(int) int",
+   "explanation": "Тип функции в Go определяется её сигнатурой — количеством и типом параметров, а также типом возвращаемых значений. В данном случае функция принимает один параметр int и возвращает int.",
+   "code": "func apply(fn func(int) int, x int) int {\n    return fn(x)\n}",
+   "code_lang": "go",
+   "distractors": [
+    "func(int) (int, error)",
+    "func(int) bool",
+    "func(int, int) int"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "func(int) bool",
+     "func(int) (int, error)",
+     "func(int, int) int",
+     "func(int) int"
+    ]
+   }
+  },
+  {
+   "domain": "go",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Функции в Go как значения и их передача",
+   "prompt": "Какой из фрагментов кода корректно демонстрирует использование функции, возвращающей другую функцию, для обработки ошибок?",
+   "correct": "getHandler() возвращает функцию, которая обрабатывает ошибку и возвращает её вызывающему коду",
+   "explanation": "Верный ответ демонстрирует, как возвращаемая функция обрабатывает ошибку и возвращает её, что позволяет внешнему коду корректно её обработать.",
+   "code": "package main\nimport (\n\t\"fmt\"\n)\nfunc getHandler() func(string) error {\n\treturn func(s string) error {\n\t\tif s == \"\" {\n\t\t\treturn fmt.Errorf(\"empty string\")\n\t\t}\n\t\treturn nil\n\t}\n}\nfunc main() {\n\thandler := getHandler()\n\terr := handler(\"\")\n\tfmt.Println(err)\n}",
+   "code_lang": "go",
+   "distractors": [
+    "getHandler() возвращает функцию, которая игнорирует ошибки и всегда возвращает nil",
+    "getHandler() возвращает функцию, которая не может быть вызвана из main()",
+    "getHandler() возвращает функцию, которая не принимает аргументы и возвращает только строку"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "getHandler() возвращает функцию, которая обрабатывает ошибку и возвращает её вызывающему коду",
+     "getHandler() возвращает функцию, которая не может быть вызвана из main()",
+     "getHandler() возвращает функцию, которая не принимает аргументы и возвращает только строку",
+     "getHandler() возвращает функцию, которая игнорирует ошибки и всегда возвращает nil"
+    ]
+   }
+  },
+  {
+   "domain": "javascript",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Функции высшего порядка",
+   "prompt": "Какой из следующих примеров демонстрирует использование функции высшего порядка?",
+   "correct": "B",
+   "explanation": "Функция `applyOperation` принимает другую функцию `operation` в качестве аргумента, что является определением функции высшего порядка.",
+   "code": "function applyOperation(a, b, operation) {\n  return operation(a, b);\n}\nconst result = applyOperation(2, 3, (x, y) => x + y);",
+   "code_lang": "javascript",
+   "distractors": [
+    "A",
+    "C",
+    "D"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "В вопросе не указаны варианты ответов (A, B, C, D), что делает его некорректным для проверки. В коде приведён пример функции высшего порядка, но без вариантов невозможно определить, какой из них соответствует коду."
+    ],
+    "options": [
+     "A",
+     "B",
+     "C",
+     "D"
+    ]
+   }
+  },
+  {
+   "domain": "javascript",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Object.defineProperty и перечисляемость свойств",
+   "prompt": "Какое свойство объекта не будет возвращено методом Object.keys() при использовании Object.defineProperty?",
+   "correct": "Установка enumerable: false",
+   "explanation": "Свойство с enumerable: false не участвует в перечислении, поэтому Object.keys() его игнорирует.",
+   "code": "const obj = {};\nObject.defineProperty(obj, 'secret', { value: 42 });\nconsole.log(Object.keys(obj));",
+   "code_lang": "javascript",
+   "distractors": [
+    "Установка configurable: false",
+    "Использование Object.freeze",
+    "Использование Object.seal"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Использование Object.seal",
+     "Использование Object.freeze",
+     "Установка enumerable: false",
+     "Установка configurable: false"
+    ]
+   }
+  },
+  {
+   "domain": "typescript",
+   "level": 2,
+   "specialization": "frontend",
+   "topic": "Типы массивов",
+   "prompt": "Какой тип у параметра numbers в следующей функции?",
+   "correct": "number[]",
+   "explanation": "number[] — это синтаксис для массива чисел в TypeScript, в то время как Array<number> эквивалентен, но в данном контексте правильный ответ — number[].",
+   "code": "function sum(numbers: number[]): number {\n  return numbers.reduce((acc, num) => acc + num, 0);\n}",
+   "code_lang": "typescript",
+   "distractors": [
+    "Array<number>",
+    "[number]",
+    "number"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     1
+    ],
+    "issues": [
+     "В TypeScript типы number[] и Array<number> эквивалентны. Вариант 1 также верен, но автор не указал его как правильный."
+    ],
+    "options": [
+     "[number]",
+     "Array<number>",
+     "number",
+     "number[]"
+    ]
+   }
+  },
+  {
+   "domain": "typescript",
+   "level": 4,
+   "specialization": "frontend",
+   "topic": "Перегрузки функций",
+   "prompt": "Что представляет собой тип функции `example` в следующем коде?",
+   "correct": "Это функция с двумя перегрузками, принимающими разные аргументы",
+   "explanation": "Перегрузки функций позволяют определить несколько сигнатур для одной функции, каждая из которых соответствует разным наборам аргументов.",
+   "code": "function example(a: string): number;\nfunction example(a: number, b: number): string;\nfunction example(a: any, b?: any): any {\n  return a + (b || '');\n}",
+   "code_lang": "typescript",
+   "distractors": [
+    "Это функция, которая может принимать либо строку, либо число и возвращать соответствующий тип",
+    "Это функция, которая принимает один обязательный аргумент и один необязательный",
+    "Это функция, которая возвращает `any` в зависимости от количества аргументов"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Это функция, которая принимает один обязательный аргумент и один необязательный",
+     "Это функция, которая может принимать либо строку, либо число и возвращать соответствующий тип",
+     "Это функция, которая возвращает `any` в зависимости от количества аргументов",
+     "Это функция с двумя перегрузками, принимающими разные аргументы"
+    ]
+   }
+  },
+  {
+   "domain": "react",
+   "level": 2,
+   "specialization": "frontend",
+   "topic": "useCallback",
+   "prompt": "Зачем использовать useCallback при передаче функции в дочерний компонент?",
+   "correct": "Чтобы избежать лишних рендеров дочернего компонента из-за изменения ссылки на функцию",
+   "explanation": "useCallback возвращает стабильную ссылку на функцию, что предотвращает ненужные перерендеры дочерних компонентов, если они зависят от этой функции.",
+   "code": "const Parent = () => {\n  const handleClick = useCallback(() => {\n    console.log('Clicked');\n  }, []);\n  return <Child onClick={handleClick} />;\n};",
+   "code_lang": "jsx",
+   "distractors": [
+    "Чтобы оптимизировать производительность при большом количестве вызовов",
+    "Чтобы хранить значение между рендерами компонента",
+    "Чтобы упростить чтение кода и его структурирование"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     3
+    ],
+    "issues": [
+     "Вариант 3 также частично верен, так как useCallback может оптимизировать производительность при частых вызовах функции, если она используется в контексте, где это критично (например, в событиях). Однако основная причина использования useCallback в данном случае — это предотвращение лишних рендеров дочернего компонента (вариант 2).",
+     "Вариант 0 неверен, так как useCallback не хранит значения между рендерами, а memoизирует функции."
+    ],
+    "options": [
+     "Чтобы хранить значение между рендерами компонента",
+     "Чтобы упростить чтение кода и его структурирование",
+     "Чтобы избежать лишних рендеров дочернего компонента из-за изменения ссылки на функцию",
+     "Чтобы оптимизировать производительность при большом количестве вызовов"
+    ]
+   }
+  },
+  {
+   "domain": "react",
+   "level": 4,
+   "specialization": "frontend",
+   "topic": "Ленивая загрузка компонентов",
+   "prompt": "Какой фрагмент кода позволяет реализовать ленивую загрузку компонентов и отображение заглушки во время загрузки?",
+   "correct": "Использование React.lazy и Suspense",
+   "explanation": "React.lazy и Suspense позволяют лениво загружать компоненты и отображать заглушку во время их загрузки.",
+   "code": "import React, { lazy, Suspense } from 'react';\nconst LazyComponent = lazy(() => import('./LazyComponent'));\nfunction App() {\n  return (\n    <Suspense fallback={<div>Загрузка...</div>}>\n      <LazyComponent />\n    </Suspense>\n  );\n}\nexport default App;",
+   "code_lang": "javascript",
+   "distractors": [
+    "Использование useEffect для асинхронной загрузки",
+    "Использование useCallback для мемоизации компонентов",
+    "Обычный импорт компонента без React.lazy"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Использование useCallback для мемоизации компонентов",
+     "Обычный импорт компонента без React.lazy",
+     "Использование useEffect для асинхронной загрузки",
+     "Использование React.lazy и Suspense"
+    ]
+   }
+  },
+  {
+   "domain": "web_layout",
+   "level": 2,
+   "specialization": "frontend",
+   "topic": "CSS псевдоклассы",
+   "prompt": "Какой CSS-селектор применяется к последнему элементу в списке?",
+   "correct": ":last-child",
+   "explanation": "Селектор :last-child выбирает последний дочерний элемент, независимо от его типа, в отличие от :last-of-type, который зависит от типа элемента.",
+   "code": "<ul>\n  <li>Пункт 1</li>\n  <li>Пункт 2</li>\n  <li>Пункт 3</li>\n</ul>",
+   "code_lang": "html",
+   "distractors": [
+    ":last-of-type",
+    ":nth-child(1)",
+    ":first-child"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     3
+    ],
+    "issues": [
+     "Вариант 3 (:last-of-type) также верен, так как в данном случае в списке только элементы <li>, и селектор :last-of-type будет применяться к последнему <li>."
+    ],
+    "options": [
+     ":last-child",
+     ":first-child",
+     ":nth-child(1)",
+     ":last-of-type"
+    ]
+   }
+  },
+  {
+   "domain": "web_layout",
+   "level": 4,
+   "specialization": "frontend",
+   "topic": "Flexbox: порядок элементов",
+   "prompt": "Какой из следующих вариантов объясняет, почему элементы остаются в исходном порядке при использовании свойства order в Flexbox с одинаковыми значениями?",
+   "correct": "B",
+   "explanation": "При одинаковых значениях order элементы остаются в порядке, определённом исходным порядком в HTML.",
+   "code": "<div class=\"container\">\n  <div class=\"item\">1</div>\n  <div class=\"item\">2</div>\n</div>\n.container {\n  display: flex;\n  flex-direction: column;\n}\n.item {\n  order: 2;\n}",
+   "code_lang": "html",
+   "distractors": [
+    "A",
+    "C",
+    "D"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "В вопросе не указаны тексты вариантов ответов (A, B, C, D), что делает его неполным и не позволяет корректно проверить правильность выбора автора.",
+     "Отсутствие контекста вариантов ответов затрудняет оценку, почему автор считает верным вариант 0."
+    ],
+    "options": [
+     "B",
+     "D",
+     "C",
+     "A"
+    ]
+   }
+  },
+  {
+   "domain": "browser",
+   "level": 2,
+   "specialization": "frontend",
+   "topic": "Flexbox",
+   "prompt": "Какое CSS-свойство задаёт направление оси для элементов flex-контейнера?",
+   "correct": "flex-direction",
+   "explanation": "flex-direction определяет ось, вдоль которой элементы выстраиваются в контейнере (row или column).",
+   "code": ".container { display: flex; }",
+   "code_lang": "css",
+   "distractors": [
+    "flex-wrap",
+    "align-items",
+    "justify-content"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "flex-wrap",
+     "flex-direction",
+     "justify-content",
+     "align-items"
+    ]
+   }
+  },
+  {
+   "domain": "browser",
+   "level": 4,
+   "specialization": "frontend",
+   "topic": "Обработка ошибок в асинхронном коде",
+   "prompt": "Что произойдёт, если в приведённом коде возникнет исключение в асинхронной функции и оно не будет обработано?",
+   "correct": "Ошибка будет отображена в консоли, но выполнение кода продолжится.",
+   "explanation": "В асинхронных функциях неперехваченные ошибки не прерывают выполнение, но отображаются в консоли.",
+   "code": "async function fetchData() {\n  throw new Error('Ошибка');\n}\nfetchData();",
+   "code_lang": "javascript",
+   "distractors": [
+    "Ошибка будет отображена в консоли, и выполнение кода остановится.",
+    "Ошибка не будет отображена в консоли, и выполнение кода продолжится.",
+    "Ошибка не будет отображена в консоли, и выполнение кода остановится."
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     0
+    ],
+    "issues": [
+     "неверный ключ (автор считает 2 верным, но на самом деле 0)",
+     "ошибка в коде: исключение в асинхронной функции не будет отображено в консоли, если не обработано, и выполнение продолжится"
+    ],
+    "options": [
+     "Ошибка не будет отображена в консоли, и выполнение кода продолжится.",
+     "Ошибка будет отображена в консоли, и выполнение кода остановится.",
+     "Ошибка будет отображена в консоли, но выполнение кода продолжится.",
+     "Ошибка не будет отображена в консоли, и выполнение кода остановится."
+    ]
+   }
+  },
+  {
+   "domain": "sql",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "CASE WHEN",
+   "prompt": "Какой результат вернет следующий SQL-запрос?",
+   "correct": "A",
+   "explanation": "CASE WHEN оценивает условия в порядке их записи и возвращает первый подходящий результат.",
+   "code": "SELECT\n    CASE\n        WHEN count_orders > 10 THEN 'VIP'\n        WHEN count_orders > 5 THEN 'Regular'\n        ELSE 'New'\n    END AS status\nFROM (\n    SELECT user_id, COUNT(*) AS count_orders\n    FROM orders\n    GROUP BY user_id\n) AS user_orders;",
+   "code_lang": "sql",
+   "distractors": [
+    "B",
+    "C",
+    "D"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "Варианты ответов (0. D, 1. C, 2. B, 3. A) не соответствуют стандартной форме тестовых вопросов, где варианты обычно обозначаются буквами (A, B, C, D) без числовых индексов. Это может вызвать путаницу у пользователей.",
+     "Отсутствует ясная связь между результатом SQL-запроса и вариантами ответов. Результат запроса — столбец с значениями 'VIP', 'Regular', 'New', но варианты ответов не содержат этих значений. Это делает вопрос некорректным."
+    ],
+    "options": [
+     "D",
+     "C",
+     "B",
+     "A"
+    ]
+   }
+  },
+  {
+   "domain": "sql",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "CTE (Common Table Expressions)",
+   "prompt": "Какое утверждение о CTE верно?",
+   "correct": "CTE может быть использован несколько раз в одном запросе",
+   "explanation": "CTE можно использовать несколько раз в одном запросе, в отличие от подзапроса, который выполняется при каждом обращении.",
+   "code": "WITH cte AS (SELECT * FROM users WHERE active = true)\nSELECT * FROM cte;\nSELECT * FROM (SELECT * FROM users WHERE active = true) AS subquery;",
+   "code_lang": "sql",
+   "distractors": [
+    "CTE не может содержать агрегатные функции",
+    "CTE не поддерживается в SQL Server",
+    "CTE работает только с JOIN"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "CTE может быть использован несколько раз в одном запросе",
+     "CTE не поддерживается в SQL Server",
+     "CTE работает только с JOIN",
+     "CTE не может содержать агрегатные функции"
+    ]
+   }
+  },
+  {
+   "domain": "databases",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Обработка ошибок в транзакциях",
+   "prompt": "Что произойдет с данными, если транзакция завершится без явного вызова команды COMMIT?",
+   "correct": "Изменения будут откатаны",
+   "explanation": "Без явного COMMIT транзакция не фиксируется, и все изменения откатываются при завершении транзакции.",
+   "code": "BEGIN TRANSACTION;\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\n-- Ошибка, не вызван COMMIT",
+   "code_lang": "sql",
+   "distractors": [
+    "Данные будут сохранены в базе",
+    "Изменения будут игнорированы",
+    "Транзакция будет повторена автоматически"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Изменения будут игнорированы",
+     "Транзакция будет повторена автоматически",
+     "Данные будут сохранены в базе",
+     "Изменения будут откатаны"
+    ]
+   }
+  },
+  {
+   "domain": "databases",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Savepoints в транзакциях",
+   "prompt": "Разработчик пишет код, в котором нужно выполнить два обновления в транзакции. Если произойдет ошибка при втором обновлении, необходимо откатить только его, сохранив первое. Какой фрагмент кода соответствует правильному решению?",
+   "correct": "Использование savepoint и отката до него при ошибке",
+   "explanation": "Savepoint позволяет откатить часть транзакции, сохранив изменения, выполненные до этой точки, что соответствует требованию задачи.",
+   "code": "try:\n    db.begin()\n    db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\")\n    savepoint = db.savepoint()\n    db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\")\n    db.commit()\nexcept:\n    db.rollback_to(savepoint)\n    raise",
+   "code_lang": "python",
+   "distractors": [
+    "db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\"); db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\"); db.commit()",
+    "db.begin(); db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\"); db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\"); db.rollback()",
+    "db.begin(); db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\"); db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\"); db.commit() if not error else db.rollback()"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Использование savepoint и отката до него при ошибке",
+     "db.begin(); db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\"); db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\"); db.commit() if not error else db.rollback()",
+     "db.begin(); db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\"); db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\"); db.rollback()",
+     "db.execute(\"UPDATE table1 SET col1 = 'value' WHERE id = 1\"); db.execute(\"UPDATE table2 SET col2 = 'value' WHERE id = 2\"); db.commit()"
+    ]
+   }
+  },
+  {
+   "domain": "http_api",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Использование заголовков HTTP для указания формата данных",
+   "prompt": "Какой заголовок HTTP следует использовать, чтобы указать серверу, что клиент ожидает получить данные в формате JSON?",
+   "correct": "Accept: application/json",
+   "explanation": "Заголовок Accept указывает формат данных, которые клиент может обрабатывать, в отличие от Content-Type, который задаёт формат данных в теле запроса.",
+   "code": "GET /users/42\nAccept: application/json\nContent-Type: application/json",
+   "code_lang": "http",
+   "distractors": [
+    "Content-Type: application/json",
+    "Accept-Charset: utf-8",
+    "Content-Type: text/json"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Content-Type: application/json",
+     "Accept-Charset: utf-8",
+     "Accept: application/json",
+     "Content-Type: text/json"
+    ]
+   }
+  },
+  {
+   "domain": "http_api",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "CORS и заголовки ответов",
+   "prompt": "Какой заголовок должен быть установлен в ответе на CORS-запрос, чтобы разрешить доступ к ресурсу с определенного домена?",
+   "correct": "Access-Control-Allow-Origin",
+   "explanation": "Заголовок Access-Control-Allow-Origin указывает, с каких доменов разрешено делать запросы к ресурсу, что является ключевым механизмом CORS.",
+   "code": null,
+   "code_lang": null,
+   "distractors": [
+    "Content-Security-Policy",
+    "X-Content-Type-Options",
+    "X-Frame-Options"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Content-Security-Policy",
+     "Access-Control-Allow-Origin",
+     "X-Frame-Options",
+     "X-Content-Type-Options"
+    ]
+   }
+  },
+  {
+   "domain": "architecture",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Bulkhead Pattern",
+   "prompt": "Какой паттерн используется для изоляции компонентов и предотвращения каскадных сбоев в микросервисной архитектуре?",
+   "correct": "Bulkhead",
+   "explanation": "Bulkhead изолирует компоненты, предотвращая каскадные сбои за счёт ограничения параллельных вызовов.",
+   "code": "Bulkhead.of(10);",
+   "code_lang": "java",
+   "distractors": [
+    "Circuit Breaker",
+    "Rate Limiting",
+    "Load Balancing"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Bulkhead",
+     "Load Balancing",
+     "Circuit Breaker",
+     "Rate Limiting"
+    ]
+   }
+  },
+  {
+   "domain": "architecture",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Асинхронная обработка и очереди сообщений",
+   "prompt": "Приложение на Java, использующее синхронные вызовы между сервисами, начинает медленно отвечать при увеличении нагрузки. Какое решение наиболее эффективно для улучшения производительности и масштабируемости?",
+   "correct": "Внедрить асинхронную обработку с использованием очередей сообщений",
+   "explanation": "Асинхронная обработка через очереди позволяет разгрузить основной поток, уменьшить блокировки и повысить масштабируемость, в отличие от синхронных вызовов, которые создают узкие места.",
+   "code": "public class UserService {\n    public void processOrder(Order order) {\n        InventoryService.checkStock(order.getProduct());\n        PaymentService.charge(order.getUser());\n        ShippingService.dispatch(order);\n    }\n}",
+   "code_lang": "java",
+   "distractors": [
+    "Увеличить количество инстансов приложения",
+    "Использовать кэширование результатов запросов",
+    "Оптимизировать SQL-запросы"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Использовать кэширование результатов запросов",
+     "Оптимизировать SQL-запросы",
+     "Увеличить количество инстансов приложения",
+     "Внедрить асинхронную обработку с использованием очередей сообщений"
+    ]
+   }
+  },
+  {
+   "domain": "security",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "XSS (Cross-Site Scripting)",
+   "prompt": "Какой метод защиты используется в данном фрагменте кода для предотвращения XSS-атак?",
+   "correct": "Экранирование специальных символов в пользовательском вводе",
+   "explanation": "Экранирование HTML-символов предотвращает выполнение вредоносного кода, вставленного через ввод пользователя.",
+   "code": "def escape_html(text):\n    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('",
+   "code_lang": "python",
+   "distractors": [
+    "Использование HTTPS для передачи данных",
+    "Хранение данных в зашифрованном виде",
+    "Проверка длины ввода"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Использование HTTPS для передачи данных",
+     "Проверка длины ввода",
+     "Экранирование специальных символов в пользовательском вводе",
+     "Хранение данных в зашифрованном виде"
+    ]
+   }
+  },
+  {
+   "domain": "security",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Безопасность обработки загружаемых файлов",
+   "prompt": "Какая мера обеспечивает защиту от загрузки вредоносных файлов при обработке загруженных пользователем файлов?",
+   "correct": "C",
+   "explanation": "Проверка MIME-типа и содержимого файла с использованием функции finfo позволяет точно определить тип файла и его содержимое, что предотвращает загрузку вредоносных файлов, в отличие от проверки только расширения или синтаксического анализа.",
+   "code": "if (finfo_file(finfo_open(FILEINFO_MIME_TYPE), $_FILES['file']['tmp_name']) === 'image/jpeg') {\n  // безопасно\n} else {\n  // ошибка\n}",
+   "code_lang": "php",
+   "distractors": [
+    "Проверка только расширения файла",
+    "Использование синтаксического анализатора для проверки содержимого",
+    "Хранение загруженных файлов в отдельной директории"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "Вариант 3 указан как 'C', что не имеет смысла и, вероятно, является опечаткой. Правильный вариант должен быть связан с проверкой MIME-типа (как в коде), но он отсутствует в списке.",
+     "Код проверяет MIME-тип файла, что является мерой защиты, но в вариантах ответа нет соответствующего варианта (например, 'Проверка MIME-типа').",
+     "Автор ошибся, указав вариант 3, так как он не существует в списке. Нет других вариантов, которые бы точно соответствовали коду."
+    ],
+    "options": [
+     "Хранение загруженных файлов в отдельной директории",
+     "Использование синтаксического анализатора для проверки содержимого",
+     "Проверка только расширения файла",
+     "C"
+    ]
+   }
+  },
+  {
+   "domain": "linux",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Обработка ошибок в shell-скриптах",
+   "prompt": "Какая из следующих конструкций выполнит команду 'echo Success', если команда 'ls /nonexistent' завершится с ошибкой?",
+   "correct": "ls /nonexistent || echo Success",
+   "explanation": "Конструкция '||' выполняет следующую команду, если предыдущая завершилась с ошибкой (ненулевым кодом возврата).",
+   "code": "ls /nonexistent || echo Success",
+   "code_lang": "bash",
+   "distractors": [
+    "ls /nonexistent && echo Success",
+    "if ls /nonexistent; then echo Success; fi",
+    "ls /nonexistent && echo Success || echo Error"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "ls /nonexistent || echo Success",
+     "ls /nonexistent && echo Success",
+     "if ls /nonexistent; then echo Success; fi",
+     "ls /nonexistent && echo Success || echo Error"
+    ]
+   }
+  },
+  {
+   "domain": "linux",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Обработка сигналов в shell-скриптах",
+   "prompt": "Какой фрагмент кода корректно обработает сигнал SIGINT (Ctrl+C) в скрипте, чтобы завершить выполнение с сохранением состояния?",
+   "correct": "trap 'echo \"Прервано пользователем\"; exit 1' SIGINT",
+   "explanation": "Правильный ответ использует trap с указанием действия и корректного завершения скрипта. Остальные варианты либо не обрабатывают состояние, либо неправильно используют сигналы.",
+   "code": "trap 'echo \"Прервано пользователем\"; exit 1' SIGINT\nsleep 300",
+   "code_lang": "bash",
+   "distractors": [
+    "trap 'exit 1' SIGINT",
+    "trap 'echo \"Прервано\"' SIGINT",
+    "trap 'kill -SIGINT $$' SIGINT"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     3
+    ],
+    "issues": [
+     "Вариант 3 также корректно завершает скрипт с кодом выхода 1, что соответствует требованию 'сохранить состояние'.",
+     "Вопрос не уточняет, требуется ли вывод сообщения, поэтому оба варианта 1 и 3 могут считаться правильными."
+    ],
+    "options": [
+     "trap 'kill -SIGINT $$' SIGINT",
+     "trap 'echo \"Прервано пользователем\"; exit 1' SIGINT",
+     "trap 'echo \"Прервано\"' SIGINT",
+     "trap 'exit 1' SIGINT"
+    ]
+   }
+  },
+  {
+   "domain": "networks",
+   "level": 2,
+   "specialization": "devops",
+   "topic": "VLAN",
+   "prompt": "Как VLAN помогает в разделении сети?",
+   "correct": "VLAN позволяет изолировать трафик между подсетями на физическом уровне коммутатора",
+   "explanation": "VLAN позволяет изолировать трафик между подсетями на физическом уровне коммутатора, поскольку использует идентификаторы VLAN для разделения трафика внутри одной физической сети.",
+   "code": null,
+   "code_lang": null,
+   "distractors": [
+    "VLAN увеличивает пропускную способность сети",
+    "VLAN использует IP-адреса для изоляции",
+    "VLAN заменяет физические коммутаторы"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "VLAN заменяет физические коммутаторы",
+     "VLAN использует IP-адреса для изоляции",
+     "VLAN увеличивает пропускную способность сети",
+     "VLAN позволяет изолировать трафик между подсетями на физическом уровне коммутатора"
+    ]
+   }
+  },
+  {
+   "domain": "networks",
+   "level": 4,
+   "specialization": "devops",
+   "topic": "MTU и фрагментация",
+   "prompt": "После настройки MTU на 1500 байт на интерфейсе сервера, при тестировании сети с клиентом, у которого MTU 1400 байт, возникает потеря пакетов. Какое утверждение является верным?",
+   "correct": "Пакеты будут фрагментироваться на стороне клиента, если настройка MTU на сервере не синхронизирована с настройкой на клиенте.",
+   "explanation": "Несоответствие MTU между узлами приводит к фрагментации пакетов на стороне узла с меньшим MTU, что может вызвать потери и снижение производительности.",
+   "code": null,
+   "code_lang": null,
+   "distractors": [
+    "Увеличение MTU на сервере улучшает производительность без учета клиента.",
+    "Фрагментация пакетов происходит только на стороне маршрутизатора.",
+    "Потеря пакетов связана с настройкой QoS на интерфейсе."
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Пакеты будут фрагментироваться на стороне клиента, если настройка MTU на сервере не синхронизирована с настройкой на клиенте.",
+     "Потеря пакетов связана с настройкой QoS на интерфейсе.",
+     "Увеличение MTU на сервере улучшает производительность без учета клиента.",
+     "Фрагментация пакетов происходит только на стороне маршрутизатора."
+    ]
+   }
+  },
+  {
+   "domain": "containers",
+   "level": 2,
+   "specialization": "devops",
+   "topic": "ARG и ENV в Dockerfile",
+   "prompt": "Какой из следующих параметров в Dockerfile позволяет передать значение при сборке, но не сохраняется в образе?",
+   "correct": "ARG",
+   "explanation": "ARG определяет переменные, которые можно передать при сборке, но не сохраняются в образе, в отличие от ENV.",
+   "code": "ARG MY_ARG\nENV MY_ENV=hello",
+   "code_lang": "dockerfile",
+   "distractors": [
+    "ENV",
+    "FROM",
+    "LABEL"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "LABEL",
+     "ARG",
+     "FROM",
+     "ENV"
+    ]
+   }
+  },
+  {
+   "domain": "containers",
+   "level": 4,
+   "specialization": "devops",
+   "topic": "Health checks в Docker",
+   "prompt": "Какой способ настройки health check гарантирует, что контейнер базы данных будет полностью запущен перед запуском приложения, использующего её?",
+   "correct": "C",
+   "explanation": "Health check через `test` в Docker Compose позволяет определить, готов ли контейнер к работе, и дождаться его готовности перед запуском зависимых сервисов.",
+   "code": "healthcheck:\n  test: [\"CMD\", \"curl\", \"-f\", \"http://localhost:8080\"]\n  interval: 5s\n  timeout: 3s\n  retries: 3",
+   "code_lang": "yaml",
+   "distractors": [
+    "A",
+    "B",
+    "D"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "Код healthcheck проверяет http://localhost:8080, что, вероятно, относится к приложению, а не к базе данных. Это не гарантирует запуск базы данных перед приложением.",
+     "Отсутствует ясная связь между healthcheck и запуском базы данных. Для обеспечения порядка запуска обычно используют depends_on в Docker Compose, а не healthcheck."
+    ],
+    "options": [
+     "A",
+     "D",
+     "C",
+     "B"
+    ]
+   }
+  },
+  {
+   "domain": "kubernetes",
+   "level": 2,
+   "specialization": "devops",
+   "topic": "Labels и Selectors в Deployments",
+   "prompt": "Какой элемент в YAML-фрагменте определяет, какие pods будут управляться этим Deployment?",
+   "correct": "selector",
+   "explanation": "Selector используется для сопоставления pods с метками, чтобы контроллер мог управлять ими.",
+   "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: example\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: example\n  template:\n    metadata:\n      labels:\n        app: example\n    spec:\n      containers:\n      - name: example\n        image: nginx",
+   "code_lang": "yaml",
+   "distractors": [
+    "replicas",
+    "template",
+    "metadata"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "metadata",
+     "replicas",
+     "template",
+     "selector"
+    ]
+   }
+  },
+  {
+   "domain": "kubernetes",
+   "level": 4,
+   "specialization": "devops",
+   "topic": "Обновление StatefulSet",
+   "prompt": "Что нужно изменить в конфигурации StatefulSet, чтобы обновить приложение с сохранением порядка и данных?",
+   "correct": "strategy: RollingUpdate с настройками maxSurge и maxUnavailable",
+   "explanation": "RollingUpdate позволяет обновлять Pod'ы по порядку, сохраняя данные и обеспечивая доступность.",
+   "code": "spec:\n  replicas: 3\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1\n      maxUnavailable: 0",
+   "code_lang": "yaml",
+   "distractors": [
+    "strategy: Recreate",
+    "Использование Deployment вместо StatefulSet",
+    "Удаление spec.strategy"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     3
+    ],
+    "issues": [
+     "Вариант 0 не является правильным, так как текущая конфигурация с maxUnavailable: 0 не позволяет корректное обновление через RollingUpdate. Это может привести к блокировке обновления, так как Kubernetes не может оставить поды недоступными.",
+     "Правильным вариантом является 3 (strategy: Recreate), так как Recreate-стратегия полностью перезапускает поды, что позволяет обновить приложение, сохраняя порядок и данные (StatefulSet поддерживает Recreate и сохраняет порядок подов)."
+    ],
+    "options": [
+     "strategy: RollingUpdate с настройками maxSurge и maxUnavailable",
+     "Удаление spec.strategy",
+     "Использование Deployment вместо StatefulSet",
+     "strategy: Recreate"
+    ]
+   }
+  },
+  {
+   "domain": "cicd",
+   "level": 2,
+   "specialization": "backend",
+   "topic": "Игнорирование файлов в Git",
+   "prompt": "Что произойдёт, если файл `README.md` добавить в `.gitignore` после того, как он уже был зафиксирован в коммите?",
+   "correct": "Файл останется в истории репозитория, но не будет добавляться в новые коммиты",
+   "explanation": "`.gitignore` влияет только на новые файлы, уже зафиксированные коммиты не удаляются.",
+   "code": null,
+   "code_lang": null,
+   "distractors": [
+    "Файл будет удалён из репозитория",
+    "Файл перестанет существовать в проекте",
+    "Файл будет игнорироваться при выполнении `git status`"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Файл перестанет существовать в проекте",
+     "Файл останется в истории репозитория, но не будет добавляться в новые коммиты",
+     "Файл будет игнорироваться при выполнении `git status`",
+     "Файл будет удалён из репозитория"
+    ]
+   }
+  },
+  {
+   "domain": "cicd",
+   "level": 4,
+   "specialization": "backend",
+   "topic": "Настройка CI/CD с GitHub Actions",
+   "prompt": "Какой шаг в GitHub Actions должен быть выполнен для запуска тестов при каждом push в репозиторий?",
+   "correct": "Запуск тестов при каждом push через GitHub Actions",
+   "explanation": "GitHub Actions позволяет автоматически запускать тесты при каждом push, обеспечивая непрерывную интеграцию и проверку кода.",
+   "code": "name: CI\non: [push]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v2\n      - name: Run tests\n        run: npm test",
+   "code_lang": "yaml",
+   "distractors": [
+    "Использование только локальных тестов",
+    "Запуск тестов только при merge в main",
+    "Использование только CI без тестов"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Запуск тестов только при merge в main",
+     "Запуск тестов при каждом push через GitHub Actions",
+     "Использование только локальных тестов",
+     "Использование только CI без тестов"
+    ]
+   }
+  },
+  {
+   "domain": "observability",
+   "level": 2,
+   "specialization": "devops",
+   "topic": "Обеспечение надёжности через автоматизацию",
+   "prompt": "Какой метод обеспечивает автоматическое восстановление системы после сбоя?",
+   "correct": "Self-healing",
+   "explanation": "Self-healing позволяет автоматически устранять проблемы, например, перезапускать падающие контейнеры.",
+   "code": null,
+   "code_lang": null,
+   "distractors": [
+    "Blue-Green deployment",
+    "Canary release",
+    "Rolling update"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Self-healing",
+     "Canary release",
+     "Rolling update",
+     "Blue-Green deployment"
+    ]
+   }
+  },
+  {
+   "domain": "observability",
+   "level": 4,
+   "specialization": "devops",
+   "topic": "Мониторинг состояния репликации в PostgreSQL",
+   "prompt": "В кластере PostgreSQL с репликацией возникла ситуация, когда лаг репликации (разница между логами на мастере и реплике) колеблется в пределах 1–5 секунд. Какой тип метрики лучше всего подходит для отслеживания этого значения в Prometheus?",
+   "correct": "Gauge",
+   "explanation": "Gauge подходит для отслеживания текущего значения лага, которое может как увеличиваться, так и уменьшаться. Counter не подходит, так как описывает монотонно растущие значения, а Summary и Histogram — агрегацию данных, а не текущее состояние.",
+   "code": "pg_wal_receiver_status{instance=\"replica:5432\"} # Возвращает метрику wal_receiver_status\n# Пример значения: 3.2s (текущий лаг)",
+   "code_lang": "promql",
+   "distractors": [
+    "Counter",
+    "Summary",
+    "Histogram"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "Автор считает верным вариант 2 (Counter), но правильный ответ — вариант 3 (Gauge).",
+     "Counter подходит для монотонно увеличивающихся значений, а лаг репликации колеблется и не является монотонной метрикой.",
+     "Gauge корректно отражает текущее значение лага, которое может изменяться вверх и вниз."
+    ],
+    "options": [
+     "Histogram",
+     "Summary",
+     "Counter",
+     "Gauge"
+    ]
+   }
+  },
+  {
+   "domain": "statistics",
+   "level": 2,
+   "specialization": "ml",
+   "topic": "Ковариация",
+   "prompt": "Что показывает ковариация между двумя переменными?",
+   "correct": "Направление линейной зависимости между переменными",
+   "explanation": "Ковариация показывает, в каком направлении изменяются переменные относительно друг друга, но не измеряет её силу.",
+   "code": "import numpy as np\nx = np.array([1, 2, 3, 4, 5])\ny = np.array([2, 4, 6, 8, 10])\ncov = np.cov(x, y)\nprint(cov)",
+   "code_lang": "python",
+   "distractors": [
+    "Силу линейной зависимости",
+    "Наличие причинно-следственной связи",
+    "Разницу между средними значениями"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Разницу между средними значениями",
+     "Наличие причинно-следственной связи",
+     "Направление линейной зависимости между переменными",
+     "Силу линейной зависимости"
+    ]
+   }
+  },
+  {
+   "domain": "statistics",
+   "level": 4,
+   "specialization": "ml",
+   "topic": "Непараметрические тесты и их применение",
+   "prompt": "Какой из следующих тестов наиболее подходит для проверки гипотезы о равенстве средних в двух группах с асимметричными распределениями и неизвестными дисперсиями?",
+   "correct": "U-тест Манна-Уитни",
+   "explanation": "U-тест Манна-Уитни не предполагает нормальность данных и подходит для асимметричных распределений, в отличие от t-тестов и F-теста.",
+   "code": "import scipy.stats as stats\nresult = stats.mannwhitneyu(group1, group2, alternative='two-sided')",
+   "code_lang": "python",
+   "distractors": [
+    "t-тест Стьюдента",
+    "t-тест Велча",
+    "F-тест"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "U-тест Манна-Уитни (вариант 2) проверяет гипотезу о равенстве распределений, а не средних. При асимметричных распределениях среднее может не совпадать с медианой, поэтому тест не идеально подходит для проверки равенства средних.",
+     "t-тест Велча (вариант 0) не предполагает равенство дисперсий, но требует нормальности распределения, что нарушено в условии вопроса. Однако, при больших объемах выборки он может быть устойчив к асимметрии."
+    ],
+    "options": [
+     "t-тест Велча",
+     "F-тест",
+     "U-тест Манна-Уитни",
+     "t-тест Стьюдента"
+    ]
+   }
+  },
+  {
+   "domain": "ml",
+   "level": 2,
+   "specialization": "ml",
+   "topic": "Обработка пропусков",
+   "prompt": "Какой метод обработки пропусков в данных может привести к потере информации?",
+   "correct": "Удаление строк с пропусками",
+   "explanation": "Удаление строк с пропусками снижает объём данных и может исказить распределение, в отличие от заполнения медианой или предсказания пропусков.",
+   "code": "import pandas as pd\ndata = pd.DataFrame({'x': [1, 2, None, 4]})\ndata.fillna(data['x'].median(), inplace=True)",
+   "code_lang": "python",
+   "distractors": [
+    "Заполнение медианой",
+    "Использование моделей для предсказания пропусков",
+    "Игнорирование пропусков"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     3
+    ],
+    "issues": [
+     "вариант 3 также верен, так как заполнение медианой может привести к потере информации (искажению распределения данных)",
+     "автор ошибочно считает, что только удаление строк (вариант 1) приводит к потере информации, игнорируя другие методы"
+    ],
+    "options": [
+     "Игнорирование пропусков",
+     "Удаление строк с пропусками",
+     "Использование моделей для предсказания пропусков",
+     "Заполнение медианой"
+    ]
+   }
+  },
+  {
+   "domain": "ml",
+   "level": 4,
+   "specialization": "ml",
+   "topic": "Обработка категориальных признаков в моделях",
+   "prompt": "При обучении модели на данных с категориальным признаком, содержащим 1000 уникальных значений, валидационная метрика резко ухудшается. Что может быть причиной?",
+   "correct": "Использование one-hot encoding ведет к раздуванию размерности и переобучению",
+   "explanation": "One-hot encoding для категориальных признаков с высокой кардинальностью увеличивает размерность признакового пространства, что может привести к переобучению и ухудшению обобщающей способности модели.",
+   "code": "from sklearn.preprocessing import OneHotEncoder\nimport pandas as pd\n# Пример данных с категориальным признаком\nX = pd.DataFrame({'feature': ['a', 'b', 'c'] * 333 + ['d']})\n# Применение one-hot encoding\nencoder = OneHotEncoder()\nencoded = encoder.fit_transform(X)",
+   "code_lang": "python",
+   "distractors": [
+    "Недостаточная регуляризация модели",
+    "Проблема несбалансированных классов",
+    "Неправильный выбор функции потерь"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Неправильный выбор функции потерь",
+     "Проблема несбалансированных классов",
+     "Недостаточная регуляризация модели",
+     "Использование one-hot encoding ведет к раздуванию размерности и переобучению"
+    ]
+   }
+  },
+  {
+   "domain": "deep_learning",
+   "level": 2,
+   "specialization": "ml",
+   "topic": "Функции активации",
+   "prompt": "Какая функция активации используется в следующем фрагменте кода?",
+   "correct": "ReLU",
+   "explanation": "В коде явно указано использование nn.ReLU(), что соответствует функции ReLU.",
+   "code": "import torch\nimport torch.nn as nn\nclass SimpleNet(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.fc1 = nn.Linear(784, 128)\n        self.relu = nn.ReLU()\n        self.fc2 = nn.Linear(128, 10)\n    def forward(self, x):\n        x = self.relu(self.fc1(x))\n        x = self.fc2(x)\n        return x",
+   "code_lang": "python",
+   "distractors": [
+    "Sigmoid",
+    "Tanh",
+    "Softmax"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Sigmoid",
+     "Tanh",
+     "Softmax",
+     "ReLU"
+    ]
+   }
+  },
+  {
+   "domain": "deep_learning",
+   "level": 4,
+   "specialization": "ml",
+   "topic": "Использование предобученных моделей на небольших данных",
+   "prompt": "Какой метод наиболее эффективен для повышения обобщающей способности модели при обучении на небольших данных, при условии, что данные не имеют четкой структуры и не поддаются простой аугментации?",
+   "correct": "Использование pretrained модели с замороженными весами и добавлением новых слоев",
+   "explanation": "Использование pretrained модели позволяет использовать знания, полученные на больших наборах данных, что особенно важно при работе с небольшими объемами данных, где простая аугментация недостаточна.",
+   "code": "model = torchvision.models.resnet18(pretrained=True)\nfor param in model.parameters():\n    param.requires_grad = False\nmodel.fc = nn.Linear(512, 10)",
+   "code_lang": "python",
+   "distractors": [
+    "Использование dropout в скрытых слоях с коэффициентом 0.5",
+    "Применение batch normalization в каждом слое",
+    "Введение слоев с attention механизмом"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Применение batch normalization в каждом слое",
+     "Использование pretrained модели с замороженными весами и добавлением новых слоев",
+     "Использование dropout в скрытых слоях с коэффициентом 0.5",
+     "Введение слоев с attention механизмом"
+    ]
+   }
+  },
+  {
+   "domain": "data_tools",
+   "level": 2,
+   "specialization": "ml",
+   "topic": "Применение функций к столбцам DataFrame",
+   "prompt": "Что делает следующий фрагмент кода?",
+   "correct": "Добавляет новый столбец 'B', где значения равны значениям из 'A' плюс 10",
+   "explanation": "Метод apply применяет функцию к каждому элементу столбца, увеличивая значения на 10 и записывая результат в новый столбец.",
+   "code": "import pandas as pd\ndf = pd.DataFrame({'A': [1, 2, 3]})\ndf['B'] = df['A'].apply(lambda x: x + 10)",
+   "code_lang": "python",
+   "distractors": [
+    "Заменяет значения в столбце 'A' на значения из 'B'",
+    "Удаляет столбец 'A' из DataFrame",
+    "Создает копию DataFrame с именем 'B'"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Создает копию DataFrame с именем 'B'",
+     "Удаляет столбец 'A' из DataFrame",
+     "Добавляет новый столбец 'B', где значения равны значениям из 'A' плюс 10",
+     "Заменяет значения в столбце 'A' на значения из 'B'"
+    ]
+   }
+  },
+  {
+   "domain": "data_tools",
+   "level": 4,
+   "specialization": "ml",
+   "topic": "Методы замены значений в DataFrame",
+   "prompt": "Какой метод pandas позволяет заменить значения, удовлетворяющие определённому условию, на заданное значение?",
+   "correct": "B",
+   "explanation": "Метод where заменяет значения, удовлетворяющие условию, на заданное значение, в отличие от replace, fillna и mask, которые работают по-разному.",
+   "code": "import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({'A': [1, -1, 2], 'B': [3, 0, -3]})\nresult = df.where(df > 0, np.nan)\nprint(result)",
+   "code_lang": "python",
+   "distractors": [
+    "A) replace",
+    "C) fillna",
+    "D) mask"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [
+     3
+    ],
+    "issues": [
+     "Неверный ключ: вариант 1 (B) не указан, что делает его нечитаемым и потенциально ошибочным.",
+     "Правильный ответ — D) mask, а не B, так как mask заменяет значения, удовлетворяющие условию, в отличие от where, который заменяет значения, не удовлетворяющие условию.",
+     "Автор ошибся, указав B как правильный ответ, хотя в коде используется where, но вопрос о замене значений, удовлетворяющих условию."
+    ],
+    "options": [
+     "C) fillna",
+     "B",
+     "A) replace",
+     "D) mask"
+    ]
+   }
+  },
+  {
+   "domain": "analytics",
+   "level": 2,
+   "specialization": "data_analyst",
+   "topic": "Интерпретация разницы в метриках A/B-теста",
+   "prompt": "Аналитик проводит A/B-тест и использует следующий фрагмент кода для анализа. Что он хочет определить?",
+   "correct": "Разницу между средними значениями конверсии в экспериментальной и контрольной группах",
+   "explanation": "Код вычисляет разницу между средними значениями метрики в двух группах, что позволяет оценить эффект в A/B-тесте.",
+   "code": "control_group = data[data['group'] == 'control']['conversion_rate']\nexperiment_group = data[data['group'] == 'experiment']['conversion_rate']\ndifference = experiment_group.mean() - control_group.mean()\nprint(difference)",
+   "code_lang": "python",
+   "distractors": [
+    "Среднее значение конверсии в обеих группах",
+    "Медиану конверсии в экспериментальной группе",
+    "Стандартное отклонение конверсии в контрольной группе"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Стандартное отклонение конверсии в контрольной группе",
+     "Разницу между средними значениями конверсии в экспериментальной и контрольной группах",
+     "Среднее значение конверсии в обеих группах",
+     "Медиану конверсии в экспериментальной группе"
+    ]
+   }
+  },
+  {
+   "domain": "analytics",
+   "level": 4,
+   "specialization": "data_analyst",
+   "topic": "Смещение из-за несбалансированных групп в A/B-тесте",
+   "prompt": "Аналитик провел A/B-тест, сравнивая конверсию в двух группах. В группе A — 1000 новых пользователей, в группе B — 1000 существующих. В группе B конверсия на 15% выше. Что это может означать?",
+   "correct": "Разница в группах может быть причиной смещения, так как новые и существующие пользователи различаются по поведению и привычкам, что делает результаты непригодными для интерпретации как эффекта изменений.",
+   "explanation": "Правильный ответ подчеркивает, что различия между группами по природе пользователей могут ввести систематическую ошибку, делая выводы о влиянии изменений некорректными.",
+   "code": null,
+   "code_lang": null,
+   "distractors": [
+    "Результаты показывают, что изменение работает лучше для существующих пользователей",
+    "Группы были сбалансированы по всем признакам, отличие достоверно",
+    "Это случайное отклонение, которое исчезнет при увеличении выборки"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Разница в группах может быть причиной смещения, так как новые и существующие пользователи различаются по поведению и привычкам, что делает результаты непригодными для интерпретации как эффекта изменений.",
+     "Результаты показывают, что изменение работает лучше для существующих пользователей",
+     "Группы были сбалансированы по всем признакам, отличие достоверно",
+     "Это случайное отклонение, которое исчезнет при увеличении выборки"
+    ]
+   }
+  },
+  {
+   "domain": "testing_theory",
+   "level": 4,
+   "specialization": "qa",
+   "topic": "Тестирование динамических элементов в Selenium",
+   "prompt": "Какой подход наиболее эффективен для тестирования элемента с динамическим идентификатором в Selenium?",
+   "correct": "Использовать XPath с атрибутом contains(@id, 'dynamic')",
+   "explanation": "contains позволяет искать элементы с частичным совпадением, что подходит для динамических идентификаторов.",
+   "code": "from selenium import webdriver\nbrowser = webdriver.Chrome()\nelement = browser.find_element('xpath', '//div[contains(@id, \"dynamic-\")]')",
+   "code_lang": "python",
+   "distractors": [
+    "Использовать XPath с атрибутом text()",
+    "Использовать CSS-селектор с атрибутом data-testid",
+    "Использовать XPath с атрибутом @id и фиксированным значением"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "Вариант 2 (CSS-селектор с data-testid) не соответствует коду, где используется XPath. Если data-testid не является частью динамического идентификатора, это неверный выбор. Однако, если data-testid используется как стабильный атрибут, он может быть правильным, но в вопросе это не указано.",
+     "Вариант 2 и 3 могут быть неверными, если data-testid не используется, а фиксированный id не подходит для динамического элемента."
+    ],
+    "options": [
+     "Использовать XPath с атрибутом text()",
+     "Использовать CSS-селектор с атрибутом data-testid",
+     "Использовать XPath с атрибутом contains(@id, 'dynamic')",
+     "Использовать XPath с атрибутом @id и фиксированным значением"
+    ]
+   }
+  },
+  {
+   "domain": "test_automation",
+   "level": 2,
+   "specialization": "qa",
+   "topic": "Параллелизм тестов",
+   "prompt": "Какой подход обеспечивает корректную работу тестов при параллельном запуске в pytest?",
+   "correct": "Использование фикстур с scope='function' и временных директорий",
+   "explanation": "Фикстуры с scope='function' и временные директории обеспечивают изоляцию тестов, предотвращая конфликты ресурсов при параллельном запуске.",
+   "code": "@pytest.fixture(scope='function')\ndef tmp_dir():\n    return tempfile.mkdtemp()\n@pytest.mark.parametrize('data', [\"test1.txt\", \"test2.txt\"])\ndef test_file_operations(tmp_dir, data):\n    path = os.path.join(tmp_dir, data)\n    with open(path, 'w') as f:\n        f.write('test')\n    assert os.path.exists(path)",
+   "code_lang": "python",
+   "distractors": [
+    "Использование глобальных переменных",
+    "Отсутствие фикстур",
+    "Использование одного и того же файла конфигурации для всех тестов"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Использование фикстур с scope='function' и временных директорий",
+     "Использование глобальных переменных",
+     "Использование одного и того же файла конфигурации для всех тестов",
+     "Отсутствие фикстур"
+    ]
+   }
+  },
+  {
+   "domain": "test_automation",
+   "level": 4,
+   "specialization": "qa",
+   "topic": "Обработка ошибок в тестах",
+   "prompt": "Какой подход к обработке ошибок в тестах может привести к пропуску критических проблем, если не сопровождается корректным логированием?",
+   "correct": "Игнорирование ошибки без логирования и повторного действия",
+   "explanation": "Игнорирование ошибки без логирования скрывает информацию о проблеме, но не решает её, что может привести к необнаруженным багам.",
+   "code": "try {\n  element.click();\n} catch (Exception e) {\n  // Пустой блок обработки ошибки\n}",
+   "code_lang": "java",
+   "distractors": [
+    "Использование явного ожидания перед действием",
+    "Перехват исключения и завершение теста с кодом ошибки",
+    "Восстановление состояния системы через фикстуру"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "problem",
+    "also_correct": [],
+    "issues": [
+     "Формулировка варианта 3 содержит неточность: в коде отсутствует 'повторное действие', что делает вариант 3 не полностью соответствующим коду. В коде происходит только игнорирование ошибки без логирования, но не повторное действие.",
+     "Вариант 1 (завершение теста с кодом ошибки) не соответствует коду, так как в коде отсутствует завершение теста с кодом ошибки."
+    ],
+    "options": [
+     "Восстановление состояния системы через фикстуру",
+     "Перехват исключения и завершение теста с кодом ошибки",
+     "Использование явного ожидания перед действием",
+     "Игнорирование ошибки без логирования и повторного действия"
+    ]
+   }
+  },
+  {
+   "domain": "testing_theory",
+   "level": 2,
+   "specialization": "qa",
+   "topic": "Валидация ввода данных",
+   "prompt": "Функция проверяет корректность email-адреса. Какой тест-кейс проверяет основную логику валидации?",
+   "correct": "Проверка email с символом @ и доменом",
+   "explanation": "Правильный ответ соответствует основной цели функции — проверке наличия @ и корректного формата домена.",
+   "code": "function isValidEmail(email) {\n  const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n  return regex.test(email);\n}",
+   "code_lang": "javascript",
+   "distractors": [
+    "Проверка email без символа @",
+    "Проверка email с лишними пробелами",
+    "Проверка email с числом вместо домена"
+   ],
+   "model": "qwen3:14b",
+   "review": {
+    "verdict": "ok",
+    "also_correct": [],
+    "issues": [],
+    "options": [
+     "Проверка email с символом @ и доменом",
+     "Проверка email с лишними пробелами",
+     "Проверка email с числом вместо домена",
+     "Проверка email без символа @"
+    ]
+   }
+  }
+ ],
+ "model": "qwen3:14b",
+ "prompt_version": "v1"
+}

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
 import {
   Award, Bell, BellOff, Briefcase, Building2, ClipboardCheck, Database, FileText, FlaskConical, LayoutDashboard, ListChecks,
-  LogOut, Mail, Menu, Search, Send, Settings, Sparkles, Star, UserRound, X, ShieldAlert,
+  LogOut, Mail, Menu, Search, Send, Settings, Sparkles, Star, UserRound, WandSparkles, X, ShieldAlert,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { homeFor, useAuth } from '@/lib/auth'
@@ -42,6 +42,7 @@ function useNav(role?: string): NavItem[] {
   ]
   return [
     { to: '/admin', label: 'Банк заданий', icon: <Database className={ic} />, end: true },
+    { to: '/admin/drafts', label: 'Черновики от LLM', icon: <WandSparkles className={ic} /> },
     { to: '/admin/integrity', label: 'Честность тестов', icon: <ShieldAlert className={ic} /> },
     { to: '/methodology', label: 'Методика', icon: <FlaskConical className={ic} /> },
   ]

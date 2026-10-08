@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import models  # noqa: F401 — регистрация моделей в метаданных
-from app.api import auth, candidate, candidate_actions, employer, fsp, public, reference, testing
+from app.api import admin_drafts, auth, candidate, candidate_actions, employer, fsp, public, reference, testing
 from app.core.config import settings
 from app.core.db import Base, SessionLocal, engine
 
@@ -35,9 +35,13 @@ async def lifespan(_: FastAPI):
     added = ensure_columns()
     if added:
         log.info("Добавлены столбцы: %s", ", ".join(added))
+    from app.services.testing.drafting import load_drafted_families, recover_batches
     from app.services.testing.service import sync_item_stats, sync_unconfirmed
 
     with SessionLocal() as db:
+        recover_batches(db)
+        if n := load_drafted_families(db):
+            log.info("Принятые черновики LLM в банке: %d пилотных и откалиброванных семейств", n)
         sync_item_stats(db)
         if settings.seed_demo:
             from app.seed.seed import seed_if_empty
@@ -62,6 +66,9 @@ tags_metadata = [
     {"name": "Интеграция с ФСП", "description": "Привязка ФСП ID (OIDC, совместимо с Keycloak), реестр достижений."},
     {"name": "Справочники", "description": "Специализации, грейды, навыки, отрасли."},
     {"name": "Публичное: методика и оценка", "description": "Результаты валидации и стенд оценки ранжирования."},
+    {"name": "Администрирование", "description": "Банк заданий: экспозиция, дрейф, калибровка; журнал честности тестов."},
+    {"name": "Администрирование: черновики заданий",
+     "description": "Пополнение банка: черновики вопросов от LLM, проверка экспертом, пилотная калибровка."},
 ]
 
 app = FastAPI(
@@ -78,7 +85,7 @@ app = FastAPI(
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_list, allow_credentials=True, allow_methods=["*"],
                    allow_headers=["*"])
 
-for r in (auth, reference, candidate, testing, candidate_actions, fsp, employer, public):
+for r in (auth, reference, candidate, testing, candidate_actions, fsp, employer, public, admin_drafts):
     app.include_router(r.router, prefix=settings.api_prefix)
 
 

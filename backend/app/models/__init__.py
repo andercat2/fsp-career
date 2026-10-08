@@ -1,4 +1,5 @@
 from app.models.candidate import CandidateProfile, CandidateResume, GradeHistory, SurveyResponse
+from app.models.drafts import DraftBatch, ItemDraft
 from app.models.employer import (
     Application,
     Company,
@@ -21,9 +22,11 @@ __all__ = [
     "Company",
     "Complaint",
     "Consent",
+    "DraftBatch",
     "EmailCode",
     "GradeHistory",
     "Invitation",
+    "ItemDraft",
     "ItemStat",
     "Notification",
     "OAuthState",

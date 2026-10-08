@@ -369,3 +369,34 @@ class EvalRankIn(BaseModel):
     vacancy_text: str
     vacancy_title: str = ""
     candidates: list[EvalCandidate] = Field(max_length=2000)
+
+
+# ---------------------------------------------------------------- черновики заданий от LLM (админка)
+
+class DraftBatchIn(BaseModel):
+    specialization: str = Field(description="Специализация (направление), код из справочника")
+    domain: str | None = Field(None, description="Раздел теста; пусто — разделы по долям состава теста")
+    level: int = Field(3, ge=1, le=5, description="Уровень сложности 1–5: стажёр … senior")
+    count: int = Field(3, ge=1, le=10, description="Сколько черновиков подготовить для проверки")
+    topic: str | None = Field(None, max_length=200, description="Тема-подсказка для модели (необязательно)")
+
+
+class DraftEditIn(BaseModel):
+    """Версия эксперта: можно изменить вопрос, код, варианты, правильный ответ и пояснение."""
+    topic: str = Field(min_length=2, max_length=200)
+    level: int = Field(ge=1, le=5)
+    prompt: str = Field(min_length=10, max_length=4000)
+    code: str | None = Field(None, max_length=4000)
+    code_lang: str | None = Field(None, max_length=20)
+    options: list[str] = Field(min_length=4, max_length=4)
+    correct: int = Field(ge=0, le=3, description="Индекс правильного варианта")
+    explanation: str = Field("", max_length=2000)
+
+    @field_validator("options")
+    @classmethod
+    def _strip(cls, v: list[str]) -> list[str]:
+        return [x.strip() for x in v]
+
+
+class DraftRejectIn(BaseModel):
+    reason: str = Field(min_length=2, max_length=200)

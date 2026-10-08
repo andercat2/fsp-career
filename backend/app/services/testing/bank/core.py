@@ -110,8 +110,9 @@ def family(fid: str, domain: str, level: int, kind: str, topic: str, *, time_lim
 
 def mcq(fid: str, domain: str, level: int, prompt: str, correct: str, wrong: list[str], *, topic: str = "",
         code: str | None = None, code_lang: str | None = None, explain: str = "", show: int = 4,
-        time_limit: int = 90) -> None:
-    """Статичный вопрос с одним ответом. Дистракторы выбираются из пула, порядок перемешивается."""
+        time_limit: int = 90, pretest: bool = False) -> ItemFamily:
+    """Статичный вопрос с одним ответом. Дистракторы выбираются из пула, порядок перемешивается.
+    pretest=True — пилотное семейство: показывается без влияния на оценку, пока трудность не откалибрована."""
 
     def gen(rng: random.Random, _lang: str | None) -> Rendered:
         opts = [{"id": "k", "text": correct}] + [
@@ -123,7 +124,8 @@ def mcq(fid: str, domain: str, level: int, prompt: str, correct: str, wrong: lis
 
     a, b, c = _default_params(fid, level, "single", False)
     c = round(1.0 / min(show, len(wrong) + 1), 3)
-    register(ItemFamily(fid, domain, level, "single", topic or prompt[:60], gen, False, a, b, c, time_limit))
+    return register(ItemFamily(fid, domain, level, "single", topic or prompt[:60], gen, False, a, b, c, time_limit,
+                               pretest=pretest))
 
 
 def multi(fid: str, domain: str, level: int, prompt: str, correct: list[str], wrong: list[str], *, topic: str = "",

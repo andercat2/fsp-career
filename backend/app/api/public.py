@@ -28,7 +28,7 @@ def methodology():
     for name in ("cat_validation", "matching_validation", "nlp_validation"):
         p = Path(REPORTS / f"{name}.json")
         out[name] = json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
-    out["bank"] = {"total_families": len(REGISTRY), "parametric": sum(f.parametric for f in REGISTRY.values()),
+    out["bank"] = {"total_families": len(REGISTRY), "parametric": sum(f.parametric for f in list(REGISTRY.values())),
                    "domains": {k: {**v, "name": DOMAINS.get(k, k)} for k, v in bank_summary().items()}}
     return out
 

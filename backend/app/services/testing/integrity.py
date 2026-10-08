@@ -36,7 +36,7 @@ def build_index() -> dict[str, float]:
         if _index is not None:
             return _index
         out = {}
-        for fam in REGISTRY.values():
+        for fam in list(REGISTRY.values()):
             if not fam.parametric or fam.kind not in ("input", "numeric"):
                 continue
             keys = [norm_answer(fam.kind, fam.render(10_000 + s).key) for s in range(SAMPLES)]

@@ -60,6 +60,16 @@ class Settings(BaseSettings):
     sandbox_token: str = "sandbox-demo-token"
     sandbox_local: bool = True
 
+    # Черновики заданий от LLM (админка): любой OpenAI-совместимый API — Ollama, vLLM, облачные модели. Пусто или
+    # сервис недоступен — демо-режим с заранее сгенерированными черновиками. Модель получает только раздел, уровень
+    # и тему — без персональных данных. reasoning_effort "none" отключает «рассуждения» (быстрее, но хуже качество)
+    llm_base_url: str | None = None
+    llm_api_key: str | None = None
+    llm_model: str = "qwen3:14b"
+    llm_reasoning_effort: str | None = None
+    llm_timeout: int = 300
+    llm_self_check: bool = True
+
     @property
     def fsp_internal(self) -> str:
         return (self.fsp_oidc_internal_url or self.fsp_oidc_issuer).rstrip("/")

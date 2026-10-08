@@ -37,6 +37,7 @@ const EmployerTasks = page(() => import('./pages/employer/Tasks'), 'EmployerTask
 const CompanyPage = page(() => import('./pages/employer/Company'), 'CompanyPage')
 const AdminItems = page(() => import('./pages/admin/Items'), 'AdminItems')
 const AdminIntegrity = page(() => import('./pages/admin/Integrity'), 'AdminIntegrity')
+const AdminDrafts = page(() => import('./pages/admin/Drafts'), 'AdminDrafts')
 
 export default function App() {
   return (
@@ -83,6 +84,7 @@ export default function App() {
         <Route path="/admin" element={<AppShell role="admin" />}>
           <Route index element={<AdminItems />} />
           <Route path="integrity" element={<AdminIntegrity />} />
+          <Route path="drafts" element={<AdminDrafts />} />
         </Route>
 
         <Route path="/home" element={<Navigate to="/" replace />} />

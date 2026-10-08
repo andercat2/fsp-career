@@ -84,7 +84,7 @@ def effective_time_limit(base: int, b: float) -> int:
 def sync_item_stats(db: Session) -> None:
     """Создаёт строки статистики для новых семейств банка (вызывается при старте приложения)."""
     existing = set(db.scalars(select(ItemStat.family_id)))
-    for fam in REGISTRY.values():
+    for fam in list(REGISTRY.values()):
         if fam.id not in existing:
             db.add(ItemStat(family_id=fam.id, status="pretest" if fam.pretest else "active", a=fam.a, b=fam.b, c=fam.c))
     db.commit()
@@ -244,7 +244,7 @@ def _present_next(db: Session, sess: TestSession, state: CatState, rng: random.R
     fam = None
     scored = True
     if sess.mode != "express" and n_scored >= 4 and rng.random() < PRETEST_RATE:
-        pre = [f for f in REGISTRY.values() if params.get(f.id) and params[f.id].status == "pretest"
+        pre = [f for f in list(REGISTRY.values()) if params.get(f.id) and params[f.id].status == "pretest"
                and f.domain in sess.blueprint and f.id not in exclude]
         if pre:
             fam, scored = rng.choice(pre), False
