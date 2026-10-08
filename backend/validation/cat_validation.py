@@ -12,6 +12,8 @@
      теста и банка без параметрических вариантов, обнаружение утечки по дрейфу решаемости и по person-fit.
   6. Устойчивость к ошибкам априорной калибровки и эффект онлайн-калибровки.
   7. Сопоставимость: нет систематического сдвига оценки между языками кода.
+  8. Экспресс-режим (8 коротких заданий) против полного теста на одной популяции: точность, разделение соседних
+     грейдов, длительность и калибровка вероятностей грейдов.
 
 Запуск: python -m validation.cat_validation
 """
@@ -482,6 +484,79 @@ def _cat_true_responses(c, used_params, true_params, rng):
     return state, decide(state, CFG)
 
 
+# --------------------------------------------------------------------------- 8. экспресс-режим
+
+def _auc(lower: list[float], upper: list[float]) -> float:
+    """P(θ̂ кандидата грейда выше > θ̂ кандидата грейда ниже) — разделяющая сила соседних грейдов."""
+    a, b = np.array(lower)[:, None], np.array(upper)[None, :]
+    return float((a < b).mean() + 0.5 * (a == b).mean())
+
+
+def _mode_metrics(pop, params, cfg: CatConfig, seed: int) -> dict:
+    """Один прогон популяции через конфигурацию теста: точность, разделение соседних грейдов, длительность, калибровка."""
+    from app.services.testing.cat import grade_probabilities
+
+    n = len(pop)
+    rng = random.Random(seed)
+    hats, true, lens, limits, minutes = [], [], [], [], []
+    by_grade: dict[str, list[float]] = defaultdict(list)
+    exact = within = 0
+    conf = []  # (вероятность самого вероятного грейда, совпал ли он с истинным)
+    for c in pop:
+        state, res = simulate_cat(c.domain_theta, c.spec, c.lang, c.claimed_grade, rng, params, cfg)
+        tg = theta_to_grade(c.theta)
+        probs = grade_probabilities(state.scored)
+        est = max(probs, key=probs.get)
+        hats.append(res["theta"])
+        true.append(c.theta)
+        lens.append(res["n_items"])
+        limits.append(sum(x.time_limit or 0 for x in state.answered) / 60)
+        minutes.append(sum(x.time_ms or 0 for x in state.answered) / 60000)
+        exact += est == tg
+        within += abs(GRADE_INDEX[est] - GRADE_INDEX[tg]) <= 1
+        by_grade[tg].append(res["theta"])
+        conf.append((probs[est], est == tg))
+    aucs = {f"{a}/{b}": r3(_auc(by_grade[a], by_grade[b])) for a, b in zip(GRADE_CODES, GRADE_CODES[1:])}
+    bins = []
+    for lo, hi in ((0.0, 0.5), (0.5, 0.7), (0.7, 0.9), (0.9, 1.01)):
+        sel = [(p, ok) for p, ok in conf if lo <= p < hi]
+        if sel:
+            bins.append({"range": [lo, min(hi, 1.0)], "n": len(sel), "mean_p": r3(np.mean([p for p, _ in sel])),
+                         "accuracy": r3(np.mean([ok for _, ok in sel]))})
+    return {
+        "items": r3(np.mean(lens)), "time_limits_min": r3(np.mean(limits)), "est_duration_min": r3(np.mean(minutes)),
+        "est_duration_p90_min": r3(np.percentile(minutes, 90)),
+        "pearson_r": r3(np.corrcoef(true, hats)[0, 1]),
+        "rmse": r3(math.sqrt(np.mean(np.square(np.array(hats) - np.array(true))))),
+        "grade_exact": r3(exact / n), "grade_within_one": r3(within / n),
+        "auc_adjacent": aucs, "auc_adjacent_mean": r3(np.mean(list(aucs.values()))),
+        "calibration": {"bins": bins, "ece": r3(sum(b["n"] * abs(b["mean_p"] - b["accuracy"]) for b in bins) / n)},
+    }
+
+
+def express_mode(params, n: int = 1000, seed: int = 21) -> dict:
+    """Экспресс-тест против полного на одной популяции. Грейд в обоих режимах — самый вероятный по ответам
+    (максимум апостериорной вероятности полосы грейда), т. е. сравнивается сама точность измерения. Калибровка: когда
+    экспресс-тест пишет «вероятнее всего Middle, 64%», угадан ли грейд примерно в 64% таких случаев (ECE).
+    Длительность — по модели времени ответа симуляции (в среднем 55% лимита задания). Перебор длины и лимита времени
+    заданий — обоснование выбранной конфигурации."""
+    from dataclasses import replace
+
+    from app.services.testing.service import EXPRESS_CFG
+
+    pop = generate_population(n, seed=seed)
+    sweep = []
+    for items, limit in ((6, 120), (7, 120), (8, 100), (8, 120), (10, 90)):
+        cfg = replace(CFG, min_items=items, max_items=items, max_time_limit=limit)
+        m = _mode_metrics(pop, params, cfg, seed)
+        sweep.append({"items": items, "max_time_limit_sec": limit, "chosen": cfg == EXPRESS_CFG,
+                      **{k: m[k] for k in ("est_duration_min", "pearson_r", "grade_exact", "grade_within_one",
+                                           "auc_adjacent_mean")}})
+    return {"config": {"items": EXPRESS_CFG.max_items, "max_time_limit_sec": EXPRESS_CFG.max_time_limit, "population": n},
+            "full": _mode_metrics(pop, params, CFG, seed), "express": _mode_metrics(pop, params, EXPRESS_CFG, seed),
+            "sweep": sweep}
+
+
 # --------------------------------------------------------------------------- запуск
 
 def main(n: int = 1500, seed: int = 11) -> dict:
@@ -507,6 +582,7 @@ def main(n: int = 1500, seed: int = 11) -> dict:
         "leak_attack": leak_attack(params, rng),
         "drift_detection": drift_detection(params, rng),
         "misspecification": misspecification(rng),
+        "express": express_mode(params),
         "information": test_information_curves(),
     }
     report["runtime_sec"] = round(time.time() - t0, 1)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07 22:10",
+  "generated_at": "2026-10-08 11:31",
   "config": {
     "min_items": 12,
     "max_items": 24,
@@ -1962,6 +1962,179 @@
     },
     "note": "Калибровка — фиксированные θ̂ из рабочих сессий и MLE трудности (реализовано: /admin/items/calibrate)."
   },
+  "express": {
+    "config": {
+      "items": 8,
+      "max_time_limit_sec": 120,
+      "population": 1000
+    },
+    "full": {
+      "items": 20.195,
+      "time_limits_min": 40.452,
+      "est_duration_min": 22.274,
+      "est_duration_p90_min": 29.325,
+      "pearson_r": 0.92,
+      "rmse": 0.45,
+      "grade_exact": 0.751,
+      "grade_within_one": 0.997,
+      "auc_adjacent": {
+        "intern/junior": 0.926,
+        "junior/middle": 0.898,
+        "middle/senior": 0.914
+      },
+      "auc_adjacent_mean": 0.913,
+      "calibration": {
+        "bins": [
+          {
+            "range": [
+              0.0,
+              0.5
+            ],
+            "n": 3,
+            "mean_p": 0.494,
+            "accuracy": 0.667
+          },
+          {
+            "range": [
+              0.5,
+              0.7
+            ],
+            "n": 361,
+            "mean_p": 0.612,
+            "accuracy": 0.626
+          },
+          {
+            "range": [
+              0.7,
+              0.9
+            ],
+            "n": 448,
+            "mean_p": 0.798,
+            "accuracy": 0.781
+          },
+          {
+            "range": [
+              0.9,
+              1.0
+            ],
+            "n": 188,
+            "mean_p": 0.955,
+            "accuracy": 0.92
+          }
+        ],
+        "ece": 0.02
+      }
+    },
+    "express": {
+      "items": 8.0,
+      "time_limits_min": 13.485,
+      "est_duration_min": 7.4,
+      "est_duration_p90_min": 8.748,
+      "pearson_r": 0.849,
+      "rmse": 0.587,
+      "grade_exact": 0.624,
+      "grade_within_one": 0.988,
+      "auc_adjacent": {
+        "intern/junior": 0.88,
+        "junior/middle": 0.812,
+        "middle/senior": 0.861
+      },
+      "auc_adjacent_mean": 0.851,
+      "calibration": {
+        "bins": [
+          {
+            "range": [
+              0.0,
+              0.5
+            ],
+            "n": 116,
+            "mean_p": 0.479,
+            "accuracy": 0.457
+          },
+          {
+            "range": [
+              0.5,
+              0.7
+            ],
+            "n": 686,
+            "mean_p": 0.585,
+            "accuracy": 0.599
+          },
+          {
+            "range": [
+              0.7,
+              0.9
+            ],
+            "n": 128,
+            "mean_p": 0.797,
+            "accuracy": 0.727
+          },
+          {
+            "range": [
+              0.9,
+              1.0
+            ],
+            "n": 70,
+            "mean_p": 0.941,
+            "accuracy": 0.957
+          }
+        ],
+        "ece": 0.022
+      }
+    },
+    "sweep": [
+      {
+        "items": 6,
+        "max_time_limit_sec": 120,
+        "chosen": false,
+        "est_duration_min": 5.565,
+        "pearson_r": 0.773,
+        "grade_exact": 0.533,
+        "grade_within_one": 0.969,
+        "auc_adjacent_mean": 0.787
+      },
+      {
+        "items": 7,
+        "max_time_limit_sec": 120,
+        "chosen": false,
+        "est_duration_min": 6.48,
+        "pearson_r": 0.808,
+        "grade_exact": 0.57,
+        "grade_within_one": 0.976,
+        "auc_adjacent_mean": 0.816
+      },
+      {
+        "items": 8,
+        "max_time_limit_sec": 100,
+        "chosen": false,
+        "est_duration_min": 6.547,
+        "pearson_r": 0.794,
+        "grade_exact": 0.584,
+        "grade_within_one": 0.975,
+        "auc_adjacent_mean": 0.802
+      },
+      {
+        "items": 8,
+        "max_time_limit_sec": 120,
+        "chosen": true,
+        "est_duration_min": 7.4,
+        "pearson_r": 0.849,
+        "grade_exact": 0.624,
+        "grade_within_one": 0.988,
+        "auc_adjacent_mean": 0.851
+      },
+      {
+        "items": 10,
+        "max_time_limit_sec": 90,
+        "chosen": false,
+        "est_duration_min": 8.168,
+        "pearson_r": 0.809,
+        "grade_exact": 0.603,
+        "grade_within_one": 0.977,
+        "auc_adjacent_mean": 0.812
+      }
+    ]
+  },
   "information": {
     "theta": [
       -3.0,
@@ -2183,5 +2356,5 @@
     },
     "se_from_info": "SE(θ) ≈ 1/√I(θ)"
   },
-  "runtime_sec": 114.5
+  "runtime_sec": 209.8
 }

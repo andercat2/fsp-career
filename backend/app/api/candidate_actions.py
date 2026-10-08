@@ -2,6 +2,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, or_, select
 
+from app.api.auth import is_guest
 from app.api.deps import DB, Candidate, CurrentUser
 from app.core.db import utcnow
 from app.models import Application, Company, Complaint, Invitation, Notification, TaskAssignment, Vacancy
@@ -168,6 +169,8 @@ def apply(vac_id: int, data: ApplyIn, cand: Candidate, db: DB):
         raise HTTPException(404, "Вакансия не найдена или закрыта")
     if not cand.consent_pd:
         raise HTTPException(409, "Нужно согласие на обработку персональных данных")
+    if is_guest(cand.user):
+        raise HTTPException(409, "С демо-аккаунта нельзя откликаться на вакансии — зарегистрируйтесь")
     exists = db.scalar(select(Application).where(Application.candidate_id == cand.id, Application.vacancy_id == v.id,
                                                  Application.status != "withdrawn"))
     if exists:

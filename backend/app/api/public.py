@@ -7,7 +7,7 @@ from fastapi import APIRouter
 from sqlalchemy import func, select
 
 from app.api.deps import DB, Admin
-from app.core.config import BASE_DIR
+from app.core.config import BASE_DIR, settings
 from app.models import CandidateProfile, CandidateResume, Company, Invitation, ItemStat, TestSession, Vacancy
 from app.schemas import EvalRankIn
 from app.services.fsp.scoring import fsp_score
@@ -16,7 +16,7 @@ from app.services.matching.ranking import Need, score_candidates
 from app.services.nlp.vacancy_parser import parse_need
 from app.services.reference.taxonomy import DOMAINS, GRADE_NAMES, SPEC_NAMES
 from app.services.testing.bank import REGISTRY, bank_summary
-from app.services.testing.service import calibrate_pretest
+from app.services.testing.service import FULL_ONLY, calibrate_pretest
 
 router = APIRouter(tags=["Публичное: методика и оценка"])
 REPORTS = BASE_DIR / "validation" / "reports"
@@ -42,9 +42,10 @@ def stats(db: DB):
         "candidates": count(CandidateProfile), "categorized": count(CandidateProfile, CandidateProfile.grade.is_not(None)),
         "extra_categories": count(CandidateResume, CandidateResume.grade.is_not(None)),
         "with_fsp": count(CandidateProfile, CandidateProfile.fsp_id.is_not(None)), "companies": count(Company),
-        "vacancies": count(Vacancy, Vacancy.is_published.is_(True)), "tests": count(TestSession, TestSession.status == "completed"),
+        "vacancies": count(Vacancy, Vacancy.is_published.is_(True)),
+        "tests": count(TestSession, TestSession.status == "completed", FULL_ONLY),
         "invitations": count(Invitation), "accepted": count(Invitation, Invitation.status == "accepted"),
-        "item_families": len(REGISTRY),
+        "item_families": len(REGISTRY), "guest_mode": settings.guest_mode,
     }
 
 

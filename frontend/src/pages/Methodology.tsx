@@ -237,6 +237,24 @@ export function Methodology() {
                 </div>
               </div>
             </div>
+            {cat.express && (
+              <div className="mt-6 card p-5">
+                <p className="font-bold text-fsp-deep">Экспресс-тест: {cat.express.config.items} заданий против полного теста</p>
+                <p className="mt-0.5 text-xs text-slate-500">Одна популяция ({cat.express.config.population} кандидатов); грейд — самый вероятный по ответам; длительность — по модели времени ответа симуляции.
+                  Экспресс-тест категорию не присваивает: это пробная оценка уровня, в том числе для проверки теста без регистрации.</p>
+                <div className="mt-3">
+                  <Table head={['', 'Полный тест', 'Экспресс']} rows={[
+                    ['Заданий', cat.express.full.items, cat.express.express.items],
+                    ['Длительность, мин (среднее / p90)', `${cat.express.full.est_duration_min} / ${cat.express.full.est_duration_p90_min}`, `${cat.express.express.est_duration_min} / ${cat.express.express.est_duration_p90_min}`],
+                    ['Корреляция θ̂ и θ', cat.express.full.pearson_r, cat.express.express.pearson_r],
+                    ['Грейд точно / ±1 ступень', `${pct(cat.express.full.grade_exact)} / ${pct(cat.express.full.grade_within_one, 1)}`, `${pct(cat.express.express.grade_exact)} / ${pct(cat.express.express.grade_within_one, 1)}`],
+                    ['Разделение соседних грейдов (AUC)', cat.express.full.auc_adjacent_mean, cat.express.express.auc_adjacent_mean],
+                    ['Калибровка вероятностей грейдов (ECE)', cat.express.full.calibration.ece, cat.express.express.calibration.ece],
+                  ]} />
+                </div>
+                <p className="mt-3 text-xs text-slate-500">Перебор длины: {(cat.express.sweep as any[]).map(r => `${r.items} зад. (лимит ${r.max_time_limit_sec} с) — ${r.est_duration_min} мин, r ${r.pearson_r}${r.chosen ? ' ← выбрано' : ''}`).join('; ')}.</p>
+              </div>
+            )}
           </Section>
         )}
 

@@ -568,6 +568,21 @@ def test_guest_accounts_expire(client):
         assert db.scalar(select(CandidateProfile).where(CandidateProfile.contact_email == first)) is None
 
 
+def test_guest_account_cannot_publish_or_apply(client):
+    """Демо-аккаунт не попадает к работодателям: публикацию профиля и отклики сервер отклоняет; интерфейс узнаёт
+    гостя по /auth/me, а кнопку «без регистрации» показывает по флагу из /public/stats."""
+    body = {"specialization": "backend", "language": "python", "claimed_grade": "junior", "consent_pd": True}
+    h = {"Authorization": f"Bearer {client.post(f'{API}/auth/guest', json=body).json()['access_token']}"}
+    assert client.get(f"{API}/auth/me", headers=h).json()["guest"] is True
+    assert client.get(f"{API}/auth/me", headers=login(client, "candidate@demo.ru")).json()["guest"] is False
+    assert client.get(f"{API}/public/stats").json()["guest_mode"] is True
+    r = client.post(f"{API}/candidate/consents", headers=h, json={"kind": "profile_publication", "granted": True})
+    assert r.status_code == 409
+    assert not client.get(f"{API}/candidate/profile", headers=h).json()["consent_publish"]
+    vid = client.get(f"{API}/vacancies", headers=h).json()[0]["id"]
+    assert client.post(f"{API}/vacancies/{vid}/apply", headers=h, json={}).status_code == 409
+
+
 def test_lower_grade_can_be_accepted_from_same_test(client):
     """Не подтвердил Middle, но тест уверенно показал уровень не ниже Junior — Junior можно принять сразу."""
     from app.services.testing.cat import AnsweredItem, CatConfig, CatState, decide

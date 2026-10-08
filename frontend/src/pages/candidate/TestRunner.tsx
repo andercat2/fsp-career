@@ -3,8 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import clsx from 'clsx'
-import { ArrowRight, Award, Camera, Check, CircleAlert, CircleCheck, CircleX, EyeOff, Flag, Info, ShieldAlert, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react'
+import {
+  ArrowRight, Award, Camera, Check, CircleAlert, CircleCheck, CircleX, EyeOff, Flag, Gauge, Info, RotateCcw, ShieldAlert, ShieldCheck, Sparkles,
+  TrendingUp, UserPlus, Zap,
+} from 'lucide-react'
 import { api } from '@/lib/api'
+import { useAuth } from '@/lib/auth'
 import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
 import { CountUp, EASE, SPRING } from '@/lib/motion'
@@ -254,6 +258,134 @@ function PercentileRing({ value }: { value: number }) {
   )
 }
 
+function Terminated({ pr }: { pr: any }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }}
+      className="flex gap-3 rounded-[22px] border border-red-100 bg-red-50 p-4 text-sm text-red-900 sm:p-5">
+      <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+      <div>
+        <p className="font-bold">Тест завершён досрочно: повторно зафиксировано нарушение — {pr.violation_name}</p>
+        <p className="mt-1 text-red-800/80">Нарушение записано в историю тестов. Результат посчитан по данным ответам с понижением оценки уровня на {String(pr.penalty).replace('.', ',')} (≈ половина грейда); задание, на котором зафиксировано нарушение, засчитано неверным.</p>
+      </div>
+    </motion.div>
+  )
+}
+
+function Review({ items }: { items: any[] }) {
+  return (
+    <Card title="Разбор заданий" subtitle="Темы и объяснения. Сами варианты уникальны и не публикуются">
+      <div className="divide-y divide-line">
+        {items.map((x: any, i: number) => (
+          <motion.div key={x.seq} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 * i }} className="flex gap-3 py-2.5">
+            {x.correct ? <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> : <CircleX className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />}
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-fsp-deep">{x.seq}. {x.topic}{!x.scored && <Badge className="ml-2" tone="gray">пилотное</Badge>}</p>
+              <p className="text-xs text-slate-500">{x.domain}{x.explanation && <> · {x.explanation}</>}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </Card>
+  )
+}
+
+/** Вероятность каждого грейда по ответам экспресс-теста: горизонтальные полосы, самый вероятный — акцентом. */
+function GradeProbs({ probs, best }: { probs: Record<string, number>; best: string }) {
+  const { ref } = useReference()
+  return (
+    <div className="space-y-3.5">
+      {ref?.grades.map((g, i) => {
+        const p = Math.round((probs[g.code] ?? 0) * 100)
+        return (
+          <div key={g.code} title={`${g.name}: ${p}%`}>
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span className={clsx('flex items-center gap-2', g.code === best ? 'font-semibold text-fsp-deep' : 'text-slate-600')}>
+                {g.name}{g.code === best && <Badge tone="pink">вероятнее всего</Badge>}</span>
+              <b className="tabular-nums text-fsp-deep">{p}%</b>
+            </div>
+            <div className="mt-1.5 h-2 rounded-full bg-[#F1EFF6]">
+              <motion.div className={clsx('h-full rounded-full', g.code === best ? 'bg-gradient-to-r from-fsp-pink to-[#ff4d8a]' : 'bg-fsp-lavender')}
+                initial={{ width: 0 }} animate={{ width: `${Math.max(1.5, p)}%` }} transition={{ duration: 0.9, ease: EASE, delay: 0.2 + i * 0.08 }} />
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/** Итог экспресс-теста: вероятный грейд и вероятности всех грейдов. Категория не меняется — дальше полный тест. */
+function ExpressResult({ view }: { view: any }) {
+  const r = view.result
+  const pr = r.proctoring
+  const { user, signOut } = useAuth()
+  const { gradeName, ref } = useReference()
+  const nav = useNavigate()
+  const { push } = useToast()
+  const qc = useQueryClient()
+  const [confirm, setConfirm] = useState<string | null>(null)
+  const start = useMutation({
+    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g, resume_id: view.resume_id ?? 0, mode: 'full' } }),
+    onSuccess: (s: any) => { qc.invalidateQueries(); nav(`/candidate/testing/${s.token}`) },
+    onError: (e: any) => push(e.message, 'error'),
+  })
+  const est: string = r.estimated_grade
+  const next = r.below_intern_floor ? 'intern' : est
+  const pct = (g: string) => Math.round((r.grade_probs?.[g] ?? 0) * 100)
+  const p = pct(est)
+  // соседний грейд почти так же вероятен — честнее сказать «на границе», чем назвать один грейд
+  const order = ref?.grades.map(g => g.code) ?? []
+  const runner = order.filter(g => g !== est && Math.abs(order.indexOf(g) - order.indexOf(est)) === 1).sort((a, b) => pct(b) - pct(a))[0]
+  const edge = !r.below_intern_floor && runner && p - pct(runner) < 10 ? [est, runner].sort((a, b) => order.indexOf(a) - order.indexOf(b)) : null
+  return (
+    <div className="space-y-6">
+      {pr?.terminated && <Terminated pr={pr} />}
+      <motion.div initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.6, ease: EASE }}
+        className="relative overflow-hidden rounded-[28px] bg-brand-gradient p-6 text-white shadow-lift sm:p-8">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-fsp-pink/30 blur-3xl" />
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+          <PercentileRing value={Math.round(r.percentile)} />
+          <div className="min-w-0 flex-1">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/85 ring-1 ring-white/15">
+              <Zap className="h-3.5 w-3.5" />Экспресс-оценка · {r.n_items} заданий</span>
+            <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.5, ease: EASE }}
+              className="mt-3 text-[26px] font-extrabold tracking-tight text-white">{r.below_intern_floor ? 'Уровень пока ниже стажёрского'
+                : edge ? `На границе ${gradeName(edge[0])} и ${gradeName(edge[1])}` : `Вероятный грейд — ${gradeName(est)}`}</motion.h2>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-2 max-w-2xl text-sm leading-relaxed text-white/75">
+              {r.below_intern_floor ? 'Стоит подтянуть основы и пройти тест позже. '
+                : edge ? `Вероятности почти равны: ${gradeName(edge[0])} — ${pct(edge[0])}%, ${gradeName(edge[1])} — ${pct(edge[1])}%. `
+                  : `Уровень в диапазоне ${gradeName(est)} — с вероятностью ${p}%. `}
+              Это ориентир, а не категория: работодатели его не видят, грейд не меняется. Категорию присваивает полный тест — 12–24 задания, оценка заметно точнее.
+            </motion.p>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <Button onClick={() => setConfirm(next)} icon={<Gauge className="h-4 w-4" />}>Полный тест на {gradeName(next)}</Button>
+              {user?.guest
+                ? <Button variant="secondary" onClick={() => { signOut(); nav('/register?role=candidate') }} icon={<UserPlus className="h-4 w-4" />}>Создать аккаунт</Button>
+                : <ButtonLink to="/candidate/testing?mode=express" variant="secondary" icon={<RotateCcw className="h-4 w-4" />}>Ещё раз</ButtonLink>}
+              <span className="ml-1 text-sm text-white/70">{r.n_correct} из {r.n_items} верно</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+      <StartTestModal grade={confirm} title={confirm ? gradeName(confirm) : undefined} loading={start.isPending}
+        onClose={() => setConfirm(null)} onConfirm={() => confirm && start.mutate(confirm)} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card title="Вероятности грейдов" subtitle="Насколько вероятно, что ваш уровень — в диапазоне каждого грейда">
+          <GradeProbs probs={r.grade_probs ?? {}} best={est} />
+        </Card>
+        <Card title="Результаты по доменам" subtitle={`Вероятность решить типичное задание уровня ${r.target_grade_name}`}>
+          <DomainBars domains={r.domains} />
+        </Card>
+      </div>
+      <Review items={r.review} />
+      <Alert tone="info" icon={<Info className="h-4 w-4" />} title="Как считается результат">
+        Оценка уровня θ = {r.theta} (± {r.se}) — на той же шкале модели IRT, что и в полном тесте. Вероятность грейда — апостериорная вероятность
+        того, что уровень попадает в его диапазон. По 8 ответам погрешность выше, чем в полном тесте, поэтому экспресс-тест грейд не присваивает.
+      </Alert>
+    </div>
+  )
+}
+
 function Result({ view }: { view: any }) {
   const r = view.result
   const pr = r.proctoring
@@ -277,16 +409,7 @@ function Result({ view }: { view: any }) {
   })
   return (
     <div className="space-y-6">
-      {pr?.terminated && (
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }}
-          className="flex gap-3 rounded-[22px] border border-red-100 bg-red-50 p-4 text-sm text-red-900 sm:p-5">
-          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
-          <div>
-            <p className="font-bold">Тест завершён досрочно: повторно зафиксировано нарушение — {pr.violation_name}</p>
-            <p className="mt-1 text-red-800/80">Нарушение записано в историю тестов. Результат посчитан по данным ответам с понижением оценки уровня на {String(pr.penalty).replace('.', ',')} (≈ половина грейда); задание, на котором зафиксировано нарушение, засчитано неверным.</p>
-          </div>
-        </motion.div>
-      )}
+      {pr?.terminated && <Terminated pr={pr} />}
       <motion.div initial={{ opacity: 0, y: 16, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.6, ease: EASE }}
         className={clsx('relative overflow-hidden rounded-[28px] p-6 sm:p-8', ok ? 'bg-brand-gradient text-white shadow-lift' : 'border border-amber-100 bg-amber-50/70')}>
         {ok && <Confetti />}
@@ -335,19 +458,7 @@ function Result({ view }: { view: any }) {
         <Card title="Результаты по доменам" subtitle="Вероятность решить типичное задание уровня заявленного грейда">
           <DomainBars domains={r.domains} />
         </Card>
-        <Card title="Разбор заданий" subtitle="Темы и объяснения. Сами варианты уникальны и не публикуются">
-          <div className="divide-y divide-line">
-            {r.review.map((x: any, i: number) => (
-              <motion.div key={x.seq} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 * i }} className="flex gap-3 py-2.5">
-                {x.correct ? <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> : <CircleX className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />}
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-fsp-deep">{x.seq}. {x.topic}{!x.scored && <Badge className="ml-2" tone="gray">пилотное</Badge>}</p>
-                  <p className="text-xs text-slate-500">{x.domain}{x.explanation && <> · {x.explanation}</>}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </Card>
+        <Review items={r.review} />
       </div>
       <Alert tone="info" icon={<Info className="h-4 w-4" />} title="Как считается результат">
         Оценка уровня θ = {r.theta} (± {r.se}) на общей шкале модели IRT: задания разной трудности дают сопоставимый результат.{pr?.penalty ? ` Оценка включает штраф −${String(pr.penalty).replace('.', ',')} за нарушение. ` : ' '}
@@ -403,12 +514,13 @@ export function TestRunner() {
   if (isLoading || !view) return <PageLoader />
   if (view.status === 'abandoned') return <Alert tone="warn" title="Сессия прервана">Тест был прерван. <Link to="/candidate/testing" className="link">Вернуться к выбору уровня</Link></Alert>
   const strikes = view.proctoring?.strikes ?? 0
+  const express = view.mode === 'express'
   return (
     <div className="proctored mx-auto max-w-4xl">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Тест на грейд</p>
-          <h1 className="mt-1.5 text-[26px] font-bold tracking-tight">{view.specialization_name} · {gradeName(view.target_grade)}</h1>
+          <p className="eyebrow">{express ? 'Экспресс-тест · пробная оценка уровня' : 'Тест на грейд'}</p>
+          <h1 className="mt-1.5 text-[26px] font-bold tracking-tight">{view.specialization_name}{express ? '' : ` · ${gradeName(view.target_grade)}`}</h1>
         </div>
         {inProgress && (
           <div className="w-full max-w-sm">
@@ -417,7 +529,7 @@ export function TestRunner() {
               {strikes ? <ShieldAlert className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
               {strikes ? 'Предупреждение получено: следующее нарушение завершит тест' : 'Прокторинг: снимки экрана и копирование фиксируются'}
             </div>
-            <div className="mb-2 flex justify-between text-xs text-slate-500"><span>Отвечено: <b className="text-fsp-deep">{view.answered}</b></span><span>обычно {view.min_items}–{view.max_items}</span></div>
+            <div className="mb-2 flex justify-between text-xs text-slate-500"><span>Отвечено: <b className="text-fsp-deep">{view.answered}</b></span><span>{view.min_items === view.max_items ? `всего ${view.max_items}` : `обычно ${view.min_items}–${view.max_items}`}</span></div>
             <div className="flex gap-1">
               {Array.from({ length: view.max_items }).map((_, i) => (
                 <motion.span key={i} className="h-1.5 flex-1 rounded-full" initial={false}
@@ -429,7 +541,7 @@ export function TestRunner() {
       </div>
       <AnimatePresence mode="wait">
         {inProgress && view.question ? <QuestionView key={view.question.id} q={view.question} onSubmit={onSubmit} busy={answer.isPending} shielded={away} /> : view.result ? (
-          <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Result view={view} /></motion.div>
+          <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{view.result.express ? <ExpressResult view={view} /> : <Result view={view} />}</motion.div>
         ) : <Alert tone="info" icon={<Flag className="h-4 w-4" />}>Тест завершён.</Alert>}
       </AnimatePresence>
       <Modal open={!!warn && inProgress} onClose={() => setWarn(null)} title="Зафиксировано нарушение правил"

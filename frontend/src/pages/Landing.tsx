@@ -5,13 +5,14 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform }
 import clsx from 'clsx'
 import {
   ArrowRight, ArrowUpRight, BadgeCheck, Building2, ChartBar, CircleCheck, Eye, Fingerprint, Lock, LockOpen, Mail, Medal, Repeat,
-  Search, ShieldCheck, Sparkles, Trophy, UserRound, Wallet,
+  Search, ShieldCheck, Sparkles, Trophy, UserRound, Wallet, Zap,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { homeFor, useAuth } from '@/lib/auth'
 import { Blobs, CountUp, EASE, Reveal } from '@/lib/motion'
 import { ButtonLink } from '@/components/ui'
 import { Logo } from '@/components/Layout'
+import { GuestStartModal } from '@/components/GuestStart'
 
 export function PublicHeader({ solid = false }: { solid?: boolean }) {
   const { user } = useAuth()
@@ -247,7 +248,10 @@ function Bento({ className, title, text, children, dark }: { className?: string;
 }
 
 export function Landing() {
+  const { user } = useAuth()
+  const [guest, setGuest] = useState(false)
   const { data: stats } = useQuery({ queryKey: ['public-stats'], queryFn: () => api('/public/stats') })
+  const canTry = !!stats?.guest_mode && !user
   const { data: meth } = useQuery({ queryKey: ['methodology'], queryFn: () => api('/public/methodology') })
   const cat = meth?.cat_validation
   const mv = meth?.matching_validation
@@ -292,6 +296,13 @@ export function Landing() {
                 <Building2 className="h-5 w-5" /> Я работодатель <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </motion.div>
+            {canTry && (
+              <motion.button type="button" onClick={() => setGuest(true)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.9 }}
+                className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white/75 transition hover:text-white">
+                <Zap className="h-4 w-4 text-[#ff7aa8]" />Без регистрации: экспресс-тест за 7 минут
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+              </motion.button>
+            )}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1 }}
               className="mt-12 grid max-w-xl grid-cols-2 gap-6 sm:grid-cols-4">
               {[[stats?.categorized, 'с подтверждённой категорией'], [stats?.with_fsp, 'с ФСП ID'], [stats?.item_families, 'семейств заданий'],
@@ -406,12 +417,20 @@ export function Landing() {
                 <p className="text-3xl font-extrabold tracking-tight">Готовы показать свой уровень?</p>
                 <p className="mt-2 max-w-lg text-white/70">Регистрация, опрос и тест — около 30 минут. Дальше предложения приходят сами.</p>
               </div>
-              <ButtonLink to="/register" size="lg" className="group">Начать <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></ButtonLink>
+              <div className="flex flex-wrap gap-3">
+                {canTry && (
+                  <button type="button" onClick={() => setGuest(true)}
+                    className="inline-flex h-12 items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 text-[15px] font-semibold text-white backdrop-blur transition hover:bg-white/10">
+                    <Zap className="h-5 w-5" />Экспресс-тест без регистрации</button>
+                )}
+                <ButtonLink to="/register" size="lg" className="group">Начать <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></ButtonLink>
+              </div>
             </div>
           </div>
         </Reveal>
       </section>
 
+      <GuestStartModal open={guest} onClose={() => setGuest(false)} />
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 text-sm text-slate-500 sm:flex-row sm:items-center sm:px-6">
           <img src="/brand/fsp-logo-black.png" alt="Федерация спортивного программирования России" className="h-8 w-auto opacity-80" />

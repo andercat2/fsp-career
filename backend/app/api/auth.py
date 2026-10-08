@@ -196,7 +196,7 @@ def token(form: Annotated[OAuth2PasswordRequestForm, Depends()], db: DB):
 
 @router.get("/me", summary="Текущий пользователь")
 def me(user: CurrentUser, db: DB):
-    out = UserOut.model_validate(user).model_dump()
+    out = UserOut.model_validate(user).model_dump() | {"guest": is_guest(user)}
     if user.role == "candidate":
         cand = db.scalar(select(CandidateProfile).where(CandidateProfile.user_id == user.id))
         out["candidate"] = {"id": cand.id, "public_id": cand.public_id, "full_name": cand.full_name,

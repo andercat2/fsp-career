@@ -7,6 +7,7 @@ export type Me = {
   email: string
   role: 'candidate' | 'employer' | 'admin'
   email_verified: boolean
+  guest?: boolean  // демо-аккаунт «Попробовать как кандидат»: не публикуется, удаляется через 2 дня
   candidate?: { id: number; public_id: string; full_name: string | null; grade: string | null; specialization: string | null } | null
   company?: { id: number; name: string } | null
 }

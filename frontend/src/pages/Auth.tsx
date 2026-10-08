@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Building2, KeyRound, Mail, ShieldCheck, UserRound } from 'lucide-react'
+import { Building2, KeyRound, Mail, ShieldCheck, UserRound, Zap } from 'lucide-react'
 import clsx from 'clsx'
 import { Blobs, EASE } from '@/lib/motion'
 import { api } from '@/lib/api'
@@ -9,6 +9,7 @@ import { homeFor, useAuth } from '@/lib/auth'
 import { useToast } from '@/lib/toast'
 import { Alert, Button, Checkbox, Field, Input, PageLoader } from '@/components/ui'
 import { Logo } from '@/components/Layout'
+import { GuestStartModal, useGuestMode } from '@/components/GuestStart'
 
 const FEATURES = [
   { icon: <ShieldCheck className="h-4 w-4" />, t: 'Категория подтверждается адаптивным тестом' },
@@ -71,6 +72,8 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(params.get('fsp_error'))
+  const [guest, setGuest] = useState(false)
+  const guestMode = useGuestMode()
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -110,6 +113,16 @@ export function Login() {
           ))}
         </div>
       </div>
+      {guestMode && (
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-[20px] border border-dashed border-[#FFC2D6] bg-[#FFF7FA] p-4">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-fsp-deep">Без регистрации</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-slate-500">Демо-кандидат в один клик и сразу тест: экспресс за ≈ 7 минут или полный</p>
+          </div>
+          <Button size="sm" onClick={() => setGuest(true)} icon={<Zap className="h-4 w-4" />}>Попробовать</Button>
+        </div>
+      )}
+      <GuestStartModal open={guest} onClose={() => setGuest(false)} />
     </AuthLayout>
   )
 }

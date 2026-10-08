@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { ArrowLeft, ArrowRight, Camera, Clock, FileUp, Fingerprint, Layers, Lock, Play, Repeat, RotateCcw, ShieldCheck, Sparkles, Timer, Upload } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Clock, FileUp, Fingerprint, Layers, Lock, Play, Repeat, RotateCcw, ShieldCheck, Sparkles, Timer, Upload, Zap } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useReference } from '@/lib/reference'
 import { useToast } from '@/lib/toast'
@@ -10,6 +10,7 @@ import { date } from '@/lib/format'
 import { Alert, Badge, Button, Card, ChoiceCard, Field, Input, PageHeader, PageLoader, Progress } from '@/components/ui'
 import { MAX_RESUMES, ResumeTabs, resumeLabel, useResumes } from '@/components/Resumes'
 import { StartTestModal } from '@/components/StartTestModal'
+import { ModePicker, type TestMode } from '@/components/GuestStart'
 
 type Survey = {
   industries: string[]; specialization: string; language: string | null; experience: string; roles: string[]
@@ -234,6 +235,7 @@ function HowItWorks({ spec, lang }: { spec?: string | null; lang?: string | null
         <li className="flex gap-3"><Fingerprint className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Уникальный.</b> Каждое задание — ваш личный вариант: свои числа, данные, код. Ответы других кандидатов не помогут.</span></li>
         <li className="flex gap-3"><Timer className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С таймером по сложности.</b> От 1 до 5 минут: базовое время зависит от формата (выбор, код, расчёт) и увеличивается для трудных заданий. Вернуться к предыдущему нельзя.</span></li>
         <li className="flex gap-3"><Camera className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">С прокторингом.</b> Снимок экрана, печать или копирование задания: первый раз — предупреждение, второй — тест завершается досрочно с пониженной оценкой. Уход со вкладки учитывается.</span></li>
+        <li className="flex gap-3"><Zap className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Экспресс-режим.</b> 8 заданий за ≈ 7 минут — пробная оценка уровня с вероятностями грейдов. Категорию не присваивает, поэтому доступен в любое время (до 5 раз в сутки).</span></li>
         <li className="flex gap-3"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-fsp-pink" /><span><b className="text-fsp-deep">Честные ограничения.</b> Смена грейда и повтор того же уровня — не чаще раза в месяц. Не прошли — можно принять грейд ниже по этому же тесту (если тест уверенно его показал) или пройти тест уровнем ниже без ожидания; уверенно прошли — тест уровнем выше доступен без ожидания, начинаете его, когда будете готовы.</span></li>
       </ul>
       {bp && (
@@ -266,20 +268,23 @@ export function Testing() {
   const [warnings, setWarnings] = useState<string[]>([])
   const [grade, setGrade] = useState<string | null>(null)
   const [confirm, setConfirm] = useState<string | null>(null)
+  const [mode, setMode] = useState<TestMode>(params.get('mode') === 'express' ? 'express' : 'full')
   const { data: resumes } = useResumes()
   const { data: el, isLoading } = useQuery({ queryKey: ['eligibility', rid], queryFn: () => api(`/testing/eligibility?resume_id=${rid}`), enabled: !isNew })
   useEffect(() => { setGrade(null); setResurvey(false) }, [rid, isNew])
   const start = useMutation({
-    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g, resume_id: rid } }),
+    mutationFn: (g: string) => api('/testing/sessions', { body: { grade: g, resume_id: rid, mode } }),
     onSuccess: (s: any) => nav(`/candidate/testing/${s.token}`),
     onError: (e: any) => push(e.message, 'error'),
   })
-  const recommended = useMemo(() => el?.grades?.find((g: any) => g.recommended && g.allowed)?.grade, [el])
+  // экспресс-тест не меняет категорию, поэтому ограничения частоты полного теста на него не действуют
+  const usable = (g: any) => mode === 'express' || g.allowed
+  const recommended = useMemo(() => el?.grades?.find((g: any) => g.recommended && (mode === 'express' || g.allowed))?.grade, [el, mode])
   if (!resumes || (!isNew && (isLoading || !el))) return <PageLoader />
   const current = resumes.find(r => r.id === rid) ?? resumes[0]
   const mainReady = !!resumes[0]?.survey_completed_at
   const canAdd = mainReady && resumes.length < MAX_RESUMES
-  const selected = grade ?? recommended ?? el?.grades?.find((g: any) => g.allowed)?.grade
+  const selected = grade ?? recommended ?? el?.grades?.find(usable)?.grade
   const showSurvey = !isNew && (!el.ready || resurvey)
   const refresh = () => { qc.invalidateQueries({ queryKey: ['eligibility'] }); qc.invalidateQueries({ queryKey: ['cand-dashboard'] }); qc.invalidateQueries({ queryKey: ['cand-resumes'] }); qc.invalidateQueries({ queryKey: ['cand-profile'] }) }
   const goTo = (id: number) => setParams(id ? { resume: String(id) } : {})
@@ -307,26 +312,31 @@ export function Testing() {
                 <Button size="sm" className="mt-2" onClick={() => nav(`/candidate/testing/${el.in_progress}`)}>Продолжить</Button>
               </Alert>
             )}
-            <Card title="Выберите уровень теста" subtitle={<>Резюме: <b className="text-fsp-deep">{resumeLabel(current)}</b> · специализация: <b className="text-fsp-deep">{specName(el.specialization)}</b>{el.current_grade && <> · текущий грейд: <b className="text-fsp-deep">{el.grades.find((g: any) => g.grade === el.current_grade)?.name}</b></>}</>}>
+            <Card title="Формат и уровень теста" subtitle={<>Резюме: <b className="text-fsp-deep">{resumeLabel(current)}</b> · специализация: <b className="text-fsp-deep">{specName(el.specialization)}</b>{el.current_grade && <> · текущий грейд: <b className="text-fsp-deep">{el.grades.find((g: any) => g.grade === el.current_grade)?.name}</b></>}</>}>
+              <ModePicker value={mode} onChange={m => { setMode(m); setGrade(null) }} />
+              <p className="label mt-6">{mode === 'express' ? 'Уровень, с которого начнётся экспресс-тест' : 'Грейд, который подтверждает тест'}</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 {el.grades.map((g: any) => (
-                  <ChoiceCard key={g.grade} selected={selected === g.grade && g.allowed} disabled={!g.allowed} onClick={() => setGrade(g.grade)}
-                    title={<span className="flex items-center gap-2">{!g.allowed && <Lock className="h-4 w-4 text-slate-400" />}{g.name}</span>}
-                    hint={g.reason ? <>{g.reason}{g.available_from && <> · доступно с {date(g.available_from)}</>}</> : undefined}
-                    badge={g.recommended && g.allowed ? <Badge tone="pink" icon={<Sparkles className="h-3 w-3" />}>рекомендуем</Badge> : undefined} />
+                  <ChoiceCard key={g.grade} selected={selected === g.grade && usable(g)} disabled={!usable(g)} onClick={() => setGrade(g.grade)}
+                    title={<span className="flex items-center gap-2">{!usable(g) && <Lock className="h-4 w-4 text-slate-400" />}{g.name}</span>}
+                    hint={mode === 'full' && g.reason ? <>{g.reason}{g.available_from && <> · доступно с {date(g.available_from)}</>}</> : undefined}
+                    badge={g.recommended && usable(g) ? <Badge tone="pink" icon={<Sparkles className="h-3 w-3" />}>рекомендуем</Badge> : undefined} />
                 ))}
               </div>
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface p-4">
-                <p className="text-sm text-slate-600">Тест займёт 20–40 минут. Обеспечьте спокойную обстановку — время на задание ограничено.</p>
-                <Button size="lg" disabled={!selected || !el.grades.find((g: any) => g.grade === selected)?.allowed}
-                  onClick={() => selected && setConfirm(selected)} icon={<Play className="h-5 w-5" />}>Начать тест</Button>
+                <p className="text-sm text-slate-600">{mode === 'express'
+                  ? 'Около 7 минут: 8 заданий. Покажет вероятный грейд; категория и ограничения полного теста не затрагиваются.'
+                  : 'Тест займёт 20–40 минут. Обеспечьте спокойную обстановку — время на задание ограничено.'}</p>
+                <Button size="lg" disabled={!selected || !usable(el.grades.find((g: any) => g.grade === selected) ?? {})}
+                  onClick={() => selected && setConfirm(selected)} icon={mode === 'express' ? <Zap className="h-5 w-5" /> : <Play className="h-5 w-5" />}>
+                  {mode === 'express' ? 'Начать экспресс-тест' : 'Начать тест'}</Button>
               </div>
             </Card>
           </>)}
         </div>
         <HowItWorks spec={isNew ? null : el.specialization} lang={isNew ? null : el.language} />
       </div>
-      <StartTestModal grade={confirm} title={confirm ? el?.grades?.find((g: any) => g.grade === confirm)?.name : undefined}
+      <StartTestModal grade={confirm} title={confirm ? el?.grades?.find((g: any) => g.grade === confirm)?.name : undefined} mode={mode}
         loading={start.isPending} onClose={() => setConfirm(null)} onConfirm={() => confirm && start.mutate(confirm)} />
     </div>
   )

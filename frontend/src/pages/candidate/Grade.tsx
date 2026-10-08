@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Award, Clock, History, Lock, Play, ShieldAlert } from 'lucide-react'
+import { Award, Clock, History, Lock, Play, ShieldAlert, Zap } from 'lucide-react'
 import { api } from '@/lib/api'
 import { date, dateTime } from '@/lib/format'
 import { Badge, ButtonLink, Card, EmptyState, KV, PageHeader, PageLoader } from '@/components/ui'
@@ -82,7 +82,9 @@ export function GradePage() {
                       <td>{resumes.length > 1 && titles[s.resume_id] ? <><span className="text-slate-400">{titles[s.resume_id]} · </span>{s.specialization_name}</> : s.specialization_name}</td>
                       <td>{s.target_grade_name}</td>
                       <td>{s.n_items ? `${s.n_correct}/${s.n_items}` : '—'}</td><td>{s.percentile != null ? `${Math.round(s.percentile)}%` : '—'}</td>
-                      <td className="space-x-1"><Badge tone={d[1]}>{d[0]}</Badge>
+                      <td className="space-x-1">{s.mode === 'express'
+                        ? <Badge tone="blue" icon={<Zap className="h-3 w-3" />}>экспресс{s.estimated_grade ? ` · ≈ ${gradeName(s.estimated_grade)}` : ''}</Badge>
+                        : <Badge tone={d[1]}>{d[0]}</Badge>}
                         {s.violation && <Badge tone="red" icon={<ShieldAlert className="h-3 w-3" />}>нарушение</Badge>}</td>
                       <td className="text-right">{(s.status === 'completed' || s.status === 'in_progress') && <Link to={`/candidate/testing/${s.token}`} className="link text-xs">{s.status === 'in_progress' ? 'продолжить' : 'результат'}</Link>}</td>
                     </tr>

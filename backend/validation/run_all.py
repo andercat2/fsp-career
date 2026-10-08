@@ -1,6 +1,6 @@
 """Полный прогон процедуры валидации и сводка в Markdown (validation/reports/SUMMARY.md).
 
-Запуск: python -m validation.run_all   (≈3–4 минуты на обычном ноутбуке)
+Запуск: python -m validation.run_all   (≈5 минут на обычном ноутбуке)
 """
 from __future__ import annotations
 
@@ -47,6 +47,32 @@ def unconfirmed_lines(match: dict) -> list[str]:
     return out + [""]
 
 
+def express_lines(cat: dict) -> list[str]:
+    e = cat.get("express")
+    if not e:
+        return []
+    f, x = e["full"], e["express"]
+    out = ["### Экспресс-тест против полного", "",
+           f"Одна популяция ({e['config']['population']} кандидатов); грейд в обоих режимах — самый вероятный по ответам. "
+           "Длительность — по модели времени ответа симуляции (в среднем 55% лимита задания).", "",
+           f"| Метрика | Полный тест | Экспресс ({e['config']['items']} заданий, лимит ≤ {e['config']['max_time_limit_sec'] // 60} мин) |",
+           "|---|---|---|",
+           f"| Заданий | {f['items']} | {x['items']} |",
+           f"| Длительность, мин: среднее / p90 | {f['est_duration_min']} / {f['est_duration_p90_min']} | {x['est_duration_min']} / {x['est_duration_p90_min']} |",
+           f"| Корреляция θ̂ с истинным θ / RMSE | {f['pearson_r']} / {f['rmse']} | {x['pearson_r']} / {x['rmse']} |",
+           f"| Грейд совпал с истинным | {pct(f['grade_exact'])} | {pct(x['grade_exact'])} |",
+           f"| Грейд в пределах ±1 ступени | {pct(f['grade_within_one'])} | {pct(x['grade_within_one'])} |",
+           f"| Разделение соседних грейдов (AUC, среднее) | {f['auc_adjacent_mean']} | {x['auc_adjacent_mean']} |",
+           f"| Калибровка вероятности грейда (ECE) | {f['calibration']['ece']} | {x['calibration']['ece']} |", "",
+           "Перебор длины экспресс-теста и лимита времени задания:", "",
+           "| Заданий | Лимит задания | Длительность, мин | r(θ̂, θ) | Грейд совпал | ±1 ступень | AUC соседних грейдов |",
+           "|---|---|---|---|---|---|---|"]
+    for r in e["sweep"]:
+        out.append(f"| {r['items']}{' (выбрано)' if r['chosen'] else ''} | {r['max_time_limit_sec']} с | {r['est_duration_min']} | "
+                   f"{r['pearson_r']} | {pct(r['grade_exact'])} | {pct(r['grade_within_one'])} | {r['auc_adjacent_mean']} |")
+    return out + ["", "Экспресс-тест категорию не присваивает: это пробная оценка уровня с вероятностями грейдов.", ""]
+
+
 def summary_md(cat: dict, match: dict, nlp: dict, plag: dict) -> str:
     rec, gr, la, dd, ms = cat["recovery"], cat["grades"], cat["leak_attack"], cat["drift_detection"], cat["misspecification"]
     s = match["summary"]
@@ -91,6 +117,7 @@ def summary_md(cat: dict, match: dict, nlp: dict, plag: dict) -> str:
         "", f"Ошибки априорной калибровки (b ± 0.4, a × e^N(0,0.25)): точность грейда {pct(ms['grade_accuracy']['prior_params'])} "
             f"на априорных параметрах против {pct(ms['grade_accuracy']['oracle_true_params'])} у «оракула»; онлайн-калибровка "
             f"снижает ошибку трудности с {ms['b_rmse_prior']} до {ms['b_rmse_after_calibration']}.", "",
+        *express_lines(cat),
         "## 2. Механика подбора", "",
         f"{match['setup']['candidates']} кандидатов, {match['setup']['needs']} потребностей; релевантность — из латентной истины.", "",
         "| Система | P@10 | nDCG@10 | MRR | Нерелевантных в топ-10 | «Завысивших» в топ-10 |", "|---|---|---|---|---|---|",

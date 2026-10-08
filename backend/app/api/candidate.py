@@ -4,6 +4,7 @@ from datetime import timedelta
 from fastapi import APIRouter, File, HTTPException, Request, Response, UploadFile
 from sqlalchemy import func, select
 
+from app.api.auth import is_guest
 from app.api.deps import DB, Candidate
 from app.core.db import utcnow
 from app.models import (
@@ -184,6 +185,9 @@ def consents(data: ConsentIn, cand: Candidate, db: DB, request: Request):
     else:
         if data.granted and not cand.consent_pd:
             raise HTTPException(409, "Сначала дайте согласие на обработку персональных данных")
+        if data.granted and is_guest(cand.user):
+            raise HTTPException(409, "Демо-аккаунт не публикуется работодателям — зарегистрируйтесь, чтобы "
+                                     "получить категорию и приглашения")
         cand.consent_publish = data.granted
     db.commit()
     return {"consent_pd": cand.consent_pd, "consent_publish": cand.consent_publish}

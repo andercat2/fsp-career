@@ -140,12 +140,13 @@ export function AppShell({ role }: { role: 'candidate' | 'employer' | 'admin' })
   const items = useNav(user?.role)
   const [drawer, setDrawer] = useState(false)
   const loc = useLocation()
+  const nav = useNavigate()
   const outlet = useOutlet()
   useEffect(() => { setDrawer(false); window.scrollTo({ top: 0 }) }, [loc.pathname])
   if (loading) return <div className="p-10"><PageLoader /></div>
   if (!user) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname)}`} replace />
   if (user.role !== role) return <Navigate to={homeFor(user.role)} replace />
-  const who = user.role === 'employer' ? user.company?.name : user.candidate?.full_name || user.email
+  const who = user.role === 'employer' ? user.company?.name : user.guest ? 'Демо-кандидат' : user.candidate?.full_name || user.email
   const roleName = role === 'employer' ? 'Работодатель' : role === 'admin' ? 'Администратор' : 'Кандидат'
   const current = [...items].sort((a, b) => b.to.length - a.to.length).find(i => loc.pathname === i.to || loc.pathname.startsWith(i.to + '/'))
   const side = (key: string) => (
@@ -198,6 +199,12 @@ export function AppShell({ role }: { role: 'candidate' | 'employer' | 'admin' })
           <div className="hidden sm:block"><Avatar name={who} className="h-9 w-9" /></div>
         </div>
       </header>
+      {user.guest && (
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-amber-100 bg-amber-50 px-4 py-2 text-center text-xs text-amber-900">
+          <span>Демо-аккаунт без регистрации: работодатели его не видят, через 2 дня он удалится вместе с ответами.</span>
+          <button onClick={() => { signOut(); nav('/register?role=candidate') }} className="font-semibold underline underline-offset-2">Создать аккаунт</button>
+        </div>
+      )}
       <main className="mx-auto w-full max-w-[1240px] px-4 py-7 sm:px-6 lg:px-10 lg:py-9">
         <motion.div key={loc.pathname} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, ease: EASE }}>
           <Suspense fallback={<PageLoader />}>{outlet}</Suspense>

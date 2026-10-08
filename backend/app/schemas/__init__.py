@@ -143,7 +143,7 @@ class StartTestIn(BaseModel):
     grade: GradeCode
     resume_id: int | None = Field(None, ge=0, description="Резюме (категория), по которому идёт тест; 0 — основное")
     mode: Literal["full", "express"] = Field("full", description="full — тест, определяющий категорию (12–24 задания); "
-                                                                 "express — пробная оценка уровня за ≈5 минут (8 заданий), "
+                                                                 "express — пробная оценка уровня за ≈7 минут (8 заданий), "
                                                                  "категорию не присваивает")
 
 
