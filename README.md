@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src="frontend/public/brand/fsp-logo-black.png" alt="Федерация спортивного программирования России" height="56">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/brand/fsp-logo-white.png">
+  <img src="frontend/public/brand/fsp-logo-black.png" alt="Федерация спортивного программирования России" height="56">
+</picture>
 
 # ФСП Карьера
 
