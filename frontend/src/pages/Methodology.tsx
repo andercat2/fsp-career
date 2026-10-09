@@ -190,7 +190,7 @@ export function Methodology() {
                 <Table head={['Истина \\ Присвоен', ...cat.grades.confusion_true_vs_assigned.cols]} rows={cat.grades.confusion_true_vs_assigned.matrix.map((row: number[], i: number) => {
                   const total = row.reduce((a, b) => a + b, 0)
                   return [<b key="r" className="text-fsp-deep">{cat.grades.confusion_true_vs_assigned.rows[i]}</b>, ...row.map((v, j) => (
-                    <span key={j} className="inline-block min-w-[44px] rounded-md px-1.5 py-0.5 text-center" style={{ background: `rgba(255,0,83,${(v / total) * 0.85})`, color: v / total > 0.45 ? '#fff' : '#1C1D22' }}>{v}</span>))]
+                    <span key={j} className="inline-block min-w-[44px] rounded-md px-1.5 py-0.5 text-center" style={{ background: `rgba(255,0,83,${(v / total) * 0.85})`, color: '#1C1D22' }}>{v}</span>))]
                 })} />
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div className="rounded-xl bg-surface p-3"><p className="text-xs text-slate-500">Точно / ±1 ступень</p><p className="font-bold text-fsp-deep">{pct(cat.grades.grade_exact_accuracy)} / {pct(cat.grades.grade_within_one)}</p></div>

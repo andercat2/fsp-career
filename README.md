@@ -21,7 +21,7 @@
 ![Tests](https://img.shields.io/badge/tests-525%20passed-2ea44f)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-[Быстрый старт](#быстрый-старт) · [Возможности](#возможности) · [Как это работает](#как-это-работает) ·
+[Видео](https://github.com/andercat2/fsp-career/releases/download/v1.0/fsp-career-demo.mp4) · [Быстрый старт](#быстрый-старт) · [Возможности](#возможности) · [Как это работает](#как-это-работает) ·
 [Валидация](#результаты-валидации) · [Документация](docs/fsp-career-documentation.pdf) ·
 [Презентация](docs/fsp-career-presentation.pdf) · [Требования ТЗ](REQUIREMENTS.md) · [Команда](#команда)
 

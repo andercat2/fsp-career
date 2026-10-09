@@ -108,7 +108,7 @@ export function CandidateDashboard() {
                   <Link to={s.link} className={clsx('group flex items-center gap-3 rounded-2xl px-3 py-3 transition',
                     next?.key === s.key ? 'bg-[#FFF5F8] ring-1 ring-fsp-pink/20' : 'hover:bg-surface')}>
                     <span className={clsx('grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold transition',
-                      s.done ? 'bg-emerald-500 text-white' : next?.key === s.key ? 'bg-fsp-pink text-white shadow-glow' : 'bg-slate-100 text-slate-500')}>
+                      s.done ? 'bg-emerald-600 text-white' : next?.key === s.key ? 'bg-fsp-pink text-white shadow-glow' : 'bg-slate-100 text-slate-500')}>
                       {s.done ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
                     </span>
                     <span className={clsx('flex-1 text-sm', s.done ? 'text-slate-400 line-through decoration-slate-300' : 'font-medium text-fsp-deep')}>{s.title}</span>

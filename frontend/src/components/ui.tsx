@@ -12,7 +12,7 @@ type Size = 'sm' | 'md' | 'lg'
 const btnBase = 'relative inline-flex select-none items-center justify-center gap-2 overflow-hidden rounded-xl font-semibold ' +
   'transition-[background,box-shadow,color,border-color] duration-200 disabled:cursor-not-allowed disabled:opacity-50'
 const btnVariant: Record<Variant, string> = {
-  primary: 'bg-gradient-to-b from-[#ff2668] to-fsp-pink text-white shadow-[0_1px_0_rgba(255,255,255,.25)_inset,0_6px_16px_-8px_rgba(255,0,83,.7)] hover:shadow-glow',
+  primary: 'bg-gradient-to-b from-[#ea0f57] to-fsp-pink text-white shadow-[0_1px_0_rgba(255,255,255,.25)_inset,0_6px_16px_-8px_rgba(255,0,83,.7)] hover:shadow-glow',
   secondary: 'border border-line bg-white text-fsp-deep shadow-soft hover:border-[#D9D4E7] hover:bg-[#FCFBFE]',
   ghost: 'text-slate-600 hover:bg-fsp-deep/[0.05] hover:text-fsp-deep',
   danger: 'border border-red-100 bg-white text-red-600 hover:bg-red-50',

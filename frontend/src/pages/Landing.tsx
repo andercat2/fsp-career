@@ -171,7 +171,7 @@ function VariantDemo() {
         <AnimatePresence mode="wait">
           <motion.span key={v.who} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="font-semibold text-fsp-blush">{v.who}</motion.span>
         </AnimatePresence>
-        <span className="text-white/40">семейство alg.loop_sum · b = −1.6</span>
+        <span className="text-white/60">семейство alg.loop_sum · b = −1.6</span>
       </div>
       <p><span className="text-[#ff7aa8]">xs</span> = <AnimatePresence mode="wait"><motion.span key={v.arr} className="inline-block text-[#FFC56B]"
         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>{v.arr}</motion.span></AnimatePresence></p>

@@ -61,10 +61,10 @@ export function CodeEditor({ value, onChange, language, onPaste, readOnly, minLi
     <div className="overflow-hidden rounded-2xl ring-1 ring-fsp-deep/25" style={{ background: '#22093d' }}>
       <div className="flex items-center justify-between bg-[#2c0d4d] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/60">
         <span>{label ?? LANG_LABEL[language] ?? language}</span>
-        <span className="normal-case tracking-normal text-white/40">{readOnly ? 'только чтение' : 'Tab — отступ · Shift+Tab — убрать'}</span>
+        <span className="normal-case tracking-normal text-white/60">{readOnly ? 'только чтение' : 'Tab — отступ · Shift+Tab — убрать'}</span>
       </div>
       <div className="relative flex" style={{ height }}>
-        <div ref={gutter} aria-hidden className="select-none overflow-hidden text-right text-white/25"
+        <div ref={gutter} aria-hidden className="select-none overflow-hidden text-right text-white/50"
           style={{ ...FONT, padding: `${PAD}px 10px ${PAD}px 12px`, minWidth: 44 }}>
           {Array.from({ length: Math.max(count, minLines) }, (_, i) => <div key={i}>{i + 1}</div>)}
         </div>

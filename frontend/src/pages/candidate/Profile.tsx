@@ -171,7 +171,7 @@ export function CandidateProfile() {
             <div className="flex flex-wrap gap-2">
               {Object.entries(ref.soft_skills).map(([k, v]) => (
                 <button key={k} type="button" onClick={() => set('soft_skills', toggle(form.soft_skills, k))}
-                  className={clsx('chip ring-1', form.soft_skills.includes(k) ? 'bg-fsp-lavender text-white ring-fsp-lavender' : 'bg-white text-slate-600 ring-slate-200')}>{v}</button>
+                  className={clsx('chip ring-1', form.soft_skills.includes(k) ? 'bg-[#655CB8] text-white ring-[#655CB8]' : 'bg-white text-slate-600 ring-slate-200')}>{v}</button>
               ))}
             </div>
           </Field>

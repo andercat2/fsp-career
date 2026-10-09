@@ -159,7 +159,7 @@ function Editor({ d, opts, onCancel, onSave, saving }: { d: Draft; opts: Options
             <div key={i} className="flex items-center gap-2">
               <button type="button" onClick={() => set('correct', i)} aria-label={`Правильный — ${LETTERS[i]}`}
                 className={clsx('grid h-8 w-8 shrink-0 place-items-center rounded-lg text-xs font-bold ring-1 transition',
-                  v.correct === i ? 'bg-emerald-500 text-white ring-emerald-500' : 'bg-white text-slate-500 ring-slate-200 hover:ring-emerald-300')}>
+                  v.correct === i ? 'bg-emerald-700 text-white ring-emerald-700' : 'bg-white text-slate-500 ring-slate-200 hover:ring-emerald-300')}>
                 {v.correct === i ? <Check className="h-4 w-4" /> : LETTERS[i]}</button>
               <Input value={o} onChange={e => set('options', v.options.map((x, j) => (j === i ? e.target.value : x)))} />
             </div>
@@ -212,7 +212,7 @@ function DraftCard({ d, opts, onDone }: { d: Draft; opts: Options; onDone: (msg:
               <div key={i} className={clsx('flex items-start gap-3 rounded-xl border px-3 py-2.5 text-sm',
                 i === d.correct ? 'border-emerald-300 bg-emerald-50/70' : doubt.has(i) ? 'border-amber-300 bg-amber-50/70' : 'border-line bg-white')}>
                 <span className={clsx('grid h-6 w-6 shrink-0 place-items-center rounded-md text-[11px] font-bold',
-                  i === d.correct ? 'bg-emerald-500 text-white' : doubt.has(i) ? 'bg-amber-400 text-white' : 'bg-slate-100 text-slate-500')}>{LETTERS[i]}</span>
+                  i === d.correct ? 'bg-emerald-700 text-white' : doubt.has(i) ? 'bg-amber-700 text-white' : 'bg-slate-100 text-slate-500')}>{LETTERS[i]}</span>
                 <span className="min-w-0 flex-1 text-fsp-ink">{o}</span>
                 {i === d.correct && <span className="shrink-0 text-[11px] font-semibold text-emerald-700">правильный по версии модели</span>}
                 {i !== d.correct && doubt.has(i) && <span className="shrink-0 text-[11px] font-semibold text-amber-700">возможно, тоже верный</span>}
