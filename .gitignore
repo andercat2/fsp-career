@@ -17,3 +17,6 @@ loadtest/results/*/report.html
 loadtest/results/*/locust_stats_history.csv
 # Демонстрационное видео (docs/build/video/record_demo.js) — в репозиторий не кладём
 docs/build/video/out/
+# Презентация с телефонами команды — только локально (build_deck.py --contacts), не для публичного репозитория
+docs/build/presentation/contacts.local.json
+docs/build/presentation/out/

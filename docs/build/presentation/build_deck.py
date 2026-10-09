@@ -1,6 +1,6 @@
 """Презентация решения на шаблоне организаторов «ЛЦТ 2026 · ФСП».
 
-python build_deck.py <шаблон.pptx> <папка скриншотов> <out.pptx>
+python build_deck.py <шаблон.pptx> <папка скриншотов> <out.pptx> [--contacts contacts.local.json]
 
 Скриншоты снимает shots.js (Chrome headless по работающему стенду), иллюстрации — docs/figures/make_figures.py.
 Слайды шаблона переставляются и заполняются: фоны, логотипы организаторов, «пилюли» заголовков, рамки устройств
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import copy
 import io
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -27,7 +28,21 @@ from pptx.oxml.ns import qn
 from pptx.util import Emu, Inches, Pt
 
 TEMPLATE, SHOTS, OUT = (Path(a) for a in sys.argv[1:4])
-TEAM = [("Ярослав", "Мурехин", "Мурехин Ярослав Андреевич"), ("Артём", "Воронин", "Воронин Артём Тимофеевич")]
+TEAM_NAME = "Рекрут 2"
+TEAM = [  # первый — капитан
+    {"first": "Ярослав", "last": "Мурехин", "full": "Мурехин Ярослав Андреевич",
+     "roles": ["Капитан команды", "ML/AI-инженер, backend"], "tg": "@Y_murik"},
+    {"first": "Артём", "last": "Воронин", "full": "Воронин Артём Тимофеевич", "roles": ["Frontend, backend"],
+     "tg": "@hl0pch1k"},
+]
+STUDY = "РТУ МИРЭА, программная инженерия"
+STUDY_FULL = "РТУ МИРЭА, программная инженерия (системы поддержки принятия решений)"
+WORK = "«Газпром автоматизация»"
+# Телефоны в репозиторий не попадают: версия для организаторов собирается с --contacts <файл> — JSON
+# {"Фамилия": "+7 …"} (docs/build/presentation/contacts.local.json, в .gitignore)
+CONTACTS = ({k: v.replace(" ", " ") for k, v in  # неразрывные пробелы: номер не переносится по частям
+             json.loads(Path(sys.argv[sys.argv.index("--contacts") + 1]).read_text(encoding="utf-8")).items()}
+            if "--contacts" in sys.argv else {})
 REPO = Path(__file__).resolve().parents[3]
 FIG = REPO / "docs" / "figures"
 BOLD_FONT = REPO / "backend" / "app" / "assets" / "fonts" / "Montserrat-Bold.ttf"
@@ -430,11 +445,11 @@ def main():
     # 1 ── Титульный: команда, задача, логотип постановщика (ФСП) ───────────────────────────
     s = S[0]
     write(s.shapes.title, [[("ФСП Карьера", {"size": 44, "bold": True})],
-                           [("Команда «Название команды»", {"size": 20, "bold": False, "color": BLUSH})]], line=1.0)
+                           [(f"Команда «{TEAM_NAME}»", {"size": 20, "bold": False, "color": BLUSH})]], line=1.0)
     write(ph(s, 12), ["Задача ФСП: цифровая платформа-агрегатор ИТ-вакансий с верифицированным профилем "
                       "достижений участника Федерации спортивного программирования"])
-    notes(s, "Мы — команда «…». Наше решение для задачи ФСП — платформа «ФСП Карьера»: подбор ИТ-специалистов с "
-             "обратной механикой, где уровень подтверждает тест, а инициатива — у работодателя.")
+    notes(s, f"Мы — команда «{TEAM_NAME}». Наше решение для задачи ФСП — платформа «ФСП Карьера»: подбор ИТ-специалистов "
+             "с обратной механикой, где уровень подтверждает тест, а инициатива — у работодателя.")
 
     # 2 ── О команде и решении ───────────────────────────────────────────────────────────────
     s = S[1]
@@ -442,10 +457,11 @@ def main():
     t = s.shapes.title
     write(t, ["О команде и решении"], color=DEEP, size=20)
     write(by_text(s, "Капитан:"), [
-        [("Состав: ", {"bold": True}), (", ".join(m[2] for m in TEAM), {})],
-        [("Участников: ", {"bold": True}), (str(len(TEAM)), {})],
-        [("О команде: ", {"bold": True}), ("[как собралась команда, место учёбы или работы]", {})],
-        [("Город и регион: ", {"bold": True}), ("[город, регион]", {})],
+        [("Команда: ", {"bold": True}), (f"«{TEAM_NAME}», участников: {len(TEAM)}", {"bold": False})],
+        [("Капитан: ", {"bold": True}), (TEAM[0]["full"], {"bold": False})],
+        [("Участник: ", {"bold": True}), (TEAM[1]["full"], {"bold": False})],
+        [("Учёба: ", {"bold": True}), (STUDY_FULL, {"bold": False})],
+        [("Работа: ", {"bold": True}), (WORK + " — оба участника", {"bold": False})],
     ])
     essence = by_text(s, "В чем суть вашего решения")
     essence.height = Inches(1.75)
@@ -459,7 +475,8 @@ def main():
         "Тест, устойчивый к утечкам: свои варианты заданий при одинаковой сложности (IRT) и прокторинг. "
         "Категория — по тесту, а не по резюме, до трёх специализаций; ФСП усиливает профиль без штрафа за отсутствие. "
         "Задачи с кодом — в песочнице с антиплагиатом."], size=12)
-    notes(s, "Кратко о команде (заполните поля) и суть решения: обратная механика найма на основе подтверждённого уровня.")
+    notes(s, f"Команда «{TEAM_NAME}»: учимся в РТУ МИРЭА и работаем в «Газпром автоматизации». Суть решения — обратная "
+             "механика найма на основе подтверждённого уровня.")
 
     # 3 ── Команда: по карточке на участника, карточки по центру слайда ─────────────────────
     s = S[2]
@@ -477,18 +494,40 @@ def main():
         dx = Inches(start + k * col_w - x)
         for sh in group:
             sh.left = sh.left + dx
-        first, last, full = TEAM[k]
+        m = TEAM[k]
         name = min((sh for sh in group if sh.has_text_frame and "Имя" in sh.text_frame.text), key=lambda sh: sh.top)
-        write(name, [first, last])
+        write(name, [m["first"], m["last"]])
         info = next(sh for sh in group if sh.has_text_frame and "Роль в команде" in sh.text_frame.text)
-        write(info, ["[роль в команде]", "[Telegram]", "[телефон]", "[место учёбы или работы]"])
-    notes(s, "Команда: " + ", ".join(m[2] for m in TEAM) + ". Роли, контакты и место учёбы или работы — заполните; "
-             "фото вставляются в рамки карточек.")
+        phone = [CONTACTS[m["last"]]] if m["last"] in CONTACTS else []
+        write(info, [*m["roles"], "Telegram " + m["tg"], *phone, STUDY, WORK], size=11, after=4)
+        info.width, info.height = Inches(2.15), Inches(2.25)
+        # рамка для фото → круг с инициалами (фото участников можно вставить на его место)
+        frame = next(sh for sh in group if sh.is_placeholder and sh.name.startswith("Рисунок"))
+        d = Inches(1.45)
+        avatar = s.shapes.add_shape(MSO_SHAPE.OVAL, frame.left + (frame.width - d) // 2, frame.top + (frame.height - d) // 2,
+                                    d, d)
+        avatar.fill.solid()
+        avatar.fill.fore_color.rgb = rgb(PINK)
+        avatar.line.fill.background()
+        avatar.shadow.inherit = False
+        avatar.name = f"Инициалы {m['last']}"
+        write(avatar, [m["first"][0] + m["last"][0]], size=34, color=WHITE, bold=True, align="c", anchor="m",
+              keep=False)
+        remove(frame)
+    notes(s, f"Команда «{TEAM_NAME}»: " + "; ".join(f"{m['full']} — " + ", ".join(r[0].lower() + r[1:] for r in m["roles"])
+                                                     for m in TEAM) + ". Оба учимся в РТУ МИРЭА (программная инженерия, "
+             "системы поддержки принятия решений) и работаем в «Газпром автоматизации».")
 
     # 4 ── История, выбор задачи, сложности ─────────────────────────────────────────────────
     s = S[3]
     pill_title(s, "КАК МЫ РАБОТАЛИ")
-    write(ph(s, 27), ["[Как собралась команда, в каких хакатонах и проектах участвовали вместе, интересные факты]"])
+    # блок «Краткая история команды» убран (ТЗ его не требует): остаются «почему эта задача» и «сложности»
+    numbers = {sh.text_frame.text.strip(): sh for sh in s.shapes if sh.has_text_frame
+               and sh.text_frame.text.strip() in ("01", "02", "03")}
+    lines = sorted((sh for sh in s.shapes if sh.name.startswith("Прямая соединительная")), key=lambda sh: sh.top)
+    for sh in (ph(s, 27), by_text(s, "Краткая история команды"), numbers["01"], lines[-1]):
+        remove(sh)
+    why_title, hard_title = by_text(s, "Почему вы выбрали"), by_text(s, "С какими основными сложностями")
     why = by_text(s, "Что вас вдохновило")
     write(why, [
         "Задача соединяет психометрику (как честно измерить навык), ML и NLP для подбора и продуктовую механику "
@@ -500,8 +539,16 @@ def main():
         "3) Первые версии подбора уступали фильтрам → разобрали ошибки и довели P@10 до 0,84 против 0,75"])
     why.width = Inches(11.2)
     hard.width, hard.height = Inches(11.2), Inches(1.3)
-    notes(s, "История команды — заполните. Почему задача: измеримость результата. Главные сложности — отсутствие "
-             "разметки, компромисс «утечки против сопоставимой сложности» и качество подбора, которое мы доказали валидацией.")
+    # два блока на высоту слайда: 01 — почему задача, 02 — сложности
+    for top, title, body, num, label in ((1.55, why_title, why, numbers["02"], "01"),
+                                         (4.0, hard_title, hard, numbers["03"], "02")):
+        shift = Inches(top) - title.top
+        for sh in (title, body, num):
+            sh.top = sh.top + shift
+        write(num, [label])
+    lines[1].top = Inches(3.65)
+    notes(s, "Почему задача: её результат измерим — мы доказали качество теста и подбора собственной валидацией. Главные "
+             "сложности — отсутствие разметки, компромисс «утечки против сопоставимой сложности» и качество подбора.")
 
     # 5 ── Коротко о решении ────────────────────────────────────────────────────────────────
     s = S[4]
@@ -892,8 +939,10 @@ def main():
         [("Документация: ", {"bold": True, "color": DEEP}), ("docs/fsp-career-documentation.pdf", {})],
         [("Демо-аккаунты ", {"bold": True, "color": DEEP}), ("(пароль demo12345): employer@demo.ru, candidate@demo.ru, newbie@demo.ru", {})],
         [("ФСП ID (тестовый): ", {"bold": True, "color": DEEP}), ("alice / gleb, пароль fsp12345", {})],
-        [("Команда: ", {"bold": True, "color": DEEP}), (", ".join(m[2] for m in TEAM), {})],
-        [("Контакты: ", {"bold": True, "color": DEEP}), ("[Telegram капитана]", {})],
+        [("Команда: ", {"bold": True, "color": DEEP}), (f"«{TEAM_NAME}» — " + ", ".join(m["full"] for m in TEAM), {})],
+        [("Контакты капитана: ", {"bold": True, "color": DEEP}),
+         (", ".join(["Telegram " + TEAM[0]["tg"], *([CONTACTS[TEAM[0]["last"]]] if TEAM[0]["last"] in CONTACTS else [])]),
+          {})],
     ], size=14, color=INK, bullet=True, after=10)
     notes(s, "Спасибо! Стенд поднимается одной командой, демо-аккаунты — на слайде. Готовы ответить на вопросы.")
 

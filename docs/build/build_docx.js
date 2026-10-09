@@ -213,7 +213,7 @@ function cover() {
   // версия, дата и команда — из аннотации Markdown (до оглавления), чтобы обложка не расходилась с текстом
   const head = fs.readFileSync(mdPath, 'utf8').split('<!-- toc -->')[0]
   const [, version, date] = head.match(/Версия ([\d.]+), (\d+ \S+ \d{4}) г\./) || []
-  const [, team] = head.match(/Команда: ([^.]+)\./) || []
+  const [team] = head.match(/Команда(?: «[^»]+»)?: [^.]+(?=\.)/) || []
   return [
     new Paragraph({ spacing: { after: 1800 }, children: [new ImageRun({ type: 'png', data: logo, transformation: { width: 300, height: 38 } })] }),
     new Paragraph({ spacing: { after: 160 }, children: [new TextRun({ text: 'СОПРОВОДИТЕЛЬНАЯ ДОКУМЕНТАЦИЯ', bold: true, size: 22, color: C.pink, characterSpacing: 40 })] }),
@@ -221,7 +221,7 @@ function cover() {
     new Paragraph({ spacing: { after: 400 }, border: { bottom: { style: BorderStyle.SINGLE, size: 18, color: C.pink, space: 14 } },
       children: [new TextRun({ text: 'Платформа подбора ИТ-специалистов с обратной механикой: категория по тесту, выход на кандидата по инициативе работодателя, профиль с достижениями ФСП', size: 28, color: C.muted })] }),
     new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: 'Специальный трек ФСП · хакатон «Лидеры цифровой трансформации — 2026»', size: 22, color: C.ink })] }),
-    ...(team ? [new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: 'Команда: ' + team, size: 22, color: C.ink })] })] : []),
+    ...(team ? [new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: team, size: 22, color: C.ink })] })] : []),
     new Paragraph({ spacing: { after: 1400 }, children: [new TextRun({ text: `Версия ${version} · ${date} г.`, size: 22, color: C.muted })] }),
     new Paragraph({ spacing: { after: 100 }, children: kpi('359', 'семейств заданий с уникальными вариантами для каждого кандидата') }),
     new Paragraph({ spacing: { after: 100 }, children: kpi('0,835', 'доля релевантных в топ-10 подборки (фильтры по резюме — 0,750)') }),

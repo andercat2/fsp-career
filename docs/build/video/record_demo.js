@@ -1,10 +1,10 @@
-// Запись демонстрационного видео: headless Chrome проходит сценарий по стенду (CDP screencast), кадры собираются
-// в MP4. На экране — подписи шагов и курсор; долгие ожидания (генерация вопроса моделью) вырезаются.
+// Запись демонстрационного видео: headless Chrome проходит сквозной сценарий из ТЗ (раздел 3.3) по стенду
+// (CDP screencast), кадры собираются в MP4. На экране — подписи шагов и курсор; остаток теста ускоряется и вырезается.
 //
 //   node docs/build/video/record_demo.js <out.mp4> --ffmpeg <путь к ffmpeg> [--base http://localhost:8080]
-//                                         [--project fsp-career]
+//                                         [--project fsp-career] [--resume <pdf из demo_resume.py>]
 //
-// Нужен запущенный стенд (docker compose) с чистыми демо-данными; для сцены с LLM — Ollama на хосте (иначе демо-режим).
+// Нужен запущенный стенд (docker compose) с чистыми демо-данными: сценарий регистрирует нового кандидата.
 const { spawn, execFileSync } = require('child_process')
 const fs = require('fs')
 const os = require('os')
@@ -16,6 +16,7 @@ const OUT = path.resolve(args[0] || 'fsp-career-demo.mp4')
 const FFMPEG = opt('--ffmpeg', 'ffmpeg')
 const BASE = opt('--base', 'http://localhost:8080')
 const PROJECT = opt('--project', 'fsp-career')
+const RESUME = path.resolve(opt('--resume', 'docs/build/video/out/demo_resume.pdf'))  // demo_resume.py
 const ROOT = path.resolve(__dirname, '..', '..', '..')
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe'
 const PORT = 9351
@@ -178,10 +179,44 @@ class Browser {
   }
   // вырезать из видео ожидание: кадры между началом и концом не попадут в ролик
   async cut(fn) { const t0 = Date.now() / 1000; await fn(); this.cuts.push([t0 + 0.8, Date.now() / 1000]) }
+  // клик по видимому элементу, текст которого содержит фрагмент
+  clickText(fragment, { scope = 'document', tags = 'a,button', wait = 700 } = {}) {
+    const js = `[...${scope}.querySelectorAll(${JSON.stringify(tags)})].find(e => e.offsetParent !== null &&
+      e.textContent.replace(/\\s+/g, ' ').includes(${JSON.stringify(fragment)}))`
+    return this.clickEl(js, fragment, wait)
+  }
+  // выбор в <select> по значению или по началу текста варианта (React слушает событие change)
+  async choose(selectJs, option) {
+    const ok = await this.ev(`(() => { const s = ${selectJs}; if (!s) return false
+      const o = [...s.options].find(o => o.value === ${JSON.stringify(option)} || o.text.trim().startsWith(${JSON.stringify(option)}))
+      if (!o) return false
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, o.value)
+      s.dispatchEvent(new Event('change', { bubbles: true })); return true })()`)
+    if (!ok) throw new Error('нет варианта: ' + option)
+  }
+  async fill(css, text, delay = 40) { await this.clickSel(css, 250); await this.type(text, delay) }
+  // файл в <input type=file> без системного диалога: курсор и «клик» по кнопке — для зрителя
+  async upload(buttonText, file) {
+    const p = await this.rect(`[...document.querySelectorAll('button')].find(e => e.offsetParent !== null && e.textContent.trim() === ${JSON.stringify(buttonText)})`)
+    if (p) { await this.moveTo(p.x, p.y); await this.ev(`__demo.ripple(${p.x}, ${p.y})`) }
+    const doc = await this.send('DOM.getDocument', { depth: 0 })
+    const node = await this.send('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: 'input[type=file]' })
+    await this.send('DOM.setFileInputFiles', { nodeId: node.result.nodeId, files: [file] })
+  }
+  api(path) {
+    return this.ev(`fetch('/api/v1${path}', { headers: { Authorization: 'Bearer ' + localStorage.getItem('fsp_career_token') } }).then(r => r.json())`)
+  }
   async login(label) {
     await this.ev(`localStorage.clear(); sessionStorage.removeItem('__cur'); true`)
     await this.goto(BASE + '/login', 1500)
     await this.click(label, { tags: 'button' })
+    await this.click('Войти', { tags: 'button[type=submit]', wait: 2200 })
+  }
+  async loginAs(email, password) {
+    await this.ev(`localStorage.clear(); sessionStorage.removeItem('__cur'); true`)
+    await this.goto(BASE + '/login', 1500)
+    await this.fill('input[type=email]', email)
+    await this.fill('input[type=password]', password, 25)
     await this.click('Войти', { tags: 'button[type=submit]', wait: 2200 })
   }
 }
@@ -192,143 +227,206 @@ function card(title, lines, small) {
 }
 
 // ----------------------------------------------------------------- сценарий
-const TEAM = 'Команда: Мурехин Ярослав Андреевич, Воронин Артём Тимофеевич'
+const TEAM = 'Команда «Рекрут 2»: Мурехин Ярослав Андреевич, Воронин Артём Тимофеевич'
 const TITLE = card('ФСП Карьера', ['Подбор ИТ-специалистов с обратной механикой:', 'уровень подтверждает тест, работодатель приходит к кандидату сам'],
   `${TEAM}<br>Хакатон «Лидеры цифровой трансформации — 2026» · специальный трек ФСП`)
 
+// Сквозной сценарий из ТЗ (раздел 3.3): регистрация соискателя → опрос → тест → присвоение категории → поиск
+// работодателем нужной категории → приглашение конкретному человеку → контакт; классический отклик на вакансию;
+// механика тестирования (тест по вакансии, уникальные варианты) и механика подбора (потребность текстом → подборка).
+const CANDIDATE = { email: 'anna.smirnova@example.com', password: 'Demo-2026!', name: 'Смирнова' }
+const VACANCY = 'Middle Python-разработчик (платёжный сервис)'  // вакансия «ТехноПульса»: приглашение и тест по вакансии
+const APPLY_TO = 'Go-разработчик (Middle+)'  // вакансия другой компании: классический отклик
+
+async function answerCurrent(b) {
+  const kind = await b.ev(`(() => { const o = document.querySelector('[data-proctored] button'); const i = document.querySelector('[data-proctored] input');
+    return o ? 'option' : i ? 'input' : null })()`)
+  if (kind === 'option') await b.clickSel('[data-proctored] button', 500)
+  else if (kind === 'input') { await b.clickSel('[data-proctored] input', 300); await b.type('42', 120) }
+  await sleep(500)
+  await b.click(kind ? 'Ответить' : 'Не знаю', { tags: 'button', wait: 2300 })
+}
+
 async function scenario(b) {
-  // 1. Титульная карточка (уже на экране поверх главной — см. main) растворяется и открывает главную
+  // 0. Титульная карточка (уже на экране поверх главной — см. main) растворяется и открывает главную
   await sleep(5500)
   await b.card(null)
-  await sleep(1200)
-
-  // 2. Главная
-  await b.caption('Главная страница', 'Работодатель находит кандидата сам — с предложением и вилкой зарплаты')
-  await sleep(3500)
+  await sleep(1000)
+  await b.caption('Обратная механика найма', 'Кандидат один раз подтверждает уровень тестом — работодатель сам приходит к нему с предложением и вилкой')
+  await sleep(4000)
   await b.scrollTo(`[...document.querySelectorAll('h2')].find(h => h.textContent.includes('Инициатива'))`)
-  await b.caption('Как это работает', 'Кандидат один раз подтверждает уровень — дальше предложения приходят сами')
-  await sleep(4000)
-  await b.scrollTo(`[...document.querySelectorAll('h2')].find(h => h.textContent.includes('Доверие к уровню'))`)
-  await b.caption('Тест, который бесполезно «сливать»', 'У каждого кандидата свои данные, код и ответы; общая шкала IRT')
-  await sleep(4000)
-  await b.scrollTo(`[...document.querySelectorAll('h2')].find(h => h.textContent.includes('Цифры'))`)
-  await b.caption('Проверено валидацией', 'Грейд по тесту завышен у 3% кандидатов против 36% в резюме')
-  await sleep(4000)
-  await b.ev('__demo.scrollTo(0, 1200)'); await sleep(1300)
+  await b.caption('Сквозной сценарий', 'Регистрация → опрос → тест → категория → поиск работодателем → приглашение → контакт')
+  await sleep(4500)
+  await b.ev('__demo.scrollTo(0, 1000)'); await sleep(1100)
 
-  // 3. Экспресс-тест без регистрации
-  await b.caption('Попробовать без регистрации', 'Демо-кандидат в один клик и экспресс-тест: 8 заданий, около 7 минут')
-  await sleep(2000)
-  await b.click('Без регистрации: экспресс-тест', { wait: 1200 })
+  // 1. Регистрация соискателя с подтверждением e-mail
+  await b.caption('1. Регистрация соискателя', 'E-mail, пароль и согласие на обработку персональных данных (152-ФЗ)')
+  await b.click('Я кандидат', { tags: 'a', wait: 1800 })
+  await b.fill('input[type=email]', CANDIDATE.email)
+  await b.fill('input[type=password]', CANDIDATE.password, 25)
+  await b.click('Даю согласие', { tags: 'label', wait: 500 })
+  await b.click('Создать аккаунт', { tags: 'button', wait: 2200 })
+  await b.caption('Подтверждение e-mail', 'Код приходит письмом; в демо-режиме стенда он показан на экране')
+  await sleep(2800)
+  await b.click('Подтвердить', { tags: 'button', wait: 2600 })
+
+  // 2. Профиль из PDF-резюме с автораспознаванием
+  await b.click('Профиль и резюме', { tags: 'a', wait: 2000 })
+  await b.caption('Профиль из PDF-резюме', 'Загрузка резюме — поля распознаются автоматически (NER Natasha, разбор вёрстки hh.ru)')
+  await sleep(1500)
+  await b.upload('Загрузить PDF', RESUME)
+  await sleep(4500)
+  await b.caption('Распознано автоматически', 'ФИО, контакты, стек, роли, стаж, ожидания и формат работы — кандидат только проверяет')
+  await sleep(5000)
+  await b.click('Применить к профилю', { tags: 'button', wait: 1200 })
+  await b.click('Сохранить профиль', { tags: 'button', wait: 2000 })
+  const PID = (await b.api('/candidate/profile')).public_id
+
+  // 3. Опрос по специализации и выбор предполагаемого грейда
+  await b.click('Опрос и тест', { tags: 'a', wait: 2000 })
+  await b.caption('2. Опрос', 'Специализация и стек, опыт, предполагаемый грейд: категорию определяет не резюме, а этот путь')
+  await b.click('Backend-разработчик', { tags: 'button', wait: 500 })
+  await b.click('Python', { tags: 'button', wait: 500 })
+  await b.click('Далее', { tags: 'button', wait: 900 })
+  await b.click('2–5 лет', { tags: 'button', wait: 400 })
+  await b.click('Middle', { tags: 'button', wait: 700 })
+  await b.click('Далее', { tags: 'button', wait: 900 })
+  await b.click('Финтех и банки', { tags: 'button', wait: 300 })
+  await b.click('Разработка', { tags: 'button', wait: 300 })
+  await b.click('Код-ревью', { tags: 'button', wait: 300 })
+  await b.click('Удалённо', { tags: 'button', wait: 500 })
+  await b.click('Далее', { tags: 'button', wait: 900 })
+  await b.caption('Нет истории ФСП — без штрафа', 'Достижения ФСП поднимают кандидата внутри категории, их отсутствие не наказывается')
+  await b.click('Нет', { tags: 'button', wait: 1000 })
+  await b.click('Сохранить ответы', { tags: 'button', wait: 2500 })
+
+  // 4. Адаптивный тест на заявленный грейд → категория
+  await b.caption('3. Тест на заявленный грейд', 'Полный адаптивный тест: 12–24 задания под прокторингом')
+  await sleep(3000)
+  await b.click('Начать тест', { tags: 'button', wait: 1000 })
   const dlg = `document.querySelector('[role=dialog]')`
-  await b.click('Middle', { scope: dlg, tags: 'button', wait: 500 })
-  await b.click('Согласен', { scope: dlg, tags: 'label', wait: 800 })
+  await b.click('Я готов', { scope: dlg, tags: 'label', wait: 500 })
   await b.click('Начать тест', { scope: dlg, tags: 'button', wait: 3000 })
-  await b.caption('Адаптивный тест', 'Свой вариант задания каждому, время на ответ — по сложности задания')
-  await sleep(3500)
-  const q = await b.ev(`(() => { const o = document.querySelector('[data-proctored] button'); const i = document.querySelector('[data-proctored] input'); return o ? 'option' : i ? 'input' : null })()`)
-  if (q === 'option') await b.clickSel('[data-proctored] button', 500)
-  else if (q === 'input') { await b.clickSel('[data-proctored] input', 300); await b.type('42', 120) }
-  await sleep(600)
-  await b.click('Ответить', { tags: 'button', wait: 2500 })
-  await b.caption('Прокторинг в браузере', 'Снимок экрана — предупреждение, повтор — досрочное завершение со штрафом')
-  await b.key('PrintScreen', 'PrintScreen', 44)
-  await sleep(4000)
-  await b.click('Понятно, продолжить тест', { tags: 'button', wait: 800 })
+  await b.caption('Адаптивный тест (IRT)', 'Следующее задание подбирается по ответам; время на ответ зависит от сложности')
+  await sleep(2500)
+  await answerCurrent(b)
+  await b.caption('Свой вариант у каждого кандидата', 'Данные, код и ответы уникальны: слитая база бесполезна, сложность сопоставима по IRT')
+  await sleep(2000)
+  await answerCurrent(b)
   const token = await b.ev('location.pathname.split("/").pop()')
-  await b.caption('⏩ Ускорено: остальные задания', '')
+  await b.caption('⏩ Ускорено: остальные задания теста', '')
   await b.cut(async () => {
-    execFileSync('docker', ['compose', '-p', PROJECT, 'exec', '-T', 'backend', 'python', '-', token, '1110111'],
+    execFileSync('docker', ['compose', '-p', PROJECT, 'exec', '-T', 'backend', 'python', '-', token, '1101111'],
       { input: fs.readFileSync(path.join(__dirname, 'finish_session.py')), cwd: ROOT })
     await b.goto(`${BASE}/candidate/testing/${token}`, 2500)
   })
-  await b.caption('Результат экспресс-теста', 'Вероятный грейд и вероятности всех грейдов; категорию присваивает полный тест')
+  await b.caption('4. Категория присвоена', 'Грейд подтверждён тестом — категория «специализация × грейд» видна работодателям')
+  await sleep(5500)
+  await b.scrollTo(`[...document.querySelectorAll('h3')].find(h => h.textContent.includes('Результаты по доменам'))`, 1200, 140)
+  await sleep(3000)
+  await b.click('Категория и грейд', { tags: 'a', wait: 2200 })
+  await b.caption('Категория и грейд', 'Текущий статус, профиль компетенций, история опроса и тестов; пересдача — с ограничением частоты')
   await sleep(4500)
-  await b.scrollTo(`[...document.querySelectorAll('h3')].find(h => h.textContent.includes('Вероятности грейдов'))`, 1200, 140)
-  await sleep(3500)
 
-  // 4. Работодатель: подборка по тексту потребности и приглашение
+  // 5. Отдельное согласие на публикацию профиля
+  await b.click('Настройки и ФСП ID', { tags: 'a', wait: 2000 })
+  await b.scrollTo(`[...document.querySelectorAll('h3')].find(h => h.textContent.includes('Согласия'))`, 1000, 160)
+  await b.caption('Согласие на публикацию профиля', 'Отдельно от согласия на обработку ПДн (152-ФЗ): без него работодатели профиль не видят')
+  await sleep(2000)
+  await b.click('Публикация профиля для работодателей', { tags: 'label', wait: 2200 })
+
+  // 6. Классический сценарий: отклик на вакансию
+  await b.click('Вакансии', { tags: 'a', wait: 2200 })
+  await b.caption('Классический сценарий: отклик на вакансию', 'Вакансии с оценкой совпадения; вилка «от–до» указана всегда')
+  await sleep(3000)
+  await b.clickText(APPLY_TO, { tags: 'a', wait: 2500 })
+  await sleep(1500)
+  await b.click('Откликнуться', { tags: 'button', wait: 1300 })
+  await b.click('Отправить', { scope: dlg, tags: 'button', wait: 2200 })
+  await b.click('Мои отклики', { tags: 'a', wait: 2200 })
+  await b.caption('Статусы откликов', 'Отправлен → просмотрен → принят или отклонён — обе стороны видят актуальный статус')
+  await sleep(4000)
+
+  // 7. Работодатель: механика подбора — потребность обычным текстом
   await b.login('Работодатель «ТехноПульс»')
-  await b.caption('Кабинет работодателя', 'Демо-компания «ТехноПульс»')
+  await b.caption('5. Кабинет работодателя', 'Работодатель сам ищет кандидатов: по тексту потребности или в банке с фильтрами')
   await sleep(2500)
-  await b.click('Подборки', { tags: 'a', wait: 1500 })
-  await b.caption('Потребность — обычным текстом', 'NLP определит специализацию, грейд, навыки, вилку и формат работы')
+  await b.click('Подборки', { tags: 'a', wait: 1600 })
+  await b.caption('Механика подбора: потребность обычным текстом', 'NLP определит специализацию, грейд, навыки, вилку и формат работы')
   await b.clickSel('textarea', 300)
-  await b.type('Ищем Python-разработчика уровня Middle в команду платежей: FastAPI, PostgreSQL, Docker. Удалённо, 250–320 тыс. руб.', 22)
-  await sleep(800)
+  await b.type('Ищем Python-разработчика уровня Middle в команду платежей: FastAPI, PostgreSQL, Docker. Удалённо, 250–320 тыс. руб.', 18)
+  await sleep(600)
   await b.click('Подобрать', { tags: 'button', wait: 3500 })
-  await b.caption('Подборка', 'Рекомендованные категории с аналитикой рынка: медиана ожиданий, доля в вашей вилке, ФСП')
+  await b.caption('Рекомендованные категории и рынок', 'Сколько кандидатов в категории, медиана ожиданий, доля в вашей вилке')
   await sleep(4500)
   await b.scrollTo(`[...document.querySelectorAll('div.card.card-hover')][0]`, 1400, 120)
-  await b.caption('Кандидаты с объяснением', 'Совпадение, навыки со статусом «подтверждён тестом», причины «за» и «против»')
-  await sleep(5000)
+  await b.caption('Ранжирование с объяснением', 'Выше — сильнее подтверждённый профиль и достижения ФСП; у каждого — причины «за» и «против»')
+  await sleep(5500)
+
+  // 8. Поиск нужной категории в банке кандидатов
+  await b.click('Банк кандидатов', { tags: 'a', wait: 2200 })
+  await b.caption('6. Поиск нужной категории', 'Банк кандидатов: специализация, грейд, навыки, ФСП — выдача только по категориям из теста')
+  const sel = v => `[...document.querySelectorAll('select')].find(s => [...s.options].some(o => o.value === '${v}'))`
+  await b.choose(sel('backend'), 'backend'); await sleep(1000)
+  await b.choose(sel('middle'), 'middle'); await sleep(1000)
+  await b.choose(sel('fresh'), 'fresh'); await sleep(2500)
+  const cardLink = `[...document.querySelectorAll('a[href^="/employer/candidates/"]')].find(a => a.textContent.includes(${JSON.stringify(PID)}) || a.textContent.includes(${JSON.stringify(CANDIDATE.name)}))`
+  await b.scrollTo(cardLink, 1000, 220)
+  await b.caption('Наш кандидат — в категории «Backend · Middle»', 'Категория из теста; среди недавно активных — сверху')
+  await sleep(3500)
+  await b.clickEl(cardLink, CANDIDATE.name, 2500)
+  await b.caption('Карточка кандидата', 'Грейд и навыки подтверждены тестом; контакты скрыты до согласия кандидата')
+  await sleep(3500)
+  await b.scrollTo(`[...document.querySelectorAll('h3')].find(h => h.textContent.trim() === 'Контакты')`, 1000, 260)
+  await sleep(3000)
+
+  // 9. Приглашение конкретному человеку
   await b.click('Пригласить', { tags: 'button', wait: 1500 })
-  await b.caption('Приглашение', 'Вилка «от–до» обязательна, видна вероятность отклика; контакты — после согласия')
+  await b.caption('7. Приглашение с вилкой', 'Описание, компания, способ связи и обязательная вилка «от–до»; вакансия — по желанию')
+  await b.choose(`document.querySelector('[role=dialog] select')`, VACANCY)
   await sleep(4500)
   await b.click('Отправить приглашение', { tags: 'button', wait: 2500 })
 
-  // 5. Кандидат: приглашение, принятие, категория
-  await b.login('Кандидат с категорией')
-  await b.caption('Кабинет кандидата', 'Две специализации — две категории: Backend · Middle и DevOps · Junior')
+  // 10. Механика тестирования: как по вакансии формируется тест
+  await b.click('Потребности', { tags: 'a', wait: 2000 })
+  await b.clickText(VACANCY, { tags: 'a', wait: 2500 })
+  await b.click('Тест по вакансии', { tags: 'button', wait: 2800 })
+  await b.caption('Механика тестирования: тест по вакансии', 'Блюпринт по доменам из требований вакансии; навыки вакансии усиливают свои разделы')
+  await sleep(5500)
+  await b.scrollTo(`[...document.querySelectorAll('h3')].find(h => h.textContent.includes('Уникальность вариантов'))`, 1200, 140)
+  await b.caption('Одно семейство — разные варианты', 'Три кандидата получают разные данные и ответы при одинаковой сложности')
+  await sleep(5500)
+
+  // 11. Кандидат принимает приглашение — контакты открываются
+  await b.loginAs(CANDIDATE.email, CANDIDATE.password)
+  await b.click('Приглашения', { tags: 'a', wait: 2000 })
+  await b.caption('8. Приглашение у кандидата', 'Условия видны до общения: компания, вилка, формат, описание')
+  await b.clickSel('button.card.card-hover', 1600)
   await sleep(3500)
-  await b.click('Приглашения', { tags: 'a', wait: 1800 })
-  await b.clickSel('button.card.card-hover', 1500)
-  await b.caption('Предложение с условиями — до общения', 'Компания, вилка, формат, описание; принять или отклонить с причиной')
+  await b.click('Принять и открыть контакты', { tags: 'button', wait: 2500 })
+  await b.caption('Контакты открыты', 'Обеим сторонам и только после согласия кандидата')
   await sleep(4000)
-  const canAccept = await b.ev(`!![...document.querySelectorAll('button')].find(e => e.textContent.includes('Принять и открыть контакты'))`)
-  if (canAccept) {
-    await b.click('Принять и открыть контакты', { tags: 'button', wait: 2500 })
-    await b.caption('Контакты открыты', 'Обеим сторонам и только после согласия кандидата')
-    await sleep(3500)
-  }
-  await b.click('Категория и грейд', { tags: 'a', wait: 2000 })
-  await b.caption('Категория и грейд', 'Специализация × грейд по тесту, профиль компетенций и история тестов')
-  await sleep(5000)
 
-  // 6. Администратор: черновики заданий от LLM
-  await b.login('Администратор')
-  await b.caption('Банк заданий', '359 семейств: экспозиция, дрейф решаемости, калибровка пилотных заданий')
+  // 12. Работодатель: статус «принято» и контакты кандидата
+  await b.login('Работодатель «ТехноПульс»')
+  await b.click('Приглашения', { tags: 'a', wait: 2200 })
+  await b.caption('Статус видят обе стороны', 'Отправлено → прочитано → принято; контакты кандидата открыты в карточке')
   await sleep(3500)
-  await b.click('Черновики от LLM', { tags: 'a', wait: 2000 })
-  await b.caption('Черновики заданий от LLM', 'Модель предлагает вопрос — эксперт принимает, правит или отклоняет')
-  await sleep(3000)
-  await b.ev(`(() => { const s = [...document.querySelectorAll('select')][1]; const o = s && [...s.options].find(o => o.value === 'sql');
-    if (!o) return false
-    const set = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set; set.call(s, o.value);
-    s.dispatchEvent(new Event('change', { bubbles: true })); return true })()`)
-  await sleep(700)
-  await b.click('3', { tags: 'button', wait: 400 })
-  await b.ev(`(() => { const i = document.querySelector('input[type=number]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-    set.call(i, '1'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()`)
-  await sleep(600)
-  await b.click('Подготовить черновики', { tags: 'button', wait: 1500 })
-  await b.caption('⏩ Ускорено: модель пишет вопрос и перепроверяет его', 'Qwen3-14B локально через Ollama, около минуты')
-  await b.cut(async () => {
-    for (let i = 0; i < 120; i++) {
-      const st = await b.ev(`fetch('/api/v1/admin/item-drafts?status=pending', { headers: { Authorization: 'Bearer ' + localStorage.getItem('fsp_career_token') } })
-        .then(r => r.json()).then(d => d.batch && d.batch.status)`)
-      if (st && st !== 'running') break
-      await sleep(3000)
-    }
-    await b.goto(BASE + '/admin/drafts', 2500)
-  })
-  await b.scrollTo(`document.querySelector('main .card.overflow-hidden')`, 1000, 110)
-  await b.caption('Проверка экспертом', 'Правильный ответ отмечен; автопроверки и самопроверка модели подсказывают, где ошибка')
-  await sleep(6000)
-  await b.click('Принять как есть', { tags: 'button', wait: 2500 })
-  await b.caption('Вопрос в банке — пилотный', 'На оценку не влияет, пока трудность не откалибрована по 40 ответам')
-  await sleep(3500)
+  await b.clickEl(`[...document.querySelectorAll('a[href^="/employer/candidates/"]')].find(a => a.textContent.includes(${JSON.stringify(CANDIDATE.name)}) || a.textContent.includes(${JSON.stringify(PID)}))`, CANDIDATE.name, 2500)
+  await b.scrollTo(`[...document.querySelectorAll('h3')].find(h => h.textContent.trim() === 'Контакты')`, 1000, 260)
+  await b.caption('Выход на контакт состоялся', 'Работодатель видит контакты кандидата — дальше общение напрямую')
+  await sleep(4500)
 
-  // 7. Методика
+  // 13. Методика и валидация
   await b.goto(BASE + '/methodology', 2500)
-  await b.caption('Методика и валидация', 'Синтетическая популяция с известной истиной, базовые линии и абляции')
+  await b.caption('Как мы проверили механики', 'Собственная валидация на популяции с известной истиной: тест, подбор, устойчивость к утечкам')
   await sleep(3500)
   for (const t of ['сопоставимый', 'Слитые ответы', 'Доля релевантных']) {
     await b.scrollTo(`[...document.querySelectorAll('h2')].find(h => h.textContent.includes(${JSON.stringify(t)}))`, 1500)
     await sleep(3200)
   }
 
-  // 8. Финальная карточка
+  // 14. Финальная карточка
   await b.caption('')
   await b.card(card('Спасибо!', ['github.com/andercat2/fsp-career', 'docker compose up --build → localhost:8080'], TEAM))
   await sleep(6000)
