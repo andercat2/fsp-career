@@ -938,6 +938,7 @@ def main():
         [("Репозиторий: ", {"bold": True, "color": DEEP}), ("github.com/andercat2/fsp-career", {})],
         [("Документация: ", {"bold": True, "color": DEEP}), ("docs/fsp-career-documentation.pdf", {})],
         [("Проверка подбора на своих данных: ", {"bold": True, "color": DEEP}), ("localhost:8080/evaluate", {})],
+        [("Видео и материалы: ", {"bold": True, "color": DEEP}), ("github.com/andercat2/fsp-career/releases", {})],
         [("Демо-аккаунты ", {"bold": True, "color": DEEP}), ("(пароль demo12345): employer@demo.ru, candidate@demo.ru, newbie@demo.ru", {})],
         [("ФСП ID (тестовый): ", {"bold": True, "color": DEEP}), ("alice / gleb, пароль fsp12345", {})],
         [("Команда: ", {"bold": True, "color": DEEP}), (f"«{TEAM_NAME}» — " + ", ".join(m["full"] for m in TEAM), {})],

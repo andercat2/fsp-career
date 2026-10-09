@@ -426,7 +426,18 @@ async function scenario(b) {
     await sleep(3200)
   }
 
-  // 14. Финальная карточка
+  // 14. Проверка подбора на своих данных (критерий оценки: доля релевантных в топе на наборе пар)
+  await b.goto(BASE + '/evaluate', 2200)
+  await b.caption('Проверьте подбор на своих данных', 'Набор пар «вакансия — кандидат» в JSON или CSV: метрики рядом с поиском по ключевым словам')
+  await sleep(3000)
+  await b.click('Запустить на примере', { tags: 'button', wait: 7000 })
+  await b.scrollTo(`[...document.querySelectorAll('p')].find(p => p.textContent.includes('Доля релевантных'))`, 1000, 160)
+  await b.caption('Доля релевантных в топ-10: 0,70 против 0,38', 'Та же выдача, что у работодателя, против поиска по ключевым словам на тех же данных')
+  await sleep(4000)
+  await b.clickSel('div.border-t > button', 1500)
+  await sleep(4500)
+
+  // 15. Финальная карточка
   await b.caption('')
   await b.card(card('Спасибо!', ['github.com/andercat2/fsp-career', 'docker compose up --build → localhost:8080'], TEAM))
   await sleep(6000)
