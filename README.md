@@ -18,6 +18,7 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
+[![CI](https://github.com/andercat2/fsp-career/actions/workflows/ci.yml/badge.svg)](https://github.com/andercat2/fsp-career/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-525%20passed-2ea44f)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -54,7 +55,7 @@
 Нужен Docker Desktop (или Docker Engine с Compose v2) и свободные порты 8080, 8000, 8090, 8025.
 
 ```bash
-git clone https://github.com/andercat2/fsp-career.git
+git clone --depth 1 https://github.com/andercat2/fsp-career.git   # только текущая версия, без истории
 cd fsp-career
 docker compose up --build
 ```

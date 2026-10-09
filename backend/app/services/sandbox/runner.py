@@ -227,6 +227,12 @@ def run(language: str, code: str, entrypoint: str, inputs: list, time_limit_ms: 
         duration = round((time.monotonic() - t0) * 1000)
         out_file = os.path.join(tmp, "output.json")
         if not os.path.exists(out_file):
+            # Бесконечный цикл на POSIX упирается в лимит процессорного времени ядра (RLIMIT_CPU) раньше таймаута по
+            # реальному времени: процесс получает SIGXCPU, на жёстком лимите — SIGKILL. Для кандидата это превышение
+            # времени, а не «ошибка выполнения»
+            if os.name == "posix" and proc.returncode in (-signal.SIGXCPU, -signal.SIGKILL) and duration >= cpu_s * 900:
+                return {"status": "timeout", "error": f"Превышено время выполнения ({time_limit_ms} мс на все тесты)",
+                        "results": [], "duration_ms": duration}
             stderr = err.decode("utf-8", "replace")[-1500:]
             reason = "превышен лимит памяти или процесс завершён системой" if proc.returncode and proc.returncode < 0 \
                 else "процесс завершился без результата"
