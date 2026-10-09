@@ -1,0 +1,40 @@
+# Публичный стенд: HTTPS через Caddy (сертификаты Let's Encrypt выпускаются и продлеваются автоматически), наружу
+# открыты только 80 и 443 — порты сервисов, которые docker-compose.yml публикует для локального запуска, закрыты.
+#
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build
+#
+# Переменные — в .env (deploy/deploy.sh создаёт его со случайными секретами): DOMAIN, PUBLIC_URL,
+# FSP_PUBLIC_ISSUER и секреты. Приложение — https://$DOMAIN, ФСП ID (mock) — https://id.$DOMAIN.
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    depends_on:
+      frontend: { condition: service_started }
+      fsp-mock: { condition: service_started }
+    environment:
+      DOMAIN: ${DOMAIN:?задайте DOMAIN в .env — например <IP>.sslip.io}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    mem_limit: 128m
+
+  frontend:
+    ports: !reset []
+  backend:
+    ports: !reset []
+  mailpit:
+    ports: !reset []
+  fsp-mock:
+    ports: !reset []
+
+volumes:
+  caddy-data:
+  caddy-config:

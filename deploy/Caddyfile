@@ -1,0 +1,10 @@
+# Приложение и OIDC-провайдер «ФСП ID» (mock) — каждый на своём имени; HTTPS-сертификаты — автоматически.
+# Без своего домена подходит <IP сервера>.sslip.io: имя и поддомены указывают на этот IP.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy frontend:80
+}
+
+id.{$DOMAIN} {
+	reverse_proxy fsp-mock:8090
+}

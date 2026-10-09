@@ -210,7 +210,7 @@ export function Verify() {
       <form onSubmit={submit} className="space-y-4">
         {error && <Alert tone="error">{error}</Alert>}
         {dev && <Alert tone="info" icon={<Mail className="h-4 w-4" />} title="Демо-режим">
-          Письмо также доступно в Mailpit (http://localhost:8025). Код для проверки: <b>{dev}</b></Alert>}
+          Стенд показывает код на экране, чтобы проверить сценарий без почты; в рабочем режиме он приходит только письмом. Код: <b>{dev}</b></Alert>}
         <Field label="Код подтверждения">
           <Input inputMode="numeric" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ''))}
                  className="text-center text-2xl font-bold tracking-[0.5em]" placeholder="••••••" />

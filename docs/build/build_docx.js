@@ -227,7 +227,7 @@ function cover() {
     new Paragraph({ spacing: { after: 100 }, children: kpi('0,835', 'доля релевантных в топ-10 подборки (фильтры по резюме — 0,750)') }),
     new Paragraph({ spacing: { after: 100 }, children: kpi('3,1%', 'завышения грейда по тесту против 35,7% в самооценке резюме') }),
     new Paragraph({ spacing: { after: 100 }, children: kpi('800', 'одновременных пользователей без ошибок в нагрузочном тесте на одной машине') }),
-    new Paragraph({ spacing: { after: 100 }, children: kpi('105', 'методов API в OpenAPI, 524 автотеста, запуск одной командой Docker') }),
+    new Paragraph({ spacing: { after: 100 }, children: kpi('105', 'методов API в OpenAPI, 525 автотестов, запуск одной командой Docker') }),
   ]
 }
 

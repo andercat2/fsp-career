@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     smtp_host: str | None = None
     smtp_port: int = 1025
     smtp_from: str = "noreply@fsp-career.local"
+    smtp_user: str | None = None  # внешний почтовый сервер: логин, пароль и STARTTLS (порт 587)
+    smtp_password: str | None = None
+    smtp_starttls: bool = False
     email_dev_mode: bool = True
     # «Попробовать как кандидат»: одноразовый аккаунт кандидата без регистрации (демо и жюри); в продуктиве — false
     guest_mode: bool = True

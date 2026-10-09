@@ -86,8 +86,12 @@ services:
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}  # процессов uvicorn (нагрузочный тест — loadtest/)
       DATABASE_URL: postgresql+psycopg://fsp:${POSTGRES_PASSWORD:-fsp_dev_password}@db:5432/fsp_career
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production-0123456789abcdef}
-      SMTP_HOST: mailpit
-      SMTP_PORT: 1025
+      SMTP_HOST: ${SMTP_HOST:-mailpit}  # по умолчанию — Mailpit; внешний сервер — переменные SMTP_* в .env
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+      SMTP_FROM: ${SMTP_FROM:-noreply@fsp-career.local}
       EMAIL_DEV_MODE: ${EMAIL_DEV_MODE:-true}
       GUEST_MODE: ${GUEST_MODE:-true}
       FRONTEND_URL: ${PUBLIC_URL:-http://localhost:8080}

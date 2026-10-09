@@ -18,7 +18,7 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-524%20passed-2ea44f)
+![Tests](https://img.shields.io/badge/tests-525%20passed-2ea44f)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 [Быстрый старт](#быстрый-старт) · [Возможности](#возможности) · [Как это работает](#как-это-работает) ·
@@ -219,6 +219,15 @@ REQUIREMENTS.md   требования ТЗ и где они выполнены
 | Требования ТЗ и как они выполнены | [REQUIREMENTS.md](REQUIREMENTS.md) |
 | Перечень эндпоинтов API | [api_endpoints.md](docs/api_endpoints.md) · Swagger на стенде: `/docs` |
 | Результаты валидации | [SUMMARY.md](backend/validation/reports/SUMMARY.md) · страница `/methodology` |
+
+### Публичный стенд на сервере
+
+На виртуальном сервере (Ubuntu, 2 vCPU, 4 ГБ RAM, открыты 80 и 443) — одна команда; HTTPS через Caddy, адрес
+`https://<IP>.sslip.io` без своего домена (подробности — раздел 11.5 документации):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/andercat2/fsp-career/main/deploy/deploy.sh | bash
+```
 
 ## Разработка
 

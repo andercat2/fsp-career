@@ -1,5 +1,5 @@
-"""Отправка писем. В docker-compose письма уходят в Mailpit (веб-интерфейс http://localhost:8025),
-без SMTP — пишутся в лог (удобно для локального запуска)."""
+"""Отправка писем. В docker-compose письма уходят в Mailpit (веб-интерфейс http://localhost:8025), без SMTP — пишутся
+в лог (удобно для локального запуска); внешний почтовый сервер — с STARTTLS и логином (SMTP_STARTTLS, SMTP_USER)."""
 import logging
 import smtplib
 from email.message import EmailMessage
@@ -21,7 +21,11 @@ def send_email(to: str, subject: str, body: str) -> bool:
     msg["Subject"] = subject
     msg.set_content(body)
     try:
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=5) as s:
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as s:
+            if settings.smtp_starttls:
+                s.starttls()
+            if settings.smtp_user:
+                s.login(settings.smtp_user, settings.smtp_password or "")
             s.send_message(msg)
         return True
     except OSError as exc:  # почта не должна ронять бизнес-операцию
