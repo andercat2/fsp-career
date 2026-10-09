@@ -50,6 +50,12 @@ class Settings(BaseSettings):
     invitations_per_day_limit: int = 60
     task_offer_interval_days: int = 7  # регулярные задания — раз в неделю
 
+    # Производительность. Пул соединений с БД — по числу потоков обработчиков в процессе (AnyIO: 40), иначе под
+    # нагрузкой запросы ждут соединение (validation: loadtest/). Процессов uvicorn — WEB_CONCURRENCY в docker-compose
+    db_pool_size: int = 20
+    db_max_overflow: int = 20
+    db_pool_timeout: int = 15
+
     seed_demo: bool = True
     seed_candidates: int = 700
 

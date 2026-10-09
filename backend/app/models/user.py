@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base, utcnow
@@ -68,6 +68,8 @@ class AuditLog(Base):
     """Аудит доступа к персональным данным: кто и когда раскрыл контакты кандидата и т. п."""
 
     __tablename__ = "audit_log"
+    # «просмотры профиля за 30 дней» в сводке кандидата: поиск по действию и объекту, а не перебор журнала
+    __table_args__ = (Index("ix_audit_log_action_entity", "action", "entity_id", "created_at"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)

@@ -431,6 +431,9 @@ def accept(db: Session, user: User, did: int, edits: dict | None = None) -> Item
     d.status, d.reviewed_by, d.reviewed_at = "accepted", user.id, utcnow()
     audit(db, user.id, "item_draft_accept", "item_draft", d.id, family_id=fam.id, edited=d.edited)
     db.commit()
+    from app.services.testing.service import invalidate_params
+
+    invalidate_params()
     return d
 
 

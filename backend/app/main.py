@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import models  # noqa: F401 — регистрация моделей в метаданных
 from app.api import admin_drafts, auth, candidate, candidate_actions, employer, fsp, public, reference, testing
 from app.core.config import settings
-from app.core.db import Base, SessionLocal, engine
+from app.core.db import Base, SessionLocal, engine, startup_lock
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("app")
@@ -29,12 +29,23 @@ def _warmup() -> None:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    with startup_lock():
+        _prepare_db()
+    threading.Thread(target=_warmup, daemon=True).start()
+    yield
+
+
+def _prepare_db() -> None:
     Base.metadata.create_all(engine)
     from app.core.db import ensure_columns
 
     added = ensure_columns()
     if added:
         log.info("Добавлены столбцы: %s", ", ".join(added))
+    from app.core.db import ensure_indexes
+
+    if indexes := ensure_indexes():
+        log.info("Созданы индексы: %s", ", ".join(indexes))
     from app.services.testing.drafting import load_drafted_families, recover_batches
     from app.services.testing.service import sync_item_stats, sync_unconfirmed
 
@@ -53,8 +64,6 @@ async def lifespan(_: FastAPI):
             from app.seed.seed import upgrade_demo_data
 
             upgrade_demo_data(db)
-    threading.Thread(target=_warmup, daemon=True).start()
-    yield
 
 
 tags_metadata = [

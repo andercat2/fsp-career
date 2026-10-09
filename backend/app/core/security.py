@@ -11,7 +11,9 @@ from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatc
 from app.core.config import settings
 from app.core.db import utcnow
 
-_ph = PasswordHasher()
+# Argon2id по рекомендации OWASP (m = 19 МиБ, t = 2, p = 1). Параметры argon2-cffi по умолчанию (64 МиБ, p = 4) при
+# одновременных входах занимают сотни мегабайт памяти; старые хеши пересчитываются при входе (needs_rehash)
+_ph = PasswordHasher(time_cost=2, memory_cost=19456, parallelism=1)
 
 
 def hash_password(password: str) -> str:
@@ -24,6 +26,13 @@ def verify_password(password: str, password_hash: str | None) -> bool:
     try:
         return _ph.verify(password_hash, password)
     except (VerifyMismatchError, VerificationError, InvalidHashError):
+        return False
+
+
+def needs_rehash(password_hash: str) -> bool:
+    try:
+        return _ph.check_needs_rehash(password_hash)
+    except InvalidHashError:
         return False
 
 

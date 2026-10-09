@@ -1,5 +1,6 @@
 """Личный кабинет работодателя: компания, потребности/вакансии, подборки, банк кандидатов, приглашения,
 отклики, регулярные задания."""
+import time
 from datetime import timedelta
 from urllib.parse import urlparse
 
@@ -83,6 +84,18 @@ def put_company(data: CompanyIn, comp: EmployerCompany, db: DB):
     return _company_out(comp)
 
 
+POOL_TTL_SEC = 60
+_pool_cache: dict = {"at": 0.0, "value": None}
+
+
+def _pool_size(db) -> int:
+    """Размер банка кандидатов для сводки: пересчёт требует загрузить весь пул, поэтому кэш на минуту в процессе."""
+    now = time.monotonic()
+    if _pool_cache["value"] is None or now - _pool_cache["at"] > POOL_TTL_SEC:
+        _pool_cache.update(at=now, value=len({c.id for c in pool_profiles(db)}))
+    return _pool_cache["value"]
+
+
 @router.get("/dashboard", summary="Сводка работодателя")
 def dashboard(comp: EmployerCompany, db: DB):
     invs = list(db.scalars(select(Invitation).where(Invitation.company_id == comp.id)))
@@ -99,7 +112,7 @@ def dashboard(comp: EmployerCompany, db: DB):
     for i in invs:
         if i.decline_reason:
             decline_reasons[i.decline_reason] = decline_reasons.get(i.decline_reason, 0) + 1
-    pool = len({c.id for c in pool_profiles(db)})  # кандидаты с категорией хотя бы по одному резюме
+    pool = _pool_size(db)  # кандидаты с категорией хотя бы по одному резюме
     return {
         "company": _company_out(comp),
         "invitations": {"total": len(invs), "by_status": by_status,
@@ -357,10 +370,14 @@ def create_selection(data: NeedIn, comp: EmployerCompany, db: DB):
 
 @router.get("/selections", summary="История подборок")
 def list_selections(comp: EmployerCompany, db: DB):
-    rows = db.scalars(select(Selection).where(Selection.company_id == comp.id).order_by(Selection.created_at.desc()).limit(50))
-    return [{"id": s.id, "title": s.title, "vacancy_id": s.vacancy_id, "created_at": s.created_at,
-             "total": len(s.results), "specialization_name": SPEC_NAMES.get(s.need.get("specialization")),
-             "grade_names": [GRADE_NAMES[g] for g in s.need.get("grades", [])]} for s in rows]
+    # сами результаты (сотни кандидатов в JSON на подборку) не читаем — их число считает БД
+    rows = db.execute(select(Selection.id, Selection.title, Selection.vacancy_id, Selection.created_at, Selection.need,
+                             func.json_array_length(Selection.results))
+                      .where(Selection.company_id == comp.id).order_by(Selection.created_at.desc()).limit(50))
+    return [{"id": sid, "title": title, "vacancy_id": vid, "created_at": created, "total": total or 0,
+             "specialization_name": SPEC_NAMES.get(need.get("specialization")),
+             "grade_names": [GRADE_NAMES[g] for g in need.get("grades", [])]}
+            for sid, title, vid, created, need, total in rows]
 
 
 @router.get("/selections/{sid}", summary="Подборка с уточняющими фильтрами (поверх сохранённого результата)")

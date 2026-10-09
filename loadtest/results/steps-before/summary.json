@@ -1,0 +1,5902 @@
+{
+ "scenario": "steps-before",
+ "about": "ступенчатая нагрузка: +100 пользователей каждые 90 секунд до 600 — поиск предела",
+ "wall_sec": 562,
+ "total": {
+  "name": "Aggregated",
+  "count": 13493,
+  "failures": 934,
+  "rps": 24.07,
+  "p50": 9.0,
+  "p95": 120000.0,
+  "p99": 120000.0,
+  "max": 120041
+ },
+ "endpoints": [
+  {
+   "name": "POST /auth/login",
+   "count": 310,
+   "failures": 143,
+   "rps": 0.55,
+   "p50": 900.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120028
+  },
+  {
+   "name": "GET /candidate/dashboard",
+   "count": 484,
+   "failures": 47,
+   "rps": 0.86,
+   "p50": 17.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120024
+  },
+  {
+   "name": "GET /candidate/invitations",
+   "count": 310,
+   "failures": 38,
+   "rps": 0.55,
+   "p50": 13.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120006
+  },
+  {
+   "name": "GET /candidate/profile",
+   "count": 330,
+   "failures": 38,
+   "rps": 0.59,
+   "p50": 13.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120015
+  },
+  {
+   "name": "GET /candidate/resumes",
+   "count": 319,
+   "failures": 29,
+   "rps": 0.57,
+   "p50": 10.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120015
+  },
+  {
+   "name": "GET /employer/candidates (поиск)",
+   "count": 181,
+   "failures": 42,
+   "rps": 0.32,
+   "p50": 190.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120020
+  },
+  {
+   "name": "GET /employer/candidates/[id]",
+   "count": 82,
+   "failures": 13,
+   "rps": 0.15,
+   "p50": 27.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120012
+  },
+  {
+   "name": "GET /employer/dashboard",
+   "count": 163,
+   "failures": 36,
+   "rps": 0.29,
+   "p50": 140.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120015
+  },
+  {
+   "name": "GET /employer/invitations",
+   "count": 149,
+   "failures": 24,
+   "rps": 0.27,
+   "p50": 61.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120006
+  },
+  {
+   "name": "GET /employer/selections",
+   "count": 190,
+   "failures": 39,
+   "rps": 0.34,
+   "p50": 80.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120010
+  },
+  {
+   "name": "POST /employer/selections (NLP + подбор)",
+   "count": 80,
+   "failures": 16,
+   "rps": 0.14,
+   "p50": 340.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120012
+  },
+  {
+   "name": "GET /notifications",
+   "count": 467,
+   "failures": 34,
+   "rps": 0.83,
+   "p50": 8.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120021
+  },
+  {
+   "name": "GET /public/stats",
+   "count": 1156,
+   "failures": 130,
+   "rps": 2.06,
+   "p50": 18.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120007
+  },
+  {
+   "name": "GET /testing/eligibility",
+   "count": 392,
+   "failures": 115,
+   "rps": 0.7,
+   "p50": 75.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120041
+  },
+  {
+   "name": "GET /testing/history",
+   "count": 235,
+   "failures": 15,
+   "rps": 0.42,
+   "p50": 9.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120020
+  },
+  {
+   "name": "POST /testing/sessions/[token]/answer (express)",
+   "count": 178,
+   "failures": 19,
+   "rps": 0.32,
+   "p50": 36.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120019
+  },
+  {
+   "name": "GET /vacancies",
+   "count": 327,
+   "failures": 28,
+   "rps": 0.58,
+   "p50": 56.0,
+   "p95": 120000.0,
+   "p99": 120000.0,
+   "max": 120024
+  },
+  {
+   "name": "GET /reference",
+   "count": 1093,
+   "failures": 47,
+   "rps": 1.95,
+   "p50": 5.0,
+   "p95": 119000.0,
+   "p99": 120000.0,
+   "max": 120021
+  },
+  {
+   "name": "GET /public/methodology",
+   "count": 1389,
+   "failures": 42,
+   "rps": 2.48,
+   "p50": 9.0,
+   "p95": 57000.0,
+   "p99": 120000.0,
+   "max": 120014
+  },
+  {
+   "name": "POST /testing/sessions (full)",
+   "count": 91,
+   "failures": 5,
+   "rps": 0.16,
+   "p50": 100.0,
+   "p95": 30000.0,
+   "p99": 120000.0,
+   "max": 120015
+  },
+  {
+   "name": "POST /testing/sessions (express)",
+   "count": 31,
+   "failures": 0,
+   "rps": 0.06,
+   "p50": 26.0,
+   "p95": 1400.0,
+   "p99": 30000.0,
+   "max": 30030
+  },
+  {
+   "name": "GET /employer/selections/[id]",
+   "count": 145,
+   "failures": 2,
+   "rps": 0.26,
+   "p50": 98.0,
+   "p95": 1200.0,
+   "p99": 59000.0,
+   "max": 120000
+  },
+  {
+   "name": "GET /auth/me",
+   "count": 92,
+   "failures": 2,
+   "rps": 0.16,
+   "p50": 51.0,
+   "p95": 1000.0,
+   "p99": 120000.0,
+   "max": 120001
+  },
+  {
+   "name": "POST /testing/sessions/[token]/answer (full)",
+   "count": 810,
+   "failures": 30,
+   "rps": 1.45,
+   "p50": 20.0,
+   "p95": 920.0,
+   "p99": 120000.0,
+   "max": 120003
+  },
+  {
+   "name": "GET /vacancies/[id]",
+   "count": 299,
+   "failures": 0,
+   "rps": 0.53,
+   "p50": 16.0,
+   "p95": 510.0,
+   "p99": 960.0,
+   "max": 1291
+  },
+  {
+   "name": "GET /testing/sessions/[token] (результат)",
+   "count": 68,
+   "failures": 0,
+   "rps": 0.12,
+   "p50": 9.0,
+   "p95": 400.0,
+   "p99": 30000.0,
+   "max": 29898
+  },
+  {
+   "name": "GET / (SPA)",
+   "count": 1668,
+   "failures": 0,
+   "rps": 2.98,
+   "p50": 1.0,
+   "p95": 8.0,
+   "p99": 11.0,
+   "max": 45
+  },
+  {
+   "name": "GET /assets/* (бандл)",
+   "count": 2454,
+   "failures": 0,
+   "rps": 4.38,
+   "p50": 5.0,
+   "p95": 6.0,
+   "p99": 10.0,
+   "max": 48
+  }
+ ],
+ "failures": [
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand260@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand235@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand196@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand233@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand281@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand169@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand270@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/selections/[id]",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/selections/[id]')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand293@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand186@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand167@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/notifications",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /notifications')",
+   "count": 31
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand180@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand236@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand250@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand219@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand194@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/testing/sessions/[token]/answer (full)",
+   "error": "CatchResponseError('ответ: 500 Internal Server Error')",
+   "count": 13
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand249@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand208@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand255@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand216@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand172@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand240@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/selections",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/selections')",
+   "count": 3
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand228@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand193@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand289@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand267@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand218@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand246@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand158@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand209@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand287@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand226@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/dashboard",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/dashboard')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/testing/sessions (full)",
+   "error": "CatchResponseError('старт теста: 504 <html>\\r\\n<head><title>504 Gateway Time-out</title></head>\\r\\n<body>\\r\\n<center><h1>504 Gateway Time-out</h1></center>\\r\\n<hr><c')",
+   "count": 4
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand292@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand191@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand299@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand269@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand214@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand175@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/dashboard",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/dashboard')",
+   "count": 35
+  },
+  {
+   "method": "POST",
+   "name": "/testing/sessions (full)",
+   "error": "CatchResponseError('старт теста: 500 Internal Server Error')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand195@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/profile",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /candidate/profile')",
+   "count": 5
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand295@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/candidates/[id]",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/candidates/[id]')",
+   "count": 3
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand166@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand258@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand279@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand203@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand188@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand257@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand217@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand278@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand301@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand210@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/public/stats",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /public/stats')",
+   "count": 99
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand182@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/selections/[id]",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections/[id]')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand276@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/testing/eligibility",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /testing/eligibility')",
+   "count": 11
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand211@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/dashboard",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /candidate/dashboard')",
+   "count": 9
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand206@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/notifications",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /notifications')",
+   "count": 3
+  },
+  {
+   "method": "GET",
+   "name": "/public/stats",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /public/stats')",
+   "count": 31
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand304@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand300@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand202@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand179@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand220@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand274@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/invitations",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/invitations')",
+   "count": 23
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand212@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/testing/sessions/[token]/answer (full)",
+   "error": "CatchResponseError('ответ: 504 <html>\\r\\n<head><title>504 Gateway Time-out</title></head>\\r\\n<body>\\r\\n<center><h1>504 Gateway Time-out</h1></center>\\r\\n<hr><c')",
+   "count": 17
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand256@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand273@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand222@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand286@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand259@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand163@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand297@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand266@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/candidates (поиск)",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/candidates (поиск)')",
+   "count": 37
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand290@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand283@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand230@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand190@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand197@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/profile",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /candidate/profile')",
+   "count": 33
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand224@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand254@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand221@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/invitations",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/invitations')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/testing/sessions/[token]/answer (express)",
+   "error": "CatchResponseError('ответ: 500 Internal Server Error')",
+   "count": 8
+  },
+  {
+   "method": "GET",
+   "name": "/public/methodology",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /public/methodology')",
+   "count": 42
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand241@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand245@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand215@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand272@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand302@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand294@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand263@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand231@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand296@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand265@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/testing/history",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /testing/history')",
+   "count": 13
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand189@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand284@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/vacancies",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /vacancies')",
+   "count": 5
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand185@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand176@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand252@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand244@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand171@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/resumes",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /candidate/resumes')",
+   "count": 28
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand223@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/invitations",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /candidate/invitations')",
+   "count": 24
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand227@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand201@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand251@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/employer/selections (NLP + подбор)",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/selections (NLP + подбор)')",
+   "count": 2
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand165@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand178@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand177@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand242@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand303@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand232@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand229@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand225@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand184@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand253@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand238@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand168@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand213@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand234@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand205@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand174@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/reference",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /reference')",
+   "count": 47
+  },
+  {
+   "method": "GET",
+   "name": "/employer/candidates/[id]",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/candidates/[id]')",
+   "count": 10
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand207@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand291@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand204@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand187@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand280@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/testing/sessions/[token]/answer (express)",
+   "error": "CatchResponseError('ответ: 504 <html>\\r\\n<head><title>504 Gateway Time-out</title></head>\\r\\n<body>\\r\\n<center><h1>504 Gateway Time-out</h1></center>\\r\\n<hr><c')",
+   "count": 11
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand271@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand198@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand183@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/invitations",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /candidate/invitations')",
+   "count": 14
+  },
+  {
+   "method": "GET",
+   "name": "/employer/selections",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections')",
+   "count": 36
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand277@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand243@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/employer/candidates (поиск)",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /employer/candidates (поиск)')",
+   "count": 5
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand275@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand247@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand261@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand237@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/auth/me",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /auth/me')",
+   "count": 2
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand164@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand264@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand285@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand288@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand282@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/vacancies",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /vacancies')",
+   "count": 23
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/resumes",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /candidate/resumes')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand181@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/testing/history",
+   "error": "HTTPError('500 Server Error: Internal Server Error for url: /testing/history')",
+   "count": 2
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand173@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand268@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/employer/selections (NLP + подбор)",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections (NLP + подбор)')",
+   "count": 14
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand248@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/candidate/dashboard",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /candidate/dashboard')",
+   "count": 38
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand170@synthetic.example: 500')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand239@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand200@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand192@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand262@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "GET",
+   "name": "/testing/eligibility",
+   "error": "HTTPError('504 Server Error: Gateway Time-out for url: /testing/eligibility')",
+   "count": 104
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand199@synthetic.example: 504')",
+   "count": 1
+  },
+  {
+   "method": "POST",
+   "name": "/auth/login",
+   "error": "CatchResponseError('вход cand298@synthetic.example: 504')",
+   "count": 1
+  }
+ ],
+ "containers": {
+  "fsp-before-frontend-1": {
+   "cpu_max": 13.98,
+   "cpu_avg": 2.3,
+   "mem_max_mb": 20.8
+  },
+  "fsp-before-backend-1": {
+   "cpu_max": 257.1,
+   "cpu_avg": 28.4,
+   "mem_max_mb": 629.4
+  },
+  "fsp-before-db-1": {
+   "cpu_max": 48.39,
+   "cpu_avg": 6.7,
+   "mem_max_mb": 114.2
+  },
+  "fsp-before-mailpit-1": {
+   "cpu_max": 3.65,
+   "cpu_avg": 0.2,
+   "mem_max_mb": 8.0
+  },
+  "fsp-before-fsp-mock-1": {
+   "cpu_max": 0.16,
+   "cpu_avg": 0.1,
+   "mem_max_mb": 39.5
+  },
+  "fsp-before-sandbox-1": {
+   "cpu_max": 20.34,
+   "cpu_avg": 1.2,
+   "mem_max_mb": 17.9
+  }
+ },
+ "history": [
+  {
+   "t": 0,
+   "users": 0,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 0.0,
+   "p95": 0.0
+  },
+  {
+   "t": 1,
+   "users": 10,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 43.0,
+   "p95": 310.0
+  },
+  {
+   "t": 2,
+   "users": 20,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 32.0,
+   "p95": 230.0
+  },
+  {
+   "t": 3,
+   "users": 40,
+   "rps": 12.0,
+   "fps": 0.0,
+   "p50": 38.0,
+   "p95": 270.0
+  },
+  {
+   "t": 4,
+   "users": 50,
+   "rps": 25.0,
+   "fps": 0.0,
+   "p50": 32.0,
+   "p95": 250.0
+  },
+  {
+   "t": 5,
+   "users": 60,
+   "rps": 29.3,
+   "fps": 0.0,
+   "p50": 30.0,
+   "p95": 230.0
+  },
+  {
+   "t": 6,
+   "users": 70,
+   "rps": 31.8,
+   "fps": 0.0,
+   "p50": 26.0,
+   "p95": 230.0
+  },
+  {
+   "t": 7,
+   "users": 80,
+   "rps": 33.2,
+   "fps": 0.0,
+   "p50": 28.0,
+   "p95": 230.0
+  },
+  {
+   "t": 8,
+   "users": 90,
+   "rps": 36.2,
+   "fps": 0.0,
+   "p50": 25.0,
+   "p95": 220.0
+  },
+  {
+   "t": 9,
+   "users": 100,
+   "rps": 38.9,
+   "fps": 0.0,
+   "p50": 22.0,
+   "p95": 220.0
+  },
+  {
+   "t": 10,
+   "users": 100,
+   "rps": 39.8,
+   "fps": 0.0,
+   "p50": 23.0,
+   "p95": 220.0
+  },
+  {
+   "t": 11,
+   "users": 100,
+   "rps": 41.7,
+   "fps": 0.0,
+   "p50": 21.0,
+   "p95": 220.0
+  },
+  {
+   "t": 12,
+   "users": 100,
+   "rps": 45.4,
+   "fps": 0.0,
+   "p50": 19.0,
+   "p95": 220.0
+  },
+  {
+   "t": 13,
+   "users": 100,
+   "rps": 51.3,
+   "fps": 0.0,
+   "p50": 15.0,
+   "p95": 210.0
+  },
+  {
+   "t": 14,
+   "users": 100,
+   "rps": 50.9,
+   "fps": 0.0,
+   "p50": 14.0,
+   "p95": 210.0
+  },
+  {
+   "t": 15,
+   "users": 100,
+   "rps": 49.7,
+   "fps": 0.0,
+   "p50": 13.0,
+   "p95": 210.0
+  },
+  {
+   "t": 16,
+   "users": 100,
+   "rps": 50.8,
+   "fps": 0.0,
+   "p50": 12.0,
+   "p95": 200.0
+  },
+  {
+   "t": 17,
+   "users": 100,
+   "rps": 51.6,
+   "fps": 0.0,
+   "p50": 12.0,
+   "p95": 200.0
+  },
+  {
+   "t": 19,
+   "users": 100,
+   "rps": 49.2,
+   "fps": 0.0,
+   "p50": 10.0,
+   "p95": 200.0
+  },
+  {
+   "t": 20,
+   "users": 100,
+   "rps": 48.9,
+   "fps": 0.0,
+   "p50": 10.0,
+   "p95": 200.0
+  },
+  {
+   "t": 21,
+   "users": 100,
+   "rps": 47.7,
+   "fps": 0.0,
+   "p50": 10.0,
+   "p95": 200.0
+  },
+  {
+   "t": 22,
+   "users": 100,
+   "rps": 46.8,
+   "fps": 0.0,
+   "p50": 10.0,
+   "p95": 200.0
+  },
+  {
+   "t": 23,
+   "users": 100,
+   "rps": 42.6,
+   "fps": 0.0,
+   "p50": 10.0,
+   "p95": 200.0
+  },
+  {
+   "t": 24,
+   "users": 100,
+   "rps": 41.3,
+   "fps": 0.0,
+   "p50": 9.0,
+   "p95": 200.0
+  },
+  {
+   "t": 25,
+   "users": 100,
+   "rps": 40.9,
+   "fps": 0.0,
+   "p50": 9.0,
+   "p95": 190.0
+  },
+  {
+   "t": 26,
+   "users": 100,
+   "rps": 40.5,
+   "fps": 0.0,
+   "p50": 9.0,
+   "p95": 190.0
+  },
+  {
+   "t": 27,
+   "users": 100,
+   "rps": 39.3,
+   "fps": 0.0,
+   "p50": 9.0,
+   "p95": 190.0
+  },
+  {
+   "t": 28,
+   "users": 100,
+   "rps": 40.4,
+   "fps": 0.0,
+   "p50": 9.0,
+   "p95": 190.0
+  },
+  {
+   "t": 29,
+   "users": 100,
+   "rps": 38.1,
+   "fps": 0.0,
+   "p50": 9.0,
+   "p95": 190.0
+  },
+  {
+   "t": 30,
+   "users": 100,
+   "rps": 38.1,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 190.0
+  },
+  {
+   "t": 31,
+   "users": 100,
+   "rps": 39.3,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 180.0
+  },
+  {
+   "t": 32,
+   "users": 100,
+   "rps": 39.3,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 180.0
+  },
+  {
+   "t": 33,
+   "users": 100,
+   "rps": 36.3,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 180.0
+  },
+  {
+   "t": 34,
+   "users": 100,
+   "rps": 37.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 180.0
+  },
+  {
+   "t": 35,
+   "users": 100,
+   "rps": 38.7,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 180.0
+  },
+  {
+   "t": 36,
+   "users": 100,
+   "rps": 38.7,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 170.0
+  },
+  {
+   "t": 37,
+   "users": 100,
+   "rps": 38.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 170.0
+  },
+  {
+   "t": 38,
+   "users": 100,
+   "rps": 39.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 170.0
+  },
+  {
+   "t": 39,
+   "users": 100,
+   "rps": 40.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 40,
+   "users": 100,
+   "rps": 42.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 41,
+   "users": 100,
+   "rps": 37.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 42,
+   "users": 100,
+   "rps": 38.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 43,
+   "users": 100,
+   "rps": 40.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 44,
+   "users": 100,
+   "rps": 39.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 45,
+   "users": 100,
+   "rps": 39.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 46,
+   "users": 100,
+   "rps": 38.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 47,
+   "users": 100,
+   "rps": 39.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 48,
+   "users": 100,
+   "rps": 40.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 49,
+   "users": 100,
+   "rps": 40.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 50,
+   "users": 100,
+   "rps": 40.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 51,
+   "users": 100,
+   "rps": 40.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 52,
+   "users": 100,
+   "rps": 40.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 53,
+   "users": 100,
+   "rps": 38.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 54,
+   "users": 100,
+   "rps": 38.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 55,
+   "users": 100,
+   "rps": 42.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 56,
+   "users": 100,
+   "rps": 42.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 57,
+   "users": 100,
+   "rps": 38.9,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 58,
+   "users": 100,
+   "rps": 38.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 59,
+   "users": 100,
+   "rps": 37.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 60,
+   "users": 100,
+   "rps": 40.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 61,
+   "users": 100,
+   "rps": 38.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 62,
+   "users": 100,
+   "rps": 38.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 130.0
+  },
+  {
+   "t": 63,
+   "users": 100,
+   "rps": 39.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 130.0
+  },
+  {
+   "t": 64,
+   "users": 100,
+   "rps": 41.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 130.0
+  },
+  {
+   "t": 65,
+   "users": 100,
+   "rps": 39.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 66,
+   "users": 100,
+   "rps": 40.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 67,
+   "users": 100,
+   "rps": 40.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 68,
+   "users": 100,
+   "rps": 39.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 69,
+   "users": 100,
+   "rps": 41.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 70,
+   "users": 100,
+   "rps": 41.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 71,
+   "users": 100,
+   "rps": 43.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 72,
+   "users": 100,
+   "rps": 41.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 73,
+   "users": 100,
+   "rps": 39.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 74,
+   "users": 100,
+   "rps": 40.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 75,
+   "users": 100,
+   "rps": 40.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 76,
+   "users": 100,
+   "rps": 38.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 77,
+   "users": 100,
+   "rps": 40.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 78,
+   "users": 100,
+   "rps": 40.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 79,
+   "users": 100,
+   "rps": 41.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 80,
+   "users": 100,
+   "rps": 40.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 81,
+   "users": 100,
+   "rps": 38.9,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 82,
+   "users": 100,
+   "rps": 41.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 83,
+   "users": 100,
+   "rps": 43.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 84,
+   "users": 100,
+   "rps": 39.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 85,
+   "users": 100,
+   "rps": 41.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 86,
+   "users": 100,
+   "rps": 41.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 87,
+   "users": 100,
+   "rps": 41.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 88,
+   "users": 100,
+   "rps": 41.6,
+   "fps": 0.0,
+   "p50": 6.0,
+   "p95": 100.0
+  },
+  {
+   "t": 89,
+   "users": 100,
+   "rps": 40.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 99.0
+  },
+  {
+   "t": 90,
+   "users": 100,
+   "rps": 41.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 97.0
+  },
+  {
+   "t": 91,
+   "users": 110,
+   "rps": 40.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 96.0
+  },
+  {
+   "t": 92,
+   "users": 120,
+   "rps": 42.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 100.0
+  },
+  {
+   "t": 93,
+   "users": 130,
+   "rps": 41.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 94,
+   "users": 140,
+   "rps": 45.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 110.0
+  },
+  {
+   "t": 95,
+   "users": 150,
+   "rps": 48.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 120.0
+  },
+  {
+   "t": 96,
+   "users": 160,
+   "rps": 52.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 97,
+   "users": 170,
+   "rps": 55.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 140.0
+  },
+  {
+   "t": 98,
+   "users": 180,
+   "rps": 59.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 99,
+   "users": 190,
+   "rps": 65.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 150.0
+  },
+  {
+   "t": 100,
+   "users": 200,
+   "rps": 68.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 101,
+   "users": 200,
+   "rps": 74.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 102,
+   "users": 200,
+   "rps": 75.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 103,
+   "users": 200,
+   "rps": 82.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 104,
+   "users": 200,
+   "rps": 83.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 105,
+   "users": 200,
+   "rps": 83.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 106,
+   "users": 200,
+   "rps": 83.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 107,
+   "users": 200,
+   "rps": 84.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 108,
+   "users": 200,
+   "rps": 83.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 109,
+   "users": 200,
+   "rps": 81.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 110,
+   "users": 200,
+   "rps": 79.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 111,
+   "users": 200,
+   "rps": 80.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 112,
+   "users": 200,
+   "rps": 81.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 113,
+   "users": 200,
+   "rps": 78.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 114,
+   "users": 200,
+   "rps": 78.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 115,
+   "users": 200,
+   "rps": 78.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 116,
+   "users": 200,
+   "rps": 78.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 117,
+   "users": 200,
+   "rps": 78.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 118,
+   "users": 200,
+   "rps": 79.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 119,
+   "users": 200,
+   "rps": 79.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 120,
+   "users": 200,
+   "rps": 81.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 121,
+   "users": 200,
+   "rps": 77.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 122,
+   "users": 200,
+   "rps": 75.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 123,
+   "users": 200,
+   "rps": 75.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 124,
+   "users": 200,
+   "rps": 77.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 125,
+   "users": 200,
+   "rps": 76.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 126,
+   "users": 200,
+   "rps": 77.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 127,
+   "users": 200,
+   "rps": 77.4,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 128,
+   "users": 200,
+   "rps": 76.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 129,
+   "users": 200,
+   "rps": 79.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 130,
+   "users": 200,
+   "rps": 74.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 131,
+   "users": 200,
+   "rps": 74.9,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 132,
+   "users": 200,
+   "rps": 79.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 133,
+   "users": 200,
+   "rps": 78.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 134,
+   "users": 200,
+   "rps": 76.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 135,
+   "users": 200,
+   "rps": 77.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 136,
+   "users": 200,
+   "rps": 77.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 137,
+   "users": 200,
+   "rps": 76.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 138,
+   "users": 200,
+   "rps": 78.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 139,
+   "users": 200,
+   "rps": 75.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 140,
+   "users": 200,
+   "rps": 79.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 141,
+   "users": 200,
+   "rps": 78.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 142,
+   "users": 200,
+   "rps": 75.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 143,
+   "users": 200,
+   "rps": 77.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 144,
+   "users": 200,
+   "rps": 80.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 145,
+   "users": 200,
+   "rps": 80.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 146,
+   "users": 200,
+   "rps": 79.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 147,
+   "users": 200,
+   "rps": 79.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 148,
+   "users": 200,
+   "rps": 79.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 149,
+   "users": 200,
+   "rps": 82.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 150,
+   "users": 200,
+   "rps": 83.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 170.0
+  },
+  {
+   "t": 151,
+   "users": 200,
+   "rps": 84.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 152,
+   "users": 200,
+   "rps": 83.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 153,
+   "users": 200,
+   "rps": 82.9,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 154,
+   "users": 200,
+   "rps": 78.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 155,
+   "users": 200,
+   "rps": 77.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 156,
+   "users": 200,
+   "rps": 77.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 157,
+   "users": 200,
+   "rps": 77.2,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 158,
+   "users": 200,
+   "rps": 78.9,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 159,
+   "users": 200,
+   "rps": 76.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 160,
+   "users": 200,
+   "rps": 72.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 161,
+   "users": 200,
+   "rps": 73.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 162,
+   "users": 200,
+   "rps": 75.9,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 163,
+   "users": 200,
+   "rps": 75.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 164,
+   "users": 200,
+   "rps": 75.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 165,
+   "users": 200,
+   "rps": 76.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 166,
+   "users": 200,
+   "rps": 77.6,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 167,
+   "users": 200,
+   "rps": 81.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 168,
+   "users": 200,
+   "rps": 78.8,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 169,
+   "users": 200,
+   "rps": 79.1,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 170,
+   "users": 200,
+   "rps": 84.0,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 171,
+   "users": 200,
+   "rps": 83.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 172,
+   "users": 200,
+   "rps": 82.5,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 173,
+   "users": 200,
+   "rps": 81.3,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 174,
+   "users": 200,
+   "rps": 79.7,
+   "fps": 0.0,
+   "p50": 7.0,
+   "p95": 160.0
+  },
+  {
+   "t": 175,
+   "users": 200,
+   "rps": 77.7,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 176,
+   "users": 200,
+   "rps": 76.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 177,
+   "users": 200,
+   "rps": 76.3,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 178,
+   "users": 200,
+   "rps": 78.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 179,
+   "users": 200,
+   "rps": 79.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 180,
+   "users": 200,
+   "rps": 76.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 181,
+   "users": 210,
+   "rps": 76.1,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 160.0
+  },
+  {
+   "t": 182,
+   "users": 220,
+   "rps": 75.5,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 170.0
+  },
+  {
+   "t": 183,
+   "users": 230,
+   "rps": 78.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 180.0
+  },
+  {
+   "t": 184,
+   "users": 240,
+   "rps": 82.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 190.0
+  },
+  {
+   "t": 185,
+   "users": 250,
+   "rps": 83.9,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 200.0
+  },
+  {
+   "t": 186,
+   "users": 260,
+   "rps": 87.7,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 210.0
+  },
+  {
+   "t": 187,
+   "users": 270,
+   "rps": 88.1,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 210.0
+  },
+  {
+   "t": 188,
+   "users": 280,
+   "rps": 87.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 230.0
+  },
+  {
+   "t": 189,
+   "users": 290,
+   "rps": 89.9,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 190,
+   "users": 300,
+   "rps": 91.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 192,
+   "users": 300,
+   "rps": 100.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 193,
+   "users": 300,
+   "rps": 101.9,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 194,
+   "users": 300,
+   "rps": 95.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 195,
+   "users": 300,
+   "rps": 88.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 196,
+   "users": 300,
+   "rps": 82.5,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 197,
+   "users": 300,
+   "rps": 74.3,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 198,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 199,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 200,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 201,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 202,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 203,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 204,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 205,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 206,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 207,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 208,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 209,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 210,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 211,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 212,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 213,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 214,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 215,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 216,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 217,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 218,
+   "users": 300,
+   "rps": 64.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 240.0
+  },
+  {
+   "t": 219,
+   "users": 300,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 250.0
+  },
+  {
+   "t": 220,
+   "users": 300,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 221,
+   "users": 300,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 222,
+   "users": 300,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 223,
+   "users": 300,
+   "rps": 4.7,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 224,
+   "users": 300,
+   "rps": 4.7,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 225,
+   "users": 300,
+   "rps": 5.7,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 226,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 227,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 228,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 229,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 230,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 231,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 232,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 233,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 234,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 235,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 236,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 237,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 238,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 239,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 240,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 241,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 242,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 243,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 244,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 245,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 246,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 247,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 248,
+   "users": 300,
+   "rps": 6.5,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 260.0
+  },
+  {
+   "t": 249,
+   "users": 300,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 270.0
+  },
+  {
+   "t": 250,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 251,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 252,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 253,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 254,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 255,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 256,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 257,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 258,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 259,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 260,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 261,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 262,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 263,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 264,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 265,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 266,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 267,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 268,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 269,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 270,
+   "users": 294,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 271,
+   "users": 310,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 272,
+   "users": 320,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 273,
+   "users": 330,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 274,
+   "users": 340,
+   "rps": 0.6,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 275,
+   "users": 350,
+   "rps": 1.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 280.0
+  },
+  {
+   "t": 276,
+   "users": 360,
+   "rps": 2.4,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 270.0
+  },
+  {
+   "t": 277,
+   "users": 370,
+   "rps": 3.4,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 270.0
+  },
+  {
+   "t": 278,
+   "users": 379,
+   "rps": 4.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 270.0
+  },
+  {
+   "t": 279,
+   "users": 390,
+   "rps": 5.4,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 280,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 281,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 282,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 283,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 284,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 285,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 286,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 287,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 288,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 289,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 290,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 291,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 292,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 293,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 294,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 295,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 296,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 297,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 298,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 299,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 300,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 301,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 302,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 303,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 304,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 305,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 306,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 307,
+   "users": 400,
+   "rps": 6.2,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 290.0
+  },
+  {
+   "t": 308,
+   "users": 400,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 300.0
+  },
+  {
+   "t": 309,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 340.0
+  },
+  {
+   "t": 310,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 340.0
+  },
+  {
+   "t": 311,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 340.0
+  },
+  {
+   "t": 312,
+   "users": 399,
+   "rps": 5.8,
+   "fps": 5.8,
+   "p50": 8.0,
+   "p95": 340.0
+  },
+  {
+   "t": 313,
+   "users": 399,
+   "rps": 5.8,
+   "fps": 5.8,
+   "p50": 8.0,
+   "p95": 370.0
+  },
+  {
+   "t": 314,
+   "users": 399,
+   "rps": 5.8,
+   "fps": 5.8,
+   "p50": 8.0,
+   "p95": 400.0
+  },
+  {
+   "t": 315,
+   "users": 399,
+   "rps": 7.2,
+   "fps": 7.2,
+   "p50": 8.0,
+   "p95": 440.0
+  },
+  {
+   "t": 316,
+   "users": 399,
+   "rps": 9.4,
+   "fps": 9.4,
+   "p50": 8.0,
+   "p95": 460.0
+  },
+  {
+   "t": 317,
+   "users": 399,
+   "rps": 11.6,
+   "fps": 11.6,
+   "p50": 8.0,
+   "p95": 470.0
+  },
+  {
+   "t": 318,
+   "users": 399,
+   "rps": 13.8,
+   "fps": 13.8,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 319,
+   "users": 399,
+   "rps": 15.2,
+   "fps": 15.2,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 320,
+   "users": 399,
+   "rps": 16.1,
+   "fps": 16.1,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 321,
+   "users": 399,
+   "rps": 16.1,
+   "fps": 16.1,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 322,
+   "users": 399,
+   "rps": 11.6,
+   "fps": 11.6,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 323,
+   "users": 399,
+   "rps": 11.6,
+   "fps": 11.6,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 324,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 325,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 326,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 327,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 328,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 329,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 330,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 331,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 332,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 333,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 334,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 335,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 336,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 337,
+   "users": 399,
+   "rps": 11.0,
+   "fps": 11.0,
+   "p50": 8.0,
+   "p95": 490.0
+  },
+  {
+   "t": 338,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 510.0
+  },
+  {
+   "t": 339,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 510.0
+  },
+  {
+   "t": 340,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 510.0
+  },
+  {
+   "t": 341,
+   "users": 399,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 510.0
+  },
+  {
+   "t": 342,
+   "users": 399,
+   "rps": 1.2,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 530.0
+  },
+  {
+   "t": 343,
+   "users": 399,
+   "rps": 1.2,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 530.0
+  },
+  {
+   "t": 344,
+   "users": 399,
+   "rps": 1.2,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 540.0
+  },
+  {
+   "t": 345,
+   "users": 399,
+   "rps": 2.0,
+   "fps": 2.0,
+   "p50": 8.0,
+   "p95": 580.0
+  },
+  {
+   "t": 346,
+   "users": 399,
+   "rps": 2.5,
+   "fps": 2.5,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 347,
+   "users": 399,
+   "rps": 3.5,
+   "fps": 3.5,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 348,
+   "users": 399,
+   "rps": 3.9,
+   "fps": 3.9,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 349,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 4.3,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 350,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 4.3,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 351,
+   "users": 399,
+   "rps": 4.8,
+   "fps": 4.5,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 352,
+   "users": 399,
+   "rps": 4.2,
+   "fps": 3.6,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 353,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 354,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 355,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 356,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 357,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 358,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 359,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 360,
+   "users": 399,
+   "rps": 4.6,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 361,
+   "users": 410,
+   "rps": 1.1,
+   "fps": 0.2,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 362,
+   "users": 420,
+   "rps": 0.5,
+   "fps": 0.2,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 363,
+   "users": 430,
+   "rps": 0.2,
+   "fps": 0.2,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 364,
+   "users": 440,
+   "rps": 0.9,
+   "fps": 0.1,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 365,
+   "users": 450,
+   "rps": 1.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 366,
+   "users": 460,
+   "rps": 2.6,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 367,
+   "users": 470,
+   "rps": 3.8,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 590.0
+  },
+  {
+   "t": 368,
+   "users": 480,
+   "rps": 4.6,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 610.0
+  },
+  {
+   "t": 369,
+   "users": 490,
+   "rps": 5.6,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 690.0
+  },
+  {
+   "t": 370,
+   "users": 500,
+   "rps": 6.4,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 780.0
+  },
+  {
+   "t": 371,
+   "users": 500,
+   "rps": 8.9,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 780.0
+  },
+  {
+   "t": 373,
+   "users": 500,
+   "rps": 14.7,
+   "fps": 1.5,
+   "p50": 8.0,
+   "p95": 780.0
+  },
+  {
+   "t": 374,
+   "users": 500,
+   "rps": 18.7,
+   "fps": 1.5,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 375,
+   "users": 500,
+   "rps": 18.0,
+   "fps": 1.6,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 376,
+   "users": 500,
+   "rps": 17.5,
+   "fps": 1.8,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 377,
+   "users": 500,
+   "rps": 17.3,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 378,
+   "users": 500,
+   "rps": 16.9,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 379,
+   "users": 500,
+   "rps": 16.9,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 380,
+   "users": 500,
+   "rps": 17.6,
+   "fps": 2.7,
+   "p50": 8.0,
+   "p95": 790.0
+  },
+  {
+   "t": 381,
+   "users": 500,
+   "rps": 15.7,
+   "fps": 1.5,
+   "p50": 8.0,
+   "p95": 800.0
+  },
+  {
+   "t": 382,
+   "users": 500,
+   "rps": 10.0,
+   "fps": 1.4,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 383,
+   "users": 500,
+   "rps": 10.0,
+   "fps": 1.4,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 384,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 385,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 386,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 387,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 388,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 389,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 390,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 391,
+   "users": 500,
+   "rps": 6.3,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 810.0
+  },
+  {
+   "t": 392,
+   "users": 488,
+   "rps": 0.7,
+   "fps": 0.7,
+   "p50": 8.0,
+   "p95": 840.0
+  },
+  {
+   "t": 393,
+   "users": 482,
+   "rps": 0.6,
+   "fps": 0.6,
+   "p50": 8.0,
+   "p95": 870.0
+  },
+  {
+   "t": 394,
+   "users": 476,
+   "rps": 0.4,
+   "fps": 0.4,
+   "p50": 8.0,
+   "p95": 900.0
+  },
+  {
+   "t": 395,
+   "users": 471,
+   "rps": 1.6,
+   "fps": 1.6,
+   "p50": 8.0,
+   "p95": 900.0
+  },
+  {
+   "t": 396,
+   "users": 464,
+   "rps": 2.4,
+   "fps": 2.4,
+   "p50": 8.0,
+   "p95": 930.0
+  },
+  {
+   "t": 397,
+   "users": 459,
+   "rps": 3.2,
+   "fps": 3.2,
+   "p50": 8.0,
+   "p95": 960.0
+  },
+  {
+   "t": 398,
+   "users": 453,
+   "rps": 3.8,
+   "fps": 3.8,
+   "p50": 8.0,
+   "p95": 970.0
+  },
+  {
+   "t": 399,
+   "users": 447,
+   "rps": 4.8,
+   "fps": 4.8,
+   "p50": 8.0,
+   "p95": 1000.0
+  },
+  {
+   "t": 400,
+   "users": 435,
+   "rps": 5.8,
+   "fps": 5.8,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 401,
+   "users": 430,
+   "rps": 8.3,
+   "fps": 8.3,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 402,
+   "users": 430,
+   "rps": 8.3,
+   "fps": 8.3,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 403,
+   "users": 430,
+   "rps": 10.2,
+   "fps": 10.2,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 404,
+   "users": 430,
+   "rps": 10.2,
+   "fps": 10.2,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 405,
+   "users": 430,
+   "rps": 10.0,
+   "fps": 10.0,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 406,
+   "users": 430,
+   "rps": 8.6,
+   "fps": 8.6,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 407,
+   "users": 430,
+   "rps": 8.6,
+   "fps": 8.6,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 408,
+   "users": 430,
+   "rps": 8.0,
+   "fps": 8.0,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 409,
+   "users": 430,
+   "rps": 6.5,
+   "fps": 6.5,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 410,
+   "users": 430,
+   "rps": 5.9,
+   "fps": 5.9,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 411,
+   "users": 430,
+   "rps": 5.9,
+   "fps": 5.9,
+   "p50": 8.0,
+   "p95": 1100.0
+  },
+  {
+   "t": 412,
+   "users": 430,
+   "rps": 2.5,
+   "fps": 2.5,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 413,
+   "users": 430,
+   "rps": 2.5,
+   "fps": 2.5,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 414,
+   "users": 430,
+   "rps": 2.5,
+   "fps": 2.5,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 415,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 416,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 417,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 418,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 419,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 420,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 421,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 422,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 423,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 424,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 425,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 426,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 427,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 428,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1200.0
+  },
+  {
+   "t": 429,
+   "users": 430,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 1300.0
+  },
+  {
+   "t": 430,
+   "users": 430,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 1300.0
+  },
+  {
+   "t": 431,
+   "users": 430,
+   "rps": 0.0,
+   "fps": 0.0,
+   "p50": 8.0,
+   "p95": 1300.0
+  },
+  {
+   "t": 432,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1300.0
+  },
+  {
+   "t": 433,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1400.0
+  },
+  {
+   "t": 434,
+   "users": 430,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 1400.0
+  },
+  {
+   "t": 435,
+   "users": 430,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 1600.0
+  },
+  {
+   "t": 436,
+   "users": 430,
+   "rps": 2.7,
+   "fps": 2.7,
+   "p50": 8.0,
+   "p95": 1700.0
+  },
+  {
+   "t": 437,
+   "users": 430,
+   "rps": 4.1,
+   "fps": 4.1,
+   "p50": 8.0,
+   "p95": 2100.0
+  },
+  {
+   "t": 438,
+   "users": 430,
+   "rps": 5.1,
+   "fps": 5.1,
+   "p50": 8.0,
+   "p95": 25000.0
+  },
+  {
+   "t": 439,
+   "users": 430,
+   "rps": 5.7,
+   "fps": 5.7,
+   "p50": 8.0,
+   "p95": 27000.0
+  },
+  {
+   "t": 440,
+   "users": 430,
+   "rps": 6.5,
+   "fps": 6.5,
+   "p50": 8.0,
+   "p95": 28000.0
+  },
+  {
+   "t": 441,
+   "users": 430,
+   "rps": 6.0,
+   "fps": 6.0,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 442,
+   "users": 430,
+   "rps": 6.9,
+   "fps": 6.9,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 443,
+   "users": 430,
+   "rps": 7.5,
+   "fps": 7.5,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 444,
+   "users": 430,
+   "rps": 7.5,
+   "fps": 7.5,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 445,
+   "users": 430,
+   "rps": 7.9,
+   "fps": 7.9,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 446,
+   "users": 430,
+   "rps": 7.9,
+   "fps": 7.9,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 447,
+   "users": 430,
+   "rps": 6.8,
+   "fps": 6.8,
+   "p50": 8.0,
+   "p95": 30000.0
+  },
+  {
+   "t": 448,
+   "users": 430,
+   "rps": 6.4,
+   "fps": 6.4,
+   "p50": 8.0,
+   "p95": 31000.0
+  },
+  {
+   "t": 449,
+   "users": 430,
+   "rps": 6.3,
+   "fps": 6.3,
+   "p50": 8.0,
+   "p95": 53000.0
+  },
+  {
+   "t": 450,
+   "users": 430,
+   "rps": 5.7,
+   "fps": 5.7,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 451,
+   "users": 510,
+   "rps": 5.2,
+   "fps": 5.2,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 452,
+   "users": 520,
+   "rps": 4.6,
+   "fps": 4.6,
+   "p50": 8.0,
+   "p95": 55000.0
+  },
+  {
+   "t": 453,
+   "users": 530,
+   "rps": 4.2,
+   "fps": 4.2,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 454,
+   "users": 540,
+   "rps": 4.5,
+   "fps": 3.9,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 455,
+   "users": 550,
+   "rps": 5.0,
+   "fps": 3.4,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 456,
+   "users": 560,
+   "rps": 4.8,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 457,
+   "users": 570,
+   "rps": 5.7,
+   "fps": 2.3,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 458,
+   "users": 580,
+   "rps": 5.8,
+   "fps": 1.8,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 459,
+   "users": 590,
+   "rps": 6.5,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 460,
+   "users": 600,
+   "rps": 7.1,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 461,
+   "users": 600,
+   "rps": 7.1,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 54000.0
+  },
+  {
+   "t": 462,
+   "users": 600,
+   "rps": 8.7,
+   "fps": 0.7,
+   "p50": 8.0,
+   "p95": 55000.0
+  },
+  {
+   "t": 463,
+   "users": 600,
+   "rps": 8.7,
+   "fps": 0.7,
+   "p50": 8.0,
+   "p95": 55000.0
+  },
+  {
+   "t": 464,
+   "users": 600,
+   "rps": 8.9,
+   "fps": 0.3,
+   "p50": 8.0,
+   "p95": 55000.0
+  },
+  {
+   "t": 465,
+   "users": 600,
+   "rps": 8.3,
+   "fps": 0.7,
+   "p50": 8.0,
+   "p95": 56000.0
+  },
+  {
+   "t": 466,
+   "users": 600,
+   "rps": 7.7,
+   "fps": 0.7,
+   "p50": 8.0,
+   "p95": 56000.0
+  },
+  {
+   "t": 467,
+   "users": 600,
+   "rps": 7.0,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 57000.0
+  },
+  {
+   "t": 468,
+   "users": 600,
+   "rps": 6.4,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 57000.0
+  },
+  {
+   "t": 469,
+   "users": 600,
+   "rps": 5.4,
+   "fps": 1.4,
+   "p50": 8.0,
+   "p95": 57000.0
+  },
+  {
+   "t": 470,
+   "users": 600,
+   "rps": 5.4,
+   "fps": 1.4,
+   "p50": 8.0,
+   "p95": 57000.0
+  },
+  {
+   "t": 471,
+   "users": 600,
+   "rps": 3.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 472,
+   "users": 600,
+   "rps": 3.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 473,
+   "users": 600,
+   "rps": 3.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 474,
+   "users": 600,
+   "rps": 2.1,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 475,
+   "users": 600,
+   "rps": 2.1,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 476,
+   "users": 600,
+   "rps": 2.2,
+   "fps": 2.2,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 477,
+   "users": 600,
+   "rps": 1.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 478,
+   "users": 600,
+   "rps": 1.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 479,
+   "users": 600,
+   "rps": 1.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 480,
+   "users": 600,
+   "rps": 1.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 481,
+   "users": 592,
+   "rps": 1.3,
+   "fps": 1.3,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 482,
+   "users": 587,
+   "rps": 1.0,
+   "fps": 1.0,
+   "p50": 8.0,
+   "p95": 59000.0
+  },
+  {
+   "t": 483,
+   "users": 581,
+   "rps": 0.9,
+   "fps": 0.9,
+   "p50": 8.0,
+   "p95": 60000.0
+  },
+  {
+   "t": 484,
+   "users": 575,
+   "rps": 1.5,
+   "fps": 1.5,
+   "p50": 8.0,
+   "p95": 61000.0
+  },
+  {
+   "t": 485,
+   "users": 569,
+   "rps": 2.5,
+   "fps": 2.5,
+   "p50": 8.0,
+   "p95": 88000.0
+  },
+  {
+   "t": 486,
+   "users": 564,
+   "rps": 3.5,
+   "fps": 3.5,
+   "p50": 8.0,
+   "p95": 88000.0
+  },
+  {
+   "t": 487,
+   "users": 557,
+   "rps": 4.5,
+   "fps": 4.5,
+   "p50": 8.0,
+   "p95": 88000.0
+  },
+  {
+   "t": 488,
+   "users": 552,
+   "rps": 5.5,
+   "fps": 5.5,
+   "p50": 8.0,
+   "p95": 90000.0
+  },
+  {
+   "t": 489,
+   "users": 546,
+   "rps": 6.1,
+   "fps": 6.1,
+   "p50": 9.0,
+   "p95": 116000.0
+  },
+  {
+   "t": 490,
+   "users": 540,
+   "rps": 7.0,
+   "fps": 7.0,
+   "p50": 9.0,
+   "p95": 119000.0
+  },
+  {
+   "t": 491,
+   "users": 540,
+   "rps": 9.1,
+   "fps": 8.1,
+   "p50": 9.0,
+   "p95": 119000.0
+  },
+  {
+   "t": 492,
+   "users": 540,
+   "rps": 13.5,
+   "fps": 12.4,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 493,
+   "users": 540,
+   "rps": 15.9,
+   "fps": 14.8,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 494,
+   "users": 540,
+   "rps": 15.3,
+   "fps": 13.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 495,
+   "users": 540,
+   "rps": 14.9,
+   "fps": 13.2,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 496,
+   "users": 540,
+   "rps": 17.1,
+   "fps": 12.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 497,
+   "users": 540,
+   "rps": 20.4,
+   "fps": 11.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 498,
+   "users": 540,
+   "rps": 20.4,
+   "fps": 11.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 499,
+   "users": 540,
+   "rps": 25.9,
+   "fps": 11.1,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 500,
+   "users": 540,
+   "rps": 27.0,
+   "fps": 10.7,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 501,
+   "users": 540,
+   "rps": 24.9,
+   "fps": 9.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 502,
+   "users": 540,
+   "rps": 20.6,
+   "fps": 5.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 503,
+   "users": 540,
+   "rps": 20.6,
+   "fps": 5.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 504,
+   "users": 540,
+   "rps": 18.5,
+   "fps": 3.2,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 505,
+   "users": 540,
+   "rps": 18.3,
+   "fps": 3.0,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 506,
+   "users": 540,
+   "rps": 18.3,
+   "fps": 3.0,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 507,
+   "users": 540,
+   "rps": 11.3,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 508,
+   "users": 540,
+   "rps": 11.3,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 509,
+   "users": 540,
+   "rps": 11.3,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 510,
+   "users": 540,
+   "rps": 2.2,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 511,
+   "users": 540,
+   "rps": 2.2,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 512,
+   "users": 540,
+   "rps": 2.1,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 514,
+   "users": 540,
+   "rps": 1.7,
+   "fps": 1.1,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 515,
+   "users": 540,
+   "rps": 1.8,
+   "fps": 1.2,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 516,
+   "users": 540,
+   "rps": 1.7,
+   "fps": 1.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 517,
+   "users": 540,
+   "rps": 1.9,
+   "fps": 1.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 518,
+   "users": 540,
+   "rps": 1.6,
+   "fps": 1.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 519,
+   "users": 540,
+   "rps": 1.7,
+   "fps": 1.7,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 520,
+   "users": 540,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 521,
+   "users": 540,
+   "rps": 2.0,
+   "fps": 2.0,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 522,
+   "users": 540,
+   "rps": 2.0,
+   "fps": 2.0,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 523,
+   "users": 540,
+   "rps": 2.6,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 524,
+   "users": 540,
+   "rps": 2.8,
+   "fps": 2.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 525,
+   "users": 540,
+   "rps": 2.6,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 526,
+   "users": 540,
+   "rps": 2.4,
+   "fps": 2.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 527,
+   "users": 540,
+   "rps": 2.1,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 528,
+   "users": 540,
+   "rps": 2.1,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 529,
+   "users": 540,
+   "rps": 2.1,
+   "fps": 2.1,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 530,
+   "users": 540,
+   "rps": 2.6,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 531,
+   "users": 540,
+   "rps": 2.6,
+   "fps": 2.6,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 532,
+   "users": 540,
+   "rps": 2.3,
+   "fps": 2.3,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 533,
+   "users": 540,
+   "rps": 1.8,
+   "fps": 1.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 534,
+   "users": 540,
+   "rps": 1.8,
+   "fps": 1.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 535,
+   "users": 540,
+   "rps": 1.8,
+   "fps": 1.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 536,
+   "users": 540,
+   "rps": 2.4,
+   "fps": 2.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 537,
+   "users": 540,
+   "rps": 2.4,
+   "fps": 2.4,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 538,
+   "users": 540,
+   "rps": 2.3,
+   "fps": 2.3,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 539,
+   "users": 540,
+   "rps": 2.2,
+   "fps": 2.2,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 540,
+   "users": 540,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 541,
+   "users": 540,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 542,
+   "users": 531,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 543,
+   "users": 531,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 544,
+   "users": 531,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 545,
+   "users": 531,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 546,
+   "users": 531,
+   "rps": 1.9,
+   "fps": 1.9,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 547,
+   "users": 530,
+   "rps": 0.8,
+   "fps": 0.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 548,
+   "users": 530,
+   "rps": 0.8,
+   "fps": 0.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 549,
+   "users": 530,
+   "rps": 0.8,
+   "fps": 0.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 550,
+   "users": 530,
+   "rps": 0.8,
+   "fps": 0.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 551,
+   "users": 530,
+   "rps": 0.8,
+   "fps": 0.8,
+   "p50": 8.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 552,
+   "users": 528,
+   "rps": 0.1,
+   "fps": 0.1,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 553,
+   "users": 527,
+   "rps": 0.1,
+   "fps": 0.1,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 554,
+   "users": 526,
+   "rps": 0.2,
+   "fps": 0.2,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 555,
+   "users": 523,
+   "rps": 0.6,
+   "fps": 0.6,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 556,
+   "users": 522,
+   "rps": 0.6,
+   "fps": 0.6,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 557,
+   "users": 519,
+   "rps": 1.2,
+   "fps": 1.2,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 558,
+   "users": 516,
+   "rps": 1.2,
+   "fps": 1.2,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 559,
+   "users": 510,
+   "rps": 1.7,
+   "fps": 1.7,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 560,
+   "users": 506,
+   "rps": 2.1,
+   "fps": 2.1,
+   "p50": 9.0,
+   "p95": 120000.0
+  },
+  {
+   "t": 561,
+   "users": 501,
+   "rps": 2.5,
+   "fps": 2.5,
+   "p50": 9.0,
+   "p95": 120000.0
+  }
+ ],
+ "generated_at": "2026-10-09 05:13"
+}

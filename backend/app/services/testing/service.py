@@ -5,6 +5,8 @@ from __future__ import annotations
 import math
 import random
 import secrets
+import threading
+import time
 from dataclasses import replace
 from datetime import datetime, timedelta
 
@@ -90,13 +92,35 @@ def sync_item_stats(db: Session) -> None:
     db.commit()
 
 
+PARAMS_TTL_SEC = 10
+_params_cache: dict = {"at": 0.0, "value": None}
+_params_lock = threading.Lock()
+
+
 def load_params(db: Session) -> dict[str, ItemState]:
+    """Параметры, статусы и экспозиция семейств для адаптивного выбора. Кэш на 10 секунд в процессе: их читает каждый
+    ответ кандидата, а меняются они медленно (калибровка и вывод из ротации сбрасывают кэш)."""
+    now = time.monotonic()
+    with _params_lock:
+        if _params_cache["value"] is not None and now - _params_cache["at"] < PARAMS_TTL_SEC:
+            return _params_cache["value"]
     total = db.scalar(select(func.count()).select_from(TestSession).where(TestSession.status == "completed",
                                                                          FULL_ONLY)) or 0
     out = {}
     for st in db.scalars(select(ItemStat)):
         out[st.family_id] = ItemState(st.a, st.b, st.c, st.status, st.exposures / max(total, 20))
+    if any(fid not in REGISTRY for fid in out):  # вопрос из черновиков LLM принят в другом процессе uvicorn
+        from app.services.testing.drafting import load_drafted_families
+
+        load_drafted_families(db)
+    with _params_lock:
+        _params_cache.update(at=now, value=out)
     return out
+
+
+def invalidate_params() -> None:
+    with _params_lock:
+        _params_cache["value"] = None
 
 
 def _update_item_stats(db: Session, sess: TestSession, theta: float) -> list[str]:
@@ -119,6 +143,8 @@ def _update_item_stats(db: Session, sess: TestSession, theta: float) -> list[str
         if st.status == "active" and st.exposures >= DRIFT_MIN_EXPOSURES and st.drift_z > DRIFT_Z_FLAG:
             st.status = "flagged"
             flagged.append(st.family_id)
+    if flagged:
+        invalidate_params()
     return flagged
 
 
@@ -141,6 +167,7 @@ def calibrate_pretest(db: Session) -> list[dict]:
         st.status = "active"
         out.append({"family_id": st.family_id, "n": len(rows), "promoted": True, "b": best_b})
     db.commit()
+    invalidate_params()
     return out
 
 

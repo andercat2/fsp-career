@@ -1,0 +1,185 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/auth/login,CatchResponseError('вход cand260@synthetic.example: 504'),1,2026-10-09T02:12:33Z,2026-10-09T02:12:33Z
+POST,/auth/login,CatchResponseError('вход cand235@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand196@synthetic.example: 504'),1,2026-10-09T02:11:03Z,2026-10-09T02:11:03Z
+POST,/auth/login,CatchResponseError('вход cand233@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand281@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+POST,/auth/login,CatchResponseError('вход cand169@synthetic.example: 500'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+POST,/auth/login,CatchResponseError('вход cand270@synthetic.example: 504'),1,2026-10-09T02:12:35Z,2026-10-09T02:12:35Z
+GET,/employer/selections/[id],HTTPError('500 Server Error: Internal Server Error for url: /employer/selections/[id]'),1,2026-10-09T02:08:38Z,2026-10-09T02:08:38Z
+POST,/auth/login,CatchResponseError('вход cand293@synthetic.example: 504'),1,2026-10-09T02:12:39Z,2026-10-09T02:12:39Z
+POST,/auth/login,CatchResponseError('вход cand186@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand167@synthetic.example: 500'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+GET,/notifications,HTTPError('504 Server Error: Gateway Time-out for url: /notifications'),31,2026-10-09T02:10:08Z,2026-10-09T02:13:51Z
+POST,/auth/login,CatchResponseError('вход cand180@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand236@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand250@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/auth/login,CatchResponseError('вход cand219@synthetic.example: 504'),1,2026-10-09T02:11:07Z,2026-10-09T02:11:07Z
+POST,/auth/login,CatchResponseError('вход cand194@synthetic.example: 504'),1,2026-10-09T02:11:03Z,2026-10-09T02:11:03Z
+POST,/testing/sessions/[token]/answer (full),CatchResponseError('ответ: 500 Internal Server Error'),13,2026-10-09T02:08:38Z,2026-10-09T02:09:39Z
+POST,/auth/login,CatchResponseError('вход cand249@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/auth/login,CatchResponseError('вход cand208@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+POST,/auth/login,CatchResponseError('вход cand255@synthetic.example: 504'),1,2026-10-09T02:12:32Z,2026-10-09T02:12:32Z
+POST,/auth/login,CatchResponseError('вход cand216@synthetic.example: 504'),1,2026-10-09T02:11:07Z,2026-10-09T02:11:07Z
+POST,/auth/login,CatchResponseError('вход cand172@synthetic.example: 500'),1,2026-10-09T02:09:08Z,2026-10-09T02:09:08Z
+POST,/auth/login,CatchResponseError('вход cand240@synthetic.example: 504'),1,2026-10-09T02:11:10Z,2026-10-09T02:11:10Z
+GET,/employer/selections,HTTPError('500 Server Error: Internal Server Error for url: /employer/selections'),3,2026-10-09T02:08:39Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand228@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand193@synthetic.example: 504'),1,2026-10-09T02:11:03Z,2026-10-09T02:11:03Z
+POST,/auth/login,CatchResponseError('вход cand289@synthetic.example: 504'),1,2026-10-09T02:12:38Z,2026-10-09T02:12:38Z
+POST,/auth/login,CatchResponseError('вход cand267@synthetic.example: 504'),1,2026-10-09T02:12:34Z,2026-10-09T02:12:34Z
+POST,/auth/login,CatchResponseError('вход cand218@synthetic.example: 504'),1,2026-10-09T02:11:07Z,2026-10-09T02:11:07Z
+POST,/auth/login,CatchResponseError('вход cand246@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/auth/login,CatchResponseError('вход cand158@synthetic.example: 504'),1,2026-10-09T02:09:38Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand209@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+POST,/auth/login,CatchResponseError('вход cand287@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+POST,/auth/login,CatchResponseError('вход cand226@synthetic.example: 504'),1,2026-10-09T02:11:08Z,2026-10-09T02:11:08Z
+GET,/employer/dashboard,HTTPError('500 Server Error: Internal Server Error for url: /employer/dashboard'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+POST,/testing/sessions (full),CatchResponseError('старт теста: 504 <html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n<hr><c'),4,2026-10-09T02:09:38Z,2026-10-09T02:10:08Z
+POST,/auth/login,CatchResponseError('вход cand292@synthetic.example: 504'),1,2026-10-09T02:12:38Z,2026-10-09T02:12:38Z
+POST,/auth/login,CatchResponseError('вход cand191@synthetic.example: 504'),1,2026-10-09T02:11:02Z,2026-10-09T02:11:02Z
+POST,/auth/login,CatchResponseError('вход cand299@synthetic.example: 504'),1,2026-10-09T02:12:40Z,2026-10-09T02:12:40Z
+POST,/auth/login,CatchResponseError('вход cand269@synthetic.example: 504'),1,2026-10-09T02:12:34Z,2026-10-09T02:12:34Z
+POST,/auth/login,CatchResponseError('вход cand214@synthetic.example: 504'),1,2026-10-09T02:11:06Z,2026-10-09T02:11:06Z
+POST,/auth/login,CatchResponseError('вход cand175@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+GET,/employer/dashboard,HTTPError('504 Server Error: Gateway Time-out for url: /employer/dashboard'),35,2026-10-09T02:09:38Z,2026-10-09T02:13:46Z
+POST,/testing/sessions (full),CatchResponseError('старт теста: 500 Internal Server Error'),1,2026-10-09T02:08:08Z,2026-10-09T02:08:08Z
+POST,/auth/login,CatchResponseError('вход cand195@synthetic.example: 504'),1,2026-10-09T02:11:03Z,2026-10-09T02:11:03Z
+GET,/candidate/profile,HTTPError('500 Server Error: Internal Server Error for url: /candidate/profile'),5,2026-10-09T02:08:38Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand295@synthetic.example: 504'),1,2026-10-09T02:12:39Z,2026-10-09T02:12:39Z
+GET,/employer/candidates/[id],HTTPError('500 Server Error: Internal Server Error for url: /employer/candidates/[id]'),3,2026-10-09T02:09:08Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand166@synthetic.example: 500'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+POST,/auth/login,CatchResponseError('вход cand258@synthetic.example: 504'),1,2026-10-09T02:12:33Z,2026-10-09T02:12:33Z
+POST,/auth/login,CatchResponseError('вход cand279@synthetic.example: 504'),1,2026-10-09T02:12:36Z,2026-10-09T02:12:36Z
+POST,/auth/login,CatchResponseError('вход cand203@synthetic.example: 504'),1,2026-10-09T02:11:04Z,2026-10-09T02:11:04Z
+POST,/auth/login,CatchResponseError('вход cand188@synthetic.example: 504'),1,2026-10-09T02:11:02Z,2026-10-09T02:11:02Z
+POST,/auth/login,CatchResponseError('вход cand257@synthetic.example: 504'),1,2026-10-09T02:12:32Z,2026-10-09T02:12:32Z
+POST,/auth/login,CatchResponseError('вход cand217@synthetic.example: 504'),1,2026-10-09T02:11:07Z,2026-10-09T02:11:07Z
+POST,/auth/login,CatchResponseError('вход cand278@synthetic.example: 504'),1,2026-10-09T02:12:36Z,2026-10-09T02:12:36Z
+POST,/auth/login,CatchResponseError('вход cand301@synthetic.example: 504'),1,2026-10-09T02:12:40Z,2026-10-09T02:12:40Z
+POST,/auth/login,CatchResponseError('вход cand210@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+GET,/public/stats,HTTPError('504 Server Error: Gateway Time-out for url: /public/stats'),99,2026-10-09T02:09:42Z,2026-10-09T02:12:47Z
+POST,/auth/login,CatchResponseError('вход cand182@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+GET,/employer/selections/[id],HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections/[id]'),1,2026-10-09T02:09:38Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand276@synthetic.example: 504'),1,2026-10-09T02:12:36Z,2026-10-09T02:12:36Z
+GET,/testing/eligibility,HTTPError('500 Server Error: Internal Server Error for url: /testing/eligibility'),11,2026-10-09T02:08:09Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand211@synthetic.example: 504'),1,2026-10-09T02:11:06Z,2026-10-09T02:11:06Z
+GET,/candidate/dashboard,HTTPError('500 Server Error: Internal Server Error for url: /candidate/dashboard'),9,2026-10-09T02:08:09Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand206@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+GET,/notifications,HTTPError('500 Server Error: Internal Server Error for url: /notifications'),3,2026-10-09T02:08:08Z,2026-10-09T02:08:38Z
+GET,/public/stats,HTTPError('500 Server Error: Internal Server Error for url: /public/stats'),31,2026-10-09T02:08:09Z,2026-10-09T02:09:39Z
+POST,/auth/login,CatchResponseError('вход cand304@synthetic.example: 504'),1,2026-10-09T02:12:40Z,2026-10-09T02:12:40Z
+POST,/auth/login,CatchResponseError('вход cand300@synthetic.example: 504'),1,2026-10-09T02:12:40Z,2026-10-09T02:12:40Z
+POST,/auth/login,CatchResponseError('вход cand202@synthetic.example: 504'),1,2026-10-09T02:11:04Z,2026-10-09T02:11:04Z
+POST,/auth/login,CatchResponseError('вход cand179@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand220@synthetic.example: 504'),1,2026-10-09T02:11:07Z,2026-10-09T02:11:07Z
+POST,/auth/login,CatchResponseError('вход cand274@synthetic.example: 504'),1,2026-10-09T02:12:35Z,2026-10-09T02:12:35Z
+GET,/employer/invitations,HTTPError('504 Server Error: Gateway Time-out for url: /employer/invitations'),23,2026-10-09T02:09:38Z,2026-10-09T02:13:50Z
+POST,/auth/login,CatchResponseError('вход cand212@synthetic.example: 504'),1,2026-10-09T02:11:06Z,2026-10-09T02:11:06Z
+POST,/testing/sessions/[token]/answer (full),CatchResponseError('ответ: 504 <html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n<hr><c'),17,2026-10-09T02:09:43Z,2026-10-09T02:10:16Z
+POST,/auth/login,CatchResponseError('вход cand256@synthetic.example: 504'),1,2026-10-09T02:12:32Z,2026-10-09T02:12:32Z
+POST,/auth/login,CatchResponseError('вход cand273@synthetic.example: 504'),1,2026-10-09T02:12:35Z,2026-10-09T02:12:35Z
+POST,/auth/login,CatchResponseError('вход cand222@synthetic.example: 504'),1,2026-10-09T02:11:08Z,2026-10-09T02:11:08Z
+POST,/auth/login,CatchResponseError('вход cand286@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+POST,/auth/login,CatchResponseError('вход cand259@synthetic.example: 504'),1,2026-10-09T02:12:33Z,2026-10-09T02:12:33Z
+POST,/auth/login,CatchResponseError('вход cand163@synthetic.example: 500'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+POST,/auth/login,CatchResponseError('вход cand297@synthetic.example: 504'),1,2026-10-09T02:12:39Z,2026-10-09T02:12:39Z
+POST,/auth/login,CatchResponseError('вход cand266@synthetic.example: 504'),1,2026-10-09T02:12:34Z,2026-10-09T02:12:34Z
+GET,/employer/candidates (поиск),HTTPError('504 Server Error: Gateway Time-out for url: /employer/candidates (поиск)'),37,2026-10-09T02:09:38Z,2026-10-09T02:13:49Z
+POST,/auth/login,CatchResponseError('вход cand290@synthetic.example: 504'),1,2026-10-09T02:12:38Z,2026-10-09T02:12:38Z
+POST,/auth/login,CatchResponseError('вход cand283@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+POST,/auth/login,CatchResponseError('вход cand230@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand190@synthetic.example: 504'),1,2026-10-09T02:11:02Z,2026-10-09T02:11:02Z
+POST,/auth/login,CatchResponseError('вход cand197@synthetic.example: 504'),1,2026-10-09T02:11:03Z,2026-10-09T02:11:03Z
+GET,/candidate/profile,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/profile'),33,2026-10-09T02:09:38Z,2026-10-09T02:13:50Z
+POST,/auth/login,CatchResponseError('вход cand224@synthetic.example: 504'),1,2026-10-09T02:11:08Z,2026-10-09T02:11:08Z
+POST,/auth/login,CatchResponseError('вход cand254@synthetic.example: 504'),1,2026-10-09T02:12:32Z,2026-10-09T02:12:32Z
+POST,/auth/login,CatchResponseError('вход cand221@synthetic.example: 504'),1,2026-10-09T02:11:07Z,2026-10-09T02:11:07Z
+GET,/employer/invitations,HTTPError('500 Server Error: Internal Server Error for url: /employer/invitations'),1,2026-10-09T02:08:38Z,2026-10-09T02:08:38Z
+POST,/testing/sessions/[token]/answer (express),CatchResponseError('ответ: 500 Internal Server Error'),8,2026-10-09T02:08:09Z,2026-10-09T02:09:39Z
+GET,/public/methodology,HTTPError('504 Server Error: Gateway Time-out for url: /public/methodology'),42,2026-10-09T02:10:08Z,2026-10-09T02:13:10Z
+POST,/auth/login,CatchResponseError('вход cand241@synthetic.example: 504'),1,2026-10-09T02:11:10Z,2026-10-09T02:11:10Z
+POST,/auth/login,CatchResponseError('вход cand245@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/auth/login,CatchResponseError('вход cand215@synthetic.example: 504'),1,2026-10-09T02:11:06Z,2026-10-09T02:11:06Z
+POST,/auth/login,CatchResponseError('вход cand272@synthetic.example: 504'),1,2026-10-09T02:12:35Z,2026-10-09T02:12:35Z
+POST,/auth/login,CatchResponseError('вход cand302@synthetic.example: 504'),1,2026-10-09T02:12:40Z,2026-10-09T02:12:40Z
+POST,/auth/login,CatchResponseError('вход cand294@synthetic.example: 504'),1,2026-10-09T02:12:39Z,2026-10-09T02:12:39Z
+POST,/auth/login,CatchResponseError('вход cand263@synthetic.example: 504'),1,2026-10-09T02:12:33Z,2026-10-09T02:12:33Z
+POST,/auth/login,CatchResponseError('вход cand231@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand296@synthetic.example: 504'),1,2026-10-09T02:12:39Z,2026-10-09T02:12:39Z
+POST,/auth/login,CatchResponseError('вход cand265@synthetic.example: 504'),1,2026-10-09T02:12:34Z,2026-10-09T02:12:34Z
+GET,/testing/history,HTTPError('504 Server Error: Gateway Time-out for url: /testing/history'),13,2026-10-09T02:10:08Z,2026-10-09T02:13:45Z
+POST,/auth/login,CatchResponseError('вход cand189@synthetic.example: 504'),1,2026-10-09T02:11:02Z,2026-10-09T02:11:02Z
+POST,/auth/login,CatchResponseError('вход cand284@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+GET,/vacancies,HTTPError('500 Server Error: Internal Server Error for url: /vacancies'),5,2026-10-09T02:08:09Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand185@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand176@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand252@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/auth/login,CatchResponseError('вход cand244@synthetic.example: 504'),1,2026-10-09T02:11:10Z,2026-10-09T02:11:10Z
+POST,/auth/login,CatchResponseError('вход cand171@synthetic.example: 500'),1,2026-10-09T02:09:08Z,2026-10-09T02:09:08Z
+GET,/candidate/resumes,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/resumes'),28,2026-10-09T02:09:38Z,2026-10-09T02:13:50Z
+POST,/auth/login,CatchResponseError('вход cand223@synthetic.example: 504'),1,2026-10-09T02:11:08Z,2026-10-09T02:11:08Z
+GET,/candidate/invitations,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/invitations'),24,2026-10-09T02:09:38Z,2026-10-09T02:13:51Z
+POST,/auth/login,CatchResponseError('вход cand227@synthetic.example: 504'),1,2026-10-09T02:11:08Z,2026-10-09T02:11:08Z
+POST,/auth/login,CatchResponseError('вход cand201@synthetic.example: 504'),1,2026-10-09T02:11:04Z,2026-10-09T02:11:04Z
+POST,/auth/login,CatchResponseError('вход cand251@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/employer/selections (NLP + подбор),HTTPError('500 Server Error: Internal Server Error for url: /employer/selections (NLP + подбор)'),2,2026-10-09T02:09:08Z,2026-10-09T02:09:39Z
+POST,/auth/login,CatchResponseError('вход cand165@synthetic.example: 500'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+POST,/auth/login,CatchResponseError('вход cand178@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand177@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand242@synthetic.example: 504'),1,2026-10-09T02:11:10Z,2026-10-09T02:11:10Z
+POST,/auth/login,CatchResponseError('вход cand303@synthetic.example: 504'),1,2026-10-09T02:12:40Z,2026-10-09T02:12:40Z
+POST,/auth/login,CatchResponseError('вход cand232@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand229@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand225@synthetic.example: 504'),1,2026-10-09T02:11:08Z,2026-10-09T02:11:08Z
+POST,/auth/login,CatchResponseError('вход cand184@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+POST,/auth/login,CatchResponseError('вход cand253@synthetic.example: 504'),1,2026-10-09T02:12:32Z,2026-10-09T02:12:32Z
+POST,/auth/login,CatchResponseError('вход cand238@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand168@synthetic.example: 500'),1,2026-10-09T02:08:39Z,2026-10-09T02:08:39Z
+POST,/auth/login,CatchResponseError('вход cand213@synthetic.example: 504'),1,2026-10-09T02:11:06Z,2026-10-09T02:11:06Z
+POST,/auth/login,CatchResponseError('вход cand234@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand205@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+POST,/auth/login,CatchResponseError('вход cand174@synthetic.example: 500'),1,2026-10-09T02:09:08Z,2026-10-09T02:09:08Z
+GET,/reference,HTTPError('504 Server Error: Gateway Time-out for url: /reference'),47,2026-10-09T02:12:39Z,2026-10-09T02:12:40Z
+GET,/employer/candidates/[id],HTTPError('504 Server Error: Gateway Time-out for url: /employer/candidates/[id]'),10,2026-10-09T02:09:44Z,2026-10-09T02:13:26Z
+POST,/auth/login,CatchResponseError('вход cand207@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+POST,/auth/login,CatchResponseError('вход cand291@synthetic.example: 504'),1,2026-10-09T02:12:38Z,2026-10-09T02:12:38Z
+POST,/auth/login,CatchResponseError('вход cand204@synthetic.example: 504'),1,2026-10-09T02:11:05Z,2026-10-09T02:11:05Z
+POST,/auth/login,CatchResponseError('вход cand187@synthetic.example: 504'),1,2026-10-09T02:11:02Z,2026-10-09T02:11:02Z
+POST,/auth/login,CatchResponseError('вход cand280@synthetic.example: 504'),1,2026-10-09T02:12:36Z,2026-10-09T02:12:36Z
+POST,/testing/sessions/[token]/answer (express),CatchResponseError('ответ: 504 <html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n<hr><c'),11,2026-10-09T02:09:38Z,2026-10-09T02:10:14Z
+POST,/auth/login,CatchResponseError('вход cand271@synthetic.example: 504'),1,2026-10-09T02:12:35Z,2026-10-09T02:12:35Z
+POST,/auth/login,CatchResponseError('вход cand198@synthetic.example: 504'),1,2026-10-09T02:11:03Z,2026-10-09T02:11:03Z
+POST,/auth/login,CatchResponseError('вход cand183@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+GET,/candidate/invitations,HTTPError('500 Server Error: Internal Server Error for url: /candidate/invitations'),14,2026-10-09T02:08:09Z,2026-10-09T02:09:39Z
+GET,/employer/selections,HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections'),36,2026-10-09T02:09:42Z,2026-10-09T02:13:51Z
+POST,/auth/login,CatchResponseError('вход cand277@synthetic.example: 504'),1,2026-10-09T02:12:36Z,2026-10-09T02:12:36Z
+POST,/auth/login,CatchResponseError('вход cand243@synthetic.example: 504'),1,2026-10-09T02:11:10Z,2026-10-09T02:11:10Z
+GET,/employer/candidates (поиск),HTTPError('500 Server Error: Internal Server Error for url: /employer/candidates (поиск)'),5,2026-10-09T02:08:38Z,2026-10-09T02:09:38Z
+POST,/auth/login,CatchResponseError('вход cand275@synthetic.example: 504'),1,2026-10-09T02:12:35Z,2026-10-09T02:12:35Z
+POST,/auth/login,CatchResponseError('вход cand247@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+POST,/auth/login,CatchResponseError('вход cand261@synthetic.example: 504'),1,2026-10-09T02:12:33Z,2026-10-09T02:12:33Z
+POST,/auth/login,CatchResponseError('вход cand237@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+GET,/auth/me,HTTPError('504 Server Error: Gateway Time-out for url: /auth/me'),2,2026-10-09T02:10:38Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand164@synthetic.example: 500'),1,2026-10-09T02:09:08Z,2026-10-09T02:09:08Z
+POST,/auth/login,CatchResponseError('вход cand264@synthetic.example: 504'),1,2026-10-09T02:12:34Z,2026-10-09T02:12:34Z
+POST,/auth/login,CatchResponseError('вход cand285@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+POST,/auth/login,CatchResponseError('вход cand288@synthetic.example: 504'),1,2026-10-09T02:12:38Z,2026-10-09T02:12:38Z
+POST,/auth/login,CatchResponseError('вход cand282@synthetic.example: 504'),1,2026-10-09T02:12:37Z,2026-10-09T02:12:37Z
+GET,/vacancies,HTTPError('504 Server Error: Gateway Time-out for url: /vacancies'),23,2026-10-09T02:09:44Z,2026-10-09T02:13:50Z
+GET,/candidate/resumes,HTTPError('500 Server Error: Internal Server Error for url: /candidate/resumes'),1,2026-10-09T02:08:09Z,2026-10-09T02:08:09Z
+POST,/auth/login,CatchResponseError('вход cand181@synthetic.example: 504'),1,2026-10-09T02:11:01Z,2026-10-09T02:11:01Z
+GET,/testing/history,HTTPError('500 Server Error: Internal Server Error for url: /testing/history'),2,2026-10-09T02:08:09Z,2026-10-09T02:08:38Z
+POST,/auth/login,CatchResponseError('вход cand173@synthetic.example: 500'),1,2026-10-09T02:09:08Z,2026-10-09T02:09:08Z
+POST,/auth/login,CatchResponseError('вход cand268@synthetic.example: 504'),1,2026-10-09T02:12:34Z,2026-10-09T02:12:34Z
+POST,/employer/selections (NLP + подбор),HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections (NLP + подбор)'),14,2026-10-09T02:09:45Z,2026-10-09T02:13:22Z
+POST,/auth/login,CatchResponseError('вход cand248@synthetic.example: 504'),1,2026-10-09T02:12:31Z,2026-10-09T02:12:31Z
+GET,/candidate/dashboard,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/dashboard'),38,2026-10-09T02:09:38Z,2026-10-09T02:13:42Z
+POST,/auth/login,CatchResponseError('вход cand170@synthetic.example: 500'),1,2026-10-09T02:09:08Z,2026-10-09T02:09:08Z
+POST,/auth/login,CatchResponseError('вход cand239@synthetic.example: 504'),1,2026-10-09T02:11:09Z,2026-10-09T02:11:09Z
+POST,/auth/login,CatchResponseError('вход cand200@synthetic.example: 504'),1,2026-10-09T02:11:04Z,2026-10-09T02:11:04Z
+POST,/auth/login,CatchResponseError('вход cand192@synthetic.example: 504'),1,2026-10-09T02:11:02Z,2026-10-09T02:11:02Z
+POST,/auth/login,CatchResponseError('вход cand262@synthetic.example: 504'),1,2026-10-09T02:12:33Z,2026-10-09T02:12:33Z
+GET,/testing/eligibility,HTTPError('504 Server Error: Gateway Time-out for url: /testing/eligibility'),104,2026-10-09T02:09:38Z,2026-10-09T02:13:49Z
+POST,/auth/login,CatchResponseError('вход cand199@synthetic.example: 504'),1,2026-10-09T02:11:04Z,2026-10-09T02:11:04Z
+POST,/auth/login,CatchResponseError('вход cand298@synthetic.example: 504'),1,2026-10-09T02:12:39Z,2026-10-09T02:12:39Z

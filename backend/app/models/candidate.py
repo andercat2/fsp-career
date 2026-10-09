@@ -42,7 +42,7 @@ class CandidateProfile(Base):
     soft_skills: Mapped[list] = mapped_column(JSON, default=list)
     languages: Mapped[list] = mapped_column(JSON, default=list)  # [{name, level}]
     links: Mapped[dict] = mapped_column(JSON, default=dict)
-    resume_text: Mapped[str | None] = mapped_column(Text)
+    resume_text: Mapped[str | None] = mapped_column(Text, deferred=True)  # исходный текст PDF: в подборе не нужен
     resume_filename: Mapped[str | None] = mapped_column(String(255))
 
     # Опрос (заявленные значения)
@@ -116,7 +116,7 @@ class CandidateResume(Base):
     skills: Mapped[list] = mapped_column(JSON, default=list)
     desired_salary: Mapped[int | None] = mapped_column(Integer)
     visible: Mapped[bool] = mapped_column(Boolean, default=True)
-    resume_text: Mapped[str | None] = mapped_column(Text)
+    resume_text: Mapped[str | None] = mapped_column(Text, deferred=True)  # исходный текст PDF: в подборе не нужен
     resume_filename: Mapped[str | None] = mapped_column(String(255))
 
     # Опрос

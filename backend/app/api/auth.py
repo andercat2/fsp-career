@@ -13,7 +13,14 @@ from app.api.deps import DB, CurrentUser
 from app.core.config import settings
 from app.core.db import utcnow
 from app.core.email import send_email
-from app.core.security import create_access_token, generate_code, hash_code, hash_password, verify_password
+from app.core.security import (
+    create_access_token,
+    generate_code,
+    hash_code,
+    hash_password,
+    needs_rehash,
+    verify_password,
+)
 from app.models import CandidateProfile, Company, Consent, EmailCode, Notification, SurveyResponse, User
 from app.schemas import GuestIn, LoginIn, Message, RegisterIn, RegisterOut, ResendIn, TokenOut, UserOut, VerifyIn
 from app.services.candidates import new_public_id
@@ -179,6 +186,8 @@ def _login(db, email: str, password: str) -> TokenOut:
     if not user.email_verified:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "E-mail не подтверждён")
     user.last_login_at = utcnow()
+    if needs_rehash(user.password_hash):  # хеш с прежними параметрами Argon2 — пересчитываем при входе
+        user.password_hash = hash_password(password)
     db.commit()
     return _token(user)
 

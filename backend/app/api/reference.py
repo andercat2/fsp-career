@@ -1,5 +1,8 @@
 """Справочники: специализации, грейды, навыки, отрасли и т. п. Публичные, без авторизации."""
-from fastapi import APIRouter
+import json
+from functools import lru_cache
+
+from fastapi import APIRouter, Response
 
 from app.services.reference.skills import SKILLS
 from app.services.reference.taxonomy import (
@@ -23,6 +26,16 @@ router = APIRouter(prefix="/reference", tags=["Справочники"])
 
 @router.get("", summary="Все справочники одним запросом")
 def all_reference():
+    """Справочники не меняются во время работы — сериализуются один раз (их запрашивает каждая страница)."""
+    return Response(_reference_json(), media_type="application/json", headers={"Cache-Control": "public, max-age=300"})
+
+
+@lru_cache(maxsize=1)
+def _reference_json() -> bytes:
+    return json.dumps(_reference(), ensure_ascii=False).encode("utf-8")
+
+
+def _reference() -> dict:
     return {
         "specializations": [
             {**{k: v for k, v in s.items() if k != "blueprint"},

@@ -12,3 +12,8 @@ backend/data/
 .vscode/
 *.log
 frontend/.vite/
+# Нагрузочный тест: HTML-отчёт Locust (~1 МБ) и сырая история — их данные есть в summary.json и CSV
+loadtest/results/*/report.html
+loadtest/results/*/locust_stats_history.csv
+# Демонстрационное видео (docs/build/video/record_demo.js) — в репозиторий не кладём
+docs/build/video/out/

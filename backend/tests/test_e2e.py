@@ -583,6 +583,26 @@ def test_guest_account_cannot_publish_or_apply(client):
     assert client.post(f"{API}/vacancies/{vid}/apply", headers=h, json={}).status_code == 409
 
 
+def test_login_upgrades_password_hash_parameters(client):
+    """Хеш со старыми параметрами Argon2 (по умолчанию argon2-cffi: 64 МиБ, p = 4) при успешном входе пересчитывается
+    с текущими (OWASP: 19 МиБ, p = 1) — одновременные входы под нагрузкой не съедают память (loadtest/)."""
+    from argon2 import PasswordHasher
+
+    from app.core.db import SessionLocal
+    from app.core.security import needs_rehash, verify_password
+    from app.models import User
+
+    old = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=4).hash("demo12345")
+    assert needs_rehash(old)
+    with SessionLocal() as db:
+        db.scalar(select(User).where(User.email == "newbie@demo.ru")).password_hash = old
+        db.commit()
+    login(client, "newbie@demo.ru")
+    with SessionLocal() as db:
+        new = db.scalar(select(User.password_hash).where(User.email == "newbie@demo.ru"))
+    assert new != old and not needs_rehash(new) and verify_password("demo12345", new)
+
+
 def test_lower_grade_can_be_accepted_from_same_test(client):
     """Не подтвердил Middle, но тест уверенно показал уровень не ниже Junior — Junior можно принять сразу."""
     from app.services.testing.cat import AnsweredItem, CatConfig, CatState, decide

@@ -1,9 +1,12 @@
 """Публичные эндпоинты: методика и результаты валидации, статистика банка заданий, стенд оценки ранжирования
 (для проверки жюри на собственном наборе пар «вакансия — кандидат»), служебные эндпоинты администратора."""
 import json
+import threading
+import time
+from functools import lru_cache
 from pathlib import Path
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from sqlalchemy import func, select
 
 from app.api.deps import DB, Admin
@@ -22,19 +25,46 @@ router = APIRouter(tags=["Публичное: методика и оценка"]
 REPORTS = BASE_DIR / "validation" / "reports"
 
 
-@router.get("/public/methodology", summary="Результаты валидации механик тестирования и подбора")
-def methodology():
+REPORT_NAMES = ("cat_validation", "matching_validation", "nlp_validation")
+STATS_TTL_SEC = 30
+_stats_cache: dict = {"at": 0.0, "value": None}
+_cache_lock = threading.Lock()
+
+
+@lru_cache(maxsize=4)
+def _methodology_json(key: tuple) -> bytes:
+    """Отчёты валидации + сводка банка, сериализованные один раз: страница «Методика» и главная читают их часто."""
     out = {}
-    for name in ("cat_validation", "matching_validation", "nlp_validation"):
+    for name in REPORT_NAMES:
         p = Path(REPORTS / f"{name}.json")
         out[name] = json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
     out["bank"] = {"total_families": len(REGISTRY), "parametric": sum(f.parametric for f in list(REGISTRY.values())),
                    "domains": {k: {**v, "name": DOMAINS.get(k, k)} for k, v in bank_summary().items()}}
-    return out
+    return json.dumps(out, ensure_ascii=False, default=str).encode("utf-8")
+
+
+@router.get("/public/methodology", summary="Результаты валидации механик тестирования и подбора")
+def methodology():
+    key = tuple((REPORTS / f"{n}.json").stat().st_mtime if (REPORTS / f"{n}.json").exists() else 0
+                for n in REPORT_NAMES) + (len(REGISTRY),)
+    return Response(_methodology_json(key), media_type="application/json",
+                    headers={"Cache-Control": "public, max-age=300"})
 
 
 @router.get("/public/stats", summary="Статистика платформы")
 def stats(db: DB):
+    """Счётчики для главной страницы; кэш на 30 секунд в процессе — главную открывает каждый посетитель."""
+    now = time.monotonic()
+    with _cache_lock:
+        if _stats_cache["value"] is not None and now - _stats_cache["at"] < STATS_TTL_SEC:
+            return _stats_cache["value"]
+    value = _stats(db)
+    with _cache_lock:
+        _stats_cache.update(at=now, value=value)
+    return value
+
+
+def _stats(db) -> dict:
     def count(model, *where):
         return db.scalar(select(func.count()).select_from(model).where(*where)) or 0
 

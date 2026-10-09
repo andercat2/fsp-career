@@ -1,0 +1,61 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/auth/login,CatchResponseError('вход cand169@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+GET,/employer/selections/[id],HTTPError('500 Server Error: Internal Server Error for url: /employer/selections/[id]'),1,2026-10-09T01:59:01Z,2026-10-09T01:59:01Z
+POST,/auth/login,CatchResponseError('вход cand167@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+GET,/notifications,HTTPError('504 Server Error: Gateway Time-out for url: /notifications'),25,2026-10-09T02:00:31Z,2026-10-09T02:03:10Z
+POST,/testing/sessions/[token]/answer (full),CatchResponseError('ответ: 500 Internal Server Error'),26,2026-10-09T01:59:00Z,2026-10-09T02:00:31Z
+POST,/auth/login,CatchResponseError('вход cand172@synthetic.example: 500'),1,2026-10-09T02:00:31Z,2026-10-09T02:00:31Z
+GET,/employer/selections,HTTPError('500 Server Error: Internal Server Error for url: /employer/selections'),5,2026-10-09T01:59:01Z,2026-10-09T02:00:31Z
+POST,/auth/login,CatchResponseError('вход cand158@synthetic.example: 504'),1,2026-10-09T02:00:31Z,2026-10-09T02:00:31Z
+GET,/employer/dashboard,HTTPError('500 Server Error: Internal Server Error for url: /employer/dashboard'),2,2026-10-09T01:59:31Z,2026-10-09T01:59:31Z
+POST,/testing/sessions (full),CatchResponseError('старт теста: 504 <html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n<hr><c'),1,2026-10-09T02:01:01Z,2026-10-09T02:01:01Z
+GET,/vacancies/[id],HTTPError('504 Server Error: Gateway Time-out for url: /vacancies/[id]'),1,2026-10-09T02:01:00Z,2026-10-09T02:01:00Z
+POST,/auth/login,CatchResponseError('вход cand171@synthetic.example: 504'),1,2026-10-09T02:00:33Z,2026-10-09T02:00:33Z
+GET,/employer/dashboard,HTTPError('504 Server Error: Gateway Time-out for url: /employer/dashboard'),19,2026-10-09T02:00:35Z,2026-10-09T02:03:18Z
+POST,/testing/sessions (full),CatchResponseError('старт теста: 500 Internal Server Error'),1,2026-10-09T01:59:31Z,2026-10-09T01:59:31Z
+GET,/candidate/profile,HTTPError('500 Server Error: Internal Server Error for url: /candidate/profile'),8,2026-10-09T01:59:31Z,2026-10-09T02:00:31Z
+GET,/employer/candidates/[id],HTTPError('500 Server Error: Internal Server Error for url: /employer/candidates/[id]'),2,2026-10-09T01:59:31Z,2026-10-09T02:00:01Z
+POST,/auth/login,CatchResponseError('вход cand166@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+GET,/public/stats,HTTPError('504 Server Error: Gateway Time-out for url: /public/stats'),35,2026-10-09T02:00:34Z,2026-10-09T02:03:13Z
+GET,/employer/selections/[id],HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections/[id]'),1,2026-10-09T02:00:30Z,2026-10-09T02:00:30Z
+POST,/auth/login,CatchResponseError('вход cand155@synthetic.example: 500'),1,2026-10-09T01:59:01Z,2026-10-09T01:59:01Z
+GET,/testing/eligibility,HTTPError('500 Server Error: Internal Server Error for url: /testing/eligibility'),8,2026-10-09T01:59:01Z,2026-10-09T02:00:31Z
+GET,/candidate/dashboard,HTTPError('500 Server Error: Internal Server Error for url: /candidate/dashboard'),14,2026-10-09T01:59:31Z,2026-10-09T02:00:31Z
+POST,/auth/login,CatchResponseError('вход cand153@synthetic.example: 500'),1,2026-10-09T01:59:01Z,2026-10-09T01:59:01Z
+GET,/public/stats,HTTPError('500 Server Error: Internal Server Error for url: /public/stats'),38,2026-10-09T01:59:01Z,2026-10-09T02:00:31Z
+GET,/employer/invitations,HTTPError('504 Server Error: Gateway Time-out for url: /employer/invitations'),10,2026-10-09T02:01:31Z,2026-10-09T02:02:46Z
+POST,/auth/login,CatchResponseError('вход cand162@synthetic.example: 500'),1,2026-10-09T01:59:31Z,2026-10-09T01:59:31Z
+POST,/testing/sessions/[token]/answer (full),CatchResponseError('ответ: 504 <html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n<hr><c'),34,2026-10-09T02:00:30Z,2026-10-09T02:01:11Z
+POST,/auth/login,CatchResponseError('вход cand163@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+GET,/employer/candidates (поиск),HTTPError('504 Server Error: Gateway Time-out for url: /employer/candidates (поиск)'),20,2026-10-09T02:00:35Z,2026-10-09T02:03:21Z
+GET,/candidate/profile,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/profile'),21,2026-10-09T02:00:30Z,2026-10-09T02:03:14Z
+GET,/employer/invitations,HTTPError('500 Server Error: Internal Server Error for url: /employer/invitations'),1,2026-10-09T01:59:00Z,2026-10-09T01:59:00Z
+GET,/public/methodology,HTTPError('504 Server Error: Gateway Time-out for url: /public/methodology'),11,2026-10-09T02:01:04Z,2026-10-09T02:01:31Z
+POST,/auth/login,CatchResponseError('вход cand159@synthetic.example: 500'),1,2026-10-09T01:59:31Z,2026-10-09T01:59:31Z
+GET,/testing/history,HTTPError('504 Server Error: Gateway Time-out for url: /testing/history'),12,2026-10-09T02:01:00Z,2026-10-09T02:03:11Z
+GET,/vacancies,HTTPError('500 Server Error: Internal Server Error for url: /vacancies'),4,2026-10-09T01:59:01Z,2026-10-09T02:00:31Z
+GET,/auth/me,HTTPError('500 Server Error: Internal Server Error for url: /auth/me'),2,2026-10-09T01:59:01Z,2026-10-09T01:59:01Z
+POST,/auth/login,CatchResponseError('вход cand154@synthetic.example: 500'),1,2026-10-09T01:59:01Z,2026-10-09T01:59:01Z
+GET,/candidate/resumes,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/resumes'),21,2026-10-09T02:00:31Z,2026-10-09T02:03:10Z
+GET,/candidate/invitations,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/invitations'),17,2026-10-09T02:00:30Z,2026-10-09T02:02:43Z
+POST,/auth/login,CatchResponseError('вход cand157@synthetic.example: 500'),1,2026-10-09T01:59:01Z,2026-10-09T01:59:01Z
+POST,/auth/login,CatchResponseError('вход cand165@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+POST,/auth/login,CatchResponseError('вход cand161@synthetic.example: 500'),1,2026-10-09T01:59:31Z,2026-10-09T01:59:31Z
+POST,/auth/login,CatchResponseError('вход cand168@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+POST,/auth/login,CatchResponseError('вход cand174@synthetic.example: 500'),1,2026-10-09T02:00:31Z,2026-10-09T02:00:31Z
+GET,/reference,HTTPError('504 Server Error: Gateway Time-out for url: /reference'),1,2026-10-09T02:01:01Z,2026-10-09T02:01:01Z
+GET,/employer/candidates/[id],HTTPError('504 Server Error: Gateway Time-out for url: /employer/candidates/[id]'),5,2026-10-09T02:02:12Z,2026-10-09T02:02:50Z
+GET,/candidate/invitations,HTTPError('500 Server Error: Internal Server Error for url: /candidate/invitations'),6,2026-10-09T01:59:01Z,2026-10-09T02:00:31Z
+GET,/employer/selections,HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections'),27,2026-10-09T02:00:30Z,2026-10-09T02:03:21Z
+GET,/employer/candidates (поиск),HTTPError('500 Server Error: Internal Server Error for url: /employer/candidates (поиск)'),5,2026-10-09T01:59:01Z,2026-10-09T02:00:31Z
+GET,/auth/me,HTTPError('504 Server Error: Gateway Time-out for url: /auth/me'),3,2026-10-09T02:00:31Z,2026-10-09T02:02:01Z
+GET,/vacancies/[id],HTTPError('500 Server Error: Internal Server Error for url: /vacancies/[id]'),2,2026-10-09T01:59:01Z,2026-10-09T01:59:31Z
+POST,/auth/login,CatchResponseError('вход cand164@synthetic.example: 500'),1,2026-10-09T02:00:01Z,2026-10-09T02:00:01Z
+POST,/auth/login,CatchResponseError('вход cand160@synthetic.example: 500'),1,2026-10-09T01:59:31Z,2026-10-09T01:59:31Z
+GET,/vacancies,HTTPError('504 Server Error: Gateway Time-out for url: /vacancies'),14,2026-10-09T02:00:31Z,2026-10-09T02:03:09Z
+GET,/candidate/resumes,HTTPError('500 Server Error: Internal Server Error for url: /candidate/resumes'),1,2026-10-09T01:59:30Z,2026-10-09T01:59:30Z
+POST,/auth/login,CatchResponseError('вход cand173@synthetic.example: 500'),1,2026-10-09T02:00:31Z,2026-10-09T02:00:31Z
+POST,/employer/selections (NLP + подбор),HTTPError('504 Server Error: Gateway Time-out for url: /employer/selections (NLP + подбор)'),6,2026-10-09T02:00:39Z,2026-10-09T02:03:18Z
+GET,/candidate/dashboard,HTTPError('504 Server Error: Gateway Time-out for url: /candidate/dashboard'),19,2026-10-09T02:00:34Z,2026-10-09T02:03:18Z
+POST,/auth/login,CatchResponseError('вход cand170@synthetic.example: 500'),1,2026-10-09T02:00:31Z,2026-10-09T02:00:31Z
+GET,/testing/eligibility,HTTPError('504 Server Error: Gateway Time-out for url: /testing/eligibility'),81,2026-10-09T02:00:31Z,2026-10-09T02:03:22Z
