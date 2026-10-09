@@ -210,6 +210,10 @@ function table(block, hint) {
 function cover() {
   const logo = fs.readFileSync(path.join(ROOT, 'frontend/public/brand/fsp-logo-black.png'))
   const kpi = (v, l) => [new TextRun({ text: v, bold: true, size: 30, color: C.deep }), new TextRun({ text: '  ' + l, size: 18, color: C.muted })]
+  // версия, дата и команда — из аннотации Markdown (до оглавления), чтобы обложка не расходилась с текстом
+  const head = fs.readFileSync(mdPath, 'utf8').split('<!-- toc -->')[0]
+  const [, version, date] = head.match(/Версия ([\d.]+), (\d+ \S+ \d{4}) г\./) || []
+  const [, team] = head.match(/Команда: ([^.]+)\./) || []
   return [
     new Paragraph({ spacing: { after: 1800 }, children: [new ImageRun({ type: 'png', data: logo, transformation: { width: 300, height: 38 } })] }),
     new Paragraph({ spacing: { after: 160 }, children: [new TextRun({ text: 'СОПРОВОДИТЕЛЬНАЯ ДОКУМЕНТАЦИЯ', bold: true, size: 22, color: C.pink, characterSpacing: 40 })] }),
@@ -217,11 +221,13 @@ function cover() {
     new Paragraph({ spacing: { after: 400 }, border: { bottom: { style: BorderStyle.SINGLE, size: 18, color: C.pink, space: 14 } },
       children: [new TextRun({ text: 'Платформа подбора ИТ-специалистов с обратной механикой: категория по тесту, выход на кандидата по инициативе работодателя, профиль с достижениями ФСП', size: 28, color: C.muted })] }),
     new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: 'Специальный трек ФСП · хакатон «Лидеры цифровой трансформации — 2026»', size: 22, color: C.ink })] }),
-    new Paragraph({ spacing: { after: 1600 }, children: [new TextRun({ text: 'Версия 1.0 · 5 октября 2026 г.', size: 22, color: C.muted })] }),
+    ...(team ? [new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: 'Команда: ' + team, size: 22, color: C.ink })] })] : []),
+    new Paragraph({ spacing: { after: 1400 }, children: [new TextRun({ text: `Версия ${version} · ${date} г.`, size: 22, color: C.muted })] }),
     new Paragraph({ spacing: { after: 100 }, children: kpi('359', 'семейств заданий с уникальными вариантами для каждого кандидата') }),
-    new Paragraph({ spacing: { after: 100 }, children: kpi('0,845', 'доля релевантных в топ-10 подборки (фильтры по резюме — 0,743)') }),
-    new Paragraph({ spacing: { after: 100 }, children: kpi('2,4%', 'завышения грейда по тесту против 36,1% в самооценке резюме') }),
-    new Paragraph({ spacing: { after: 100 }, children: kpi('86', 'методов API в OpenAPI, 491 автотест, запуск одной командой Docker') }),
+    new Paragraph({ spacing: { after: 100 }, children: kpi('0,835', 'доля релевантных в топ-10 подборки (фильтры по резюме — 0,750)') }),
+    new Paragraph({ spacing: { after: 100 }, children: kpi('3,1%', 'завышения грейда по тесту против 35,7% в самооценке резюме') }),
+    new Paragraph({ spacing: { after: 100 }, children: kpi('800', 'одновременных пользователей без ошибок в нагрузочном тесте на одной машине') }),
+    new Paragraph({ spacing: { after: 100 }, children: kpi('104', 'метода API в OpenAPI, 521 автотест, запуск одной командой Docker') }),
   ]
 }
 
