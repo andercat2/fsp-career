@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import json
-import math
 from collections import Counter
 from pathlib import Path
 
 import numpy as np
+
+from app.services.matching.metrics import mrr, ndcg_at_k, precision_at_k  # noqa: F401 — общие с POST /eval/dataset
 
 REPORTS = Path(__file__).resolve().parent / "reports"
 REPORTS.mkdir(parents=True, exist_ok=True)
@@ -47,26 +48,6 @@ def weighted_kappa(a: list[int], b: list[int], k: int) -> float:
     w = np.array([[(i - j) ** 2 / (k - 1) ** 2 for j in range(k)] for i in range(k)])
     e = np.outer(o.sum(1), o.sum(0)) / o.sum()
     return float(1 - (w * o).sum() / (w * e).sum())
-
-
-def ndcg_at_k(rels: list[int], k: int, ideal: list[int]) -> float:
-    def dcg(rs):
-        return sum((2**r - 1) / math.log2(i + 2) for i, r in enumerate(rs[:k]))
-
-    idcg = dcg(sorted(ideal, reverse=True))
-    return dcg(rels) / idcg if idcg > 0 else 0.0
-
-
-def precision_at_k(rels: list[int], k: int, thr: int = 2) -> float:
-    top = rels[:k]
-    return sum(r >= thr for r in top) / k if top else 0.0
-
-
-def mrr(rels: list[int], thr: int = 2) -> float:
-    for i, r in enumerate(rels):
-        if r >= thr:
-            return 1 / (i + 1)
-    return 0.0
 
 
 def point_biserial(u: list[int], x: list[float]) -> float:

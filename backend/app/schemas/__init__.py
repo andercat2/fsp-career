@@ -371,6 +371,50 @@ class EvalRankIn(BaseModel):
     candidates: list[EvalCandidate] = Field(max_length=2000)
 
 
+class EvalVacancy(BaseModel):
+    id: str = Field(max_length=100)
+    title: str = Field("", max_length=300)
+    text: str = Field(min_length=10, max_length=20000, description="Описание вакансии или потребности обычным текстом")
+
+
+class EvalDatasetCandidate(BaseModel):
+    id: str = Field(max_length=100)
+    text: str = Field("", max_length=30000, description="Текст резюме. Без категории его разбирает NLP: специализация, "
+                                                        "навыки, заявленный грейд (статус «не подтверждён»)")
+    specialization: str | None = Field(None, description="Категория по тесту — код специализации из справочника")
+    grade: GradeCode | None = Field(None, description="Категория по тесту — грейд")
+    theta: float | None = Field(None, description="Оценка способности по тесту; по умолчанию — середина грейда")
+    skills: list[str] = Field([], description="Навыки: коды онтологии или названия; пусто — из текста резюме")
+    verified_skills: list[str] = Field([], description="Навыки, подтверждённые тестом")
+    desired_salary: int | None = None
+    work_formats: list[WorkFormat] = []
+    city: str | None = None
+    fsp_achievements: list[dict] = []
+
+
+class EvalLabel(BaseModel):
+    vacancy: str
+    candidate: str
+    relevance: int = Field(ge=0, le=3, description="0 — нерелевантен; бинарно 1 или по шкале 0–3 (релевантен при ≥ 2)")
+
+
+class EvalDatasetIn(BaseModel):
+    vacancies: list[EvalVacancy] = Field(min_length=1, max_length=50)
+    candidates: list[EvalDatasetCandidate] = Field(min_length=1, max_length=2000)
+    labels: list[EvalLabel] = Field([], max_length=100000, description="Метки пар; не указанные пары — 0")
+    k: int = Field(10, ge=1, le=50, description="Глубина топа для P@k и nDCG@k")
+
+    @model_validator(mode="after")
+    def _ids(self):
+        vac, cand = {v.id for v in self.vacancies}, {c.id for c in self.candidates}
+        if len(vac) != len(self.vacancies) or len(cand) != len(self.candidates):
+            raise ValueError("id вакансий и кандидатов должны быть уникальны")
+        bad = [lb for lb in self.labels if lb.vacancy not in vac or lb.candidate not in cand]
+        if bad:
+            raise ValueError(f"метки ссылаются на неизвестные id: {bad[0].vacancy} — {bad[0].candidate}")
+        return self
+
+
 # ---------------------------------------------------------------- черновики заданий от LLM (админка)
 
 class DraftBatchIn(BaseModel):

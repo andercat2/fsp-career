@@ -12,6 +12,7 @@ function page<T extends Record<string, unknown>>(loader: () => Promise<T>, name:
 }
 
 const Methodology = page(() => import('./pages/Methodology'), 'Methodology')
+const Evaluate = page(() => import('./pages/Evaluate'), 'Evaluate')
 const CandidateDashboard = page(() => import('./pages/candidate/Dashboard'), 'CandidateDashboard')
 const CandidateProfile = page(() => import('./pages/candidate/Profile'), 'CandidateProfile')
 const Testing = page(() => import('./pages/candidate/Testing'), 'Testing')
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/verify" element={<Verify />} />
         <Route path="/auth/fsp" element={<FspAuth />} />
         <Route path="/methodology" element={<Methodology />} />
+        <Route path="/evaluate" element={<Evaluate />} />
 
         <Route path="/candidate" element={<AppShell role="candidate" />}>
           <Route index element={<CandidateDashboard />} />

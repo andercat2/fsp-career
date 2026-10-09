@@ -12,8 +12,9 @@ from sqlalchemy import func, select
 from app.api.deps import DB, Admin
 from app.core.config import BASE_DIR, settings
 from app.models import CandidateProfile, CandidateResume, Company, Invitation, ItemStat, TestSession, Vacancy
-from app.schemas import EvalRankIn
+from app.schemas import EvalDatasetIn, EvalRankIn, Message
 from app.services.fsp.scoring import fsp_score
+from app.services.matching.evaluation import evaluate_dataset
 from app.services.matching.profile import W_FSP, W_TEST, test_position
 from app.services.matching.ranking import Need, score_candidates
 from app.services.nlp.vacancy_parser import parse_need
@@ -98,6 +99,17 @@ def eval_rank(data: EvalRankIn):
     ranked = score_candidates(need, cands)
     return {"need": parsed, "ranking": [{"id": r["public_id"], "score": r["score"], "match": r["match"],
                                          "components": r["components"], "reasons": r["reasons"]} for r in ranked]}
+
+
+@router.post("/eval/dataset", summary="Стенд оценки: выдача и метрики на наборе пар «вакансия — кандидат»",
+             description="Проверка подбора на собственных данных жюри или работодателя, без сохранения. По каждой "
+                         "вакансии строится выдача тем же ранжированием, что в продукте, и считаются доля релевантных "
+                         "в топе (P@k), nDCG@k и MRR — рядом с поиском по ключевым словам (TF-IDF) на тех же данных. "
+                         "Кандидат задаётся категорией по тесту (specialization + grade) или только текстом резюме — "
+                         "тогда категорию определяет NLP со статусом «не подтверждён». Страница: /evaluate.",
+             responses={422: {"model": Message}})
+def eval_dataset(data: EvalDatasetIn):
+    return evaluate_dataset(data)
 
 
 @router.get("/admin/items", tags=["Администрирование"], summary="Статистика банка заданий: экспозиция и дрейф")

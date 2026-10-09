@@ -18,7 +18,7 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-521%20passed-2ea44f)
+![Tests](https://img.shields.io/badge/tests-524%20passed-2ea44f)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 [Быстрый старт](#быстрый-старт) · [Возможности](#возможности) · [Как это работает](#как-это-работает) ·
@@ -61,8 +61,9 @@ docker compose up --build
 | Адрес | Что там |
 |---|---|
 | http://localhost:8080 | приложение |
-| http://localhost:8080/docs | Swagger UI — 104 метода API с описаниями и примерами |
+| http://localhost:8080/docs | Swagger UI — 105 методов API с описаниями и примерами |
 | http://localhost:8080/methodology | методика и результаты валидации |
+| http://localhost:8080/evaluate | проверка подбора на своём наборе пар «вакансия — кандидат» |
 | http://localhost:8025 | Mailpit — письма с кодами подтверждения |
 | http://localhost:8090 | ФСП ID (mock): OIDC-провайдер, совместимый по путям с Keycloak, и реестр достижений |
 
@@ -176,6 +177,10 @@ flowchart LR
 | Экспресс-тест (8 заданий, ≈ 7 мин) против полного: r(θ̂, θ) / грейд ±1 | 0,85 / 98,8% (полный — 0,92 / 99,7%) |
 | Нагрузка (Locust, одна машина): 300 пользователей всех ролей | 110,1 запр/с без ошибок, p95 50 мс (до оптимизации — 18,3% ошибок) |
 | Ступенчатая нагрузка: без ошибок, p95 ≤ 1 с | 800 одновременных пользователей (до оптимизации — 200) |
+
+**Проверьте подбор на своих данных:** страница `/evaluate` принимает набор пар «вакансия — кандидат» с разметкой
+(JSON или CSV), строит выдачу тем же ранжированием и считает P@10, nDCG@10 и MRR рядом с поиском по ключевым словам.
+На встроенном примере из валидации P@10 — 0,70 против 0,38 у поиска по ключевым словам.
 
 ### Нагрузочное тестирование
 

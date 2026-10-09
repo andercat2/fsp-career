@@ -100,6 +100,7 @@ export function Methodology() {
           <p className="mt-4 max-w-3xl text-white/75">Эталонной разметки на хакатоне нет, поэтому мы построили собственную процедуру: синтетическую популяцию
             с известной «истиной» (истинный уровень, реальные навыки, честное или завышенное резюме) и прогоняем через неё и тестирование, и подбор,
             и атаки на утечку заданий. Все эксперименты воспроизводимы командой <code className="rounded bg-white/10 px-1.5 py-0.5 text-white">python -m validation.run_all</code>.</p>
+          <a href="/evaluate" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-fsp-blush hover:text-white">Проверить подбор на своих данных →</a>
           {cat && mv && (
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Kpi accent label="Грейд по тесту верен" value={pct(cat.grades.grade_exact_accuracy)} hint={`самооценка в резюме — ${pct(cat.grades.self_declared_exact_accuracy)}`} />

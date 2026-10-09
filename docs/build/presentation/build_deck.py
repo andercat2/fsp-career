@@ -559,7 +559,7 @@ def main():
         "Подбор: NLP-разбор вакансии → категории → ранжирование с объяснением",
         "ФСП ID по OpenID Connect (пути Keycloak); резюме из PDF, включая экспорт hh.ru",
         "Задачи с кодом: песочница без сети, скрытые тесты, антиплагиат",
-        "FastAPI, PostgreSQL, React; Docker, 104 метода OpenAPI, 521 автотест, нагрузочный тест",
+        "FastAPI, PostgreSQL, React; Docker, 105 методов OpenAPI, 524 автотеста, нагрузочный тест",
     ], size=14, after=9)
     write(ph(s, 42), [
         "Работодатель видит только кандидатов с подтверждённым уровнем и рынок категории до найма",
@@ -854,7 +854,7 @@ def main():
     t.width = Inches(8)
     remove(ph(s, 1))
     fit_picture(s, FIG / "architecture.png", 0.6, 1.62, 8.6, 5.15)
-    facts = [("104", "метода API, OpenAPI / Swagger"), ("521", "автотест: банк заданий, сценарии, песочница, антиплагиат"),
+    facts = [("105", "методов API, OpenAPI / Swagger"), ("524", "автотеста: банк заданий, сценарии, песочница, антиплагиат"),
              ("800", "одновременных пользователей без ошибок в нагрузочном тесте"), ("1 команда", "docker compose up: 6 контейнеров, ≈ 3 ГБ RAM")]
     for k, (big, small) in enumerate(facts):
         y = 1.85 + k * 1.2
@@ -937,6 +937,7 @@ def main():
         [("Демо: ", {"bold": True, "color": DEEP}), ("docker compose up --build → http://localhost:8080", {})],
         [("Репозиторий: ", {"bold": True, "color": DEEP}), ("github.com/andercat2/fsp-career", {})],
         [("Документация: ", {"bold": True, "color": DEEP}), ("docs/fsp-career-documentation.pdf", {})],
+        [("Проверка подбора на своих данных: ", {"bold": True, "color": DEEP}), ("localhost:8080/evaluate", {})],
         [("Демо-аккаунты ", {"bold": True, "color": DEEP}), ("(пароль demo12345): employer@demo.ru, candidate@demo.ru, newbie@demo.ru", {})],
         [("ФСП ID (тестовый): ", {"bold": True, "color": DEEP}), ("alice / gleb, пароль fsp12345", {})],
         [("Команда: ", {"bold": True, "color": DEEP}), (f"«{TEAM_NAME}» — " + ", ".join(m["full"] for m in TEAM), {})],

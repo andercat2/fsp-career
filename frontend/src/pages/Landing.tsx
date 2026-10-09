@@ -26,6 +26,7 @@ export function PublicHeader({ solid = false }: { solid?: boolean }) {
         <Logo dark />
         <nav className="flex items-center gap-1 sm:gap-2">
           <Link to="/methodology" className="hidden rounded-xl px-3 py-2 text-sm font-medium text-white/70 transition hover:text-white sm:block">Методика</Link>
+          <Link to="/evaluate" className="hidden rounded-xl px-3 py-2 text-sm font-medium text-white/70 transition hover:text-white lg:block">Проверка подбора</Link>
           <a href="/docs" className="hidden rounded-xl px-3 py-2 text-sm font-medium text-white/70 transition hover:text-white md:block">API</a>
           {user ? (
             <ButtonLink to={homeFor(user.role)} size="sm">Личный кабинет</ButtonLink>
